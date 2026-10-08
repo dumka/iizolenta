@@ -11,7 +11,7 @@
    - Ошибки отдельных лент (`feed error: ...`) — норма, продолжай.
 
 3. **Есть ли работа.** Если в `state/pending.json` пустой список `items`:
-   - если `git status --porcelain state/seen.json` показывает изменения — закоммить и запушь его (шаг 8, сообщение `state: prune seen`);
+   - если `git status --porcelain state/seen.json` показывает изменения — закоммить и запушь только его теми же командами, что в шаге 8, с сообщением `state: prune seen`;
    - иначе ничего не коммить. Заверши запуск.
 
 4. **Выжимки.** Прочитай `state/pending.json` и для **каждого** элемента `items` запиши ровно одну запись в `state/summaries.json` (формат ниже). Используй только поля `title`, `text`, `snippet`, `source`, `text_source`, `default_category` этого элемента.
@@ -24,12 +24,12 @@
 
 7. **Не трогай ничего, кроме данных.** Перед коммитом `git status --porcelain` должен показывать изменения только в `site/data/news.json` и `state/seen.json`. Если изменилось что-то ещё — `git checkout -- <файл>` для каждого лишнего файла.
 
-8. **Коммит и публикация.**
+8. **Коммит и публикация.** Рабочая копия может быть в состоянии detached HEAD — это нормально, команды ниже работают в обоих случаях. Число `<merged>` — из строки `merge`, время подставляет `date`, не пиши его вручную.
    ```
    git add site/data/news.json state/seen.json
-   git commit -m "news: +<merged> (<UTC YYYY-MM-DD HH:MM>)"
+   git commit -m "news: +<merged> ($(date -u '+%Y-%m-%d %H:%M'))"
    git pull --rebase origin main
-   git push origin main
+   git push origin HEAD:main
    ```
    Пушить только в `main`. Если `git pull --rebase` дал конфликт: `git rebase --abort`, `git reset --hard origin/main`, ничего не пушить и сообщить об этом в итоге (повторить слияние нельзя — рабочие файлы уже удалены; статьи будут собраны заново в следующий час).
 
