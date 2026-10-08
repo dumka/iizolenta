@@ -63,29 +63,42 @@ class Env:
         self.state = tmp_path / "state"
         self.state.mkdir()
         self.news = tmp_path / "site" / "data" / "news.json"
+        self.posts = tmp_path / "site" / "data" / "posts.json"
 
     def write(self, name, data, raw=False, encoding="utf-8"):
         path = self.state / name
         path.write_text(data if raw else json.dumps(data, ensure_ascii=False), encoding=encoding)
 
-    def setup(self, items, summaries, seen=None, news=None):
-        self.write("pending.json", {"generated_at": iso(NOW), "items": items, "errors": []})
+    def setup(self, items, summaries, seen=None, news=None, posts=None, post_summaries=None, posts_store=None):
+        pending = {"generated_at": iso(NOW), "items": items, "errors": []}
+        if posts is not None:
+            pending["posts"] = posts
+        self.write("pending.json", pending)
         if summaries is not None:
-            self.write("summaries.json", {"items": summaries})
+            data = {"items": summaries}
+            if post_summaries is not None:
+                data["posts"] = post_summaries
+            self.write("summaries.json", data)
         default_seen = {
             i["id"]: {"first_seen": NOW.isoformat(), "status": "pending", "attempts": 0}
-            for i in items
+            for i in items + (posts or [])
         }
         self.write("seen.json", seen if seen is not None else default_seen)
         if news is not None:
             self.news.parent.mkdir(parents=True, exist_ok=True)
             self.news.write_text(json.dumps({"generated_at": "x", "items": news}), encoding="utf-8")
+        if posts_store is not None:
+            self.posts.parent.mkdir(parents=True, exist_ok=True)
+            self.posts.write_text(json.dumps({"generated_at": "x", "items": posts_store}), encoding="utf-8")
 
     def run(self, **kwargs):
         return merge(self.state, self.news, NOW, **kwargs)
 
     def news_items(self):
         return json.loads(self.news.read_text(encoding="utf-8"))["items"]
+
+    def post_items(self):
+        return json.loads(self.posts.read_text(encoding="utf-8"))["items"]
 
     def seen(self):
         return json.loads((self.state / "seen.json").read_text(encoding="utf-8"))
@@ -261,3 +274,98 @@ def test_summary_line(env):
     env.setup(items, summaries)
     result = env.run()
     assert result.summary() == "merged=1 skipped=1 invalid=1 missing=1 failed=0 | news total=1"
+
+
+POST_RU = "Модели неплохо знают географию: достаточно спросить координаты, и они ответят."
+
+
+def pending_post(status_id, published=NOW - timedelta(hours=1)):
+    return {
+        "id": f"x:{status_id}",
+        "url": f"https://x.com/karpathy/status/{status_id}",
+        "author_handle": "karpathy",
+        "author_name": "Andrej Karpathy",
+        "published_at": iso(published),
+        "text": "Models know geography.",
+        "quote": None,
+        "lang": "en",
+    }
+
+
+def test_post_merged_into_posts_json_with_pending_metadata(env):
+    forged = {"id": "x:1", "status": "ok", "text": POST_RU, "url": "https://evil.example", "author_handle": "evil"}
+    env.setup([], [], posts=[pending_post("1")], post_summaries=[forged])
+    result = env.run()
+    assert env.post_items() == [{
+        "id": "x:1",
+        "url": "https://x.com/karpathy/status/1",
+        "author_handle": "karpathy",
+        "author_name": "Andrej Karpathy",
+        "published_at": iso(NOW - timedelta(hours=1)),
+        "text": POST_RU,
+    }]
+    assert env.seen()["x:1"]["status"] == "done"
+    assert result.posts.merged == 1 and result.posts.total == 1
+    assert "posts: merged=1 skipped=0 invalid=0 missing=0 failed=0 | total=1" in result.summary()
+
+
+def test_post_skip_and_invalid_attempts(env):
+    seen = {
+        "x:1": {"first_seen": NOW.isoformat(), "status": "pending", "attempts": 0},
+        "x:2": {"first_seen": NOW.isoformat(), "status": "pending", "attempts": 2},
+    }
+    env.setup([], [], seen=seen, posts=[pending_post("1"), pending_post("2")], post_summaries=[
+        {"id": "x:1", "status": "skip", "reason": "личное"},
+        {"id": "x:2", "status": "ok", "text": "English only text that was not translated"},
+    ])
+    result = env.run()
+    assert env.post_items() == []
+    assert env.seen()["x:1"]["status"] == "skipped"
+    assert env.seen()["x:2"] == {"first_seen": NOW.isoformat(), "status": "failed", "attempts": 3}
+    assert result.posts.skipped == 1 and result.posts.failed == 1
+    assert result.posts.invalid[0][0] == "x:2"
+
+
+def test_posts_older_than_3_days_pruned(env):
+    old = [
+        {"id": "x:8", "url": "https://x.com/a/status/8", "author_handle": "a", "author_name": "A",
+         "published_at": iso(NOW - timedelta(days=3, minutes=1)), "text": POST_RU},
+        {"id": "x:9", "url": "https://x.com/a/status/9", "author_handle": "a", "author_name": "A",
+         "published_at": iso(NOW - timedelta(days=2, hours=23)), "text": POST_RU},
+    ]
+    env.setup([], [], posts=[], post_summaries=[], posts_store=old)
+    env.run()
+    assert [p["id"] for p in env.post_items()] == ["x:9"]
+
+
+def test_bare_list_summaries_still_merge_articles_only(env):
+    env.setup([pending_item("a1")], None, posts=[pending_post("1")])
+    env.write("summaries.json", json.dumps([ok_summary("a1")], ensure_ascii=False), raw=True)
+    result = env.run()
+    assert [r["id"] for r in env.news_items()] == ["a1"]
+    assert result.posts.missing == 1
+    assert env.seen()["x:1"]["attempts"] == 1
+
+
+def test_corrupted_posts_json_aborts_without_overwrite(env):
+    env.setup([pending_item("a1")], [ok_summary("a1")], posts=[pending_post("1")], post_summaries=[])
+    env.posts.parent.mkdir(parents=True, exist_ok=True)
+    env.posts.write_text("{oops", encoding="utf-8")
+    with pytest.raises(StateError):
+        env.run()
+    assert env.posts.read_text(encoding="utf-8") == "{oops"
+    assert not env.news.exists()
+
+
+def test_missing_posts_summaries_count_attempts(env):
+    env.setup([], [], posts=[pending_post("1"), pending_post("2")], post_summaries=[{"id": "x:1", "status": "ok", "text": POST_RU}])
+    result = env.run()
+    assert result.posts.merged == 1 and result.posts.missing == 1
+    assert env.seen()["x:2"]["attempts"] == 1
+
+
+def test_no_posts_key_in_pending_keeps_old_summary(env):
+    env.setup([pending_item("a1")], [ok_summary("a1")])
+    result = env.run()
+    assert result.posts is None
+    assert "posts:" not in result.summary()

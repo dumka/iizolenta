@@ -42,16 +42,19 @@ def run_check(args: argparse.Namespace) -> int:
 
 
 def run_merge(args: argparse.Namespace) -> None:
-    result = merge(args.state_dir, args.news, datetime.now(UTC))
+    result = merge(args.state_dir, args.news, datetime.now(UTC), posts_path=args.posts)
     print(result.summary())
     if result.summaries_error:
         print(f"  summaries error: {result.summaries_error}")
-    for item_id, reasons in result.invalid:
-        print(f"  invalid {item_id}: {'; '.join(reasons)}")
-    for item_id in result.unknown_ids:
-        print(f"  unknown id ignored: {item_id}")
-    for item_id in result.duplicate_ids:
-        print(f"  duplicate id ignored: {item_id}")
+    for label, kind in (("", result), ("post ", result.posts)):
+        if kind is None:
+            continue
+        for item_id, reasons in kind.invalid:
+            print(f"  invalid {label}{item_id}: {'; '.join(reasons)}")
+        for item_id in kind.unknown_ids:
+            print(f"  unknown {label}id ignored: {item_id}")
+        for item_id in kind.duplicate_ids:
+            print(f"  duplicate {label}id ignored: {item_id}")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -70,6 +73,7 @@ def main(argv: list[str] | None = None) -> int:
     merge_cmd = commands.add_parser("merge", help="validate summaries and update news.json")
     merge_cmd.add_argument("--state-dir", type=Path, default=Path("state"))
     merge_cmd.add_argument("--news", type=Path, default=Path("site/data/news.json"))
+    merge_cmd.add_argument("--posts", type=Path, default=Path("site/data/posts.json"))
     merge_cmd.set_defaults(handler=run_merge)
 
     args = parser.parse_args(argv)

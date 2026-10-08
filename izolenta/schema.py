@@ -111,3 +111,60 @@ def validate_summary(raw: Any) -> Summary | Skip:
         lead=lead,
         body=tuple(body),
     )
+
+
+# Posts from X: {"id": "x:<status id>", "status": "ok", "text": "..."} or a skip.
+
+POST_TEXT_LEN = (20, 600)
+POST_PARAGRAPHS_MAX = 3
+PARAGRAPH_BREAK = re.compile(r"\n\s*\n")
+
+
+@dataclass(frozen=True)
+class PostSummary:
+    id: str
+    text: str
+
+
+def _is_post_id(value: Any) -> bool:
+    return isinstance(value, str) and value.startswith("x:") and value[2:].isdigit()
+
+
+def validate_post(raw: Any) -> PostSummary | Skip:
+    if not isinstance(raw, dict):
+        raise ValidationError(["entry: must be a JSON object"])
+    errors: list[str] = []
+    post_id = raw.get("id")
+    if not _is_post_id(post_id):
+        errors.append(f"id: must look like 'x:<digits>', got {post_id!r}")
+
+    status = raw.get("status")
+    if status == "skip":
+        reason = raw.get("reason")
+        reason = normalize(reason) if isinstance(reason, str) else ""
+        if not reason or len(reason) > REASON_MAX:
+            errors.append(f"reason: must be a non-empty string up to {REASON_MAX} chars")
+        if errors:
+            raise ValidationError(errors)
+        return Skip(id=post_id, reason=reason)
+    if status != "ok":
+        raise ValidationError(errors + [f"status: must be 'ok' or 'skip', got {status!r}"])
+
+    value = raw.get("text")
+    if not isinstance(value, str):
+        raise ValidationError(errors + ["text: must be a string"])
+    paragraphs = [normalize(part) for part in PARAGRAPH_BREAK.split(value)]
+    paragraphs = [part for part in paragraphs if part]
+    text = "\n\n".join(paragraphs)
+    low, high = POST_TEXT_LEN
+    if len(paragraphs) > POST_PARAGRAPHS_MAX:
+        errors.append(f"text: at most {POST_PARAGRAPHS_MAX} paragraphs, got {len(paragraphs)}")
+    elif not low <= len(text) <= high:
+        errors.append(f"text: length {len(text)} not in {low}..{high}")
+    elif not CYRILLIC.search(text):
+        errors.append("text: no Russian text (not translated?)")
+    elif "<" in text or ">" in text:
+        errors.append("text: HTML is not allowed")
+    if errors:
+        raise ValidationError(errors)
+    return PostSummary(id=post_id, text=text)

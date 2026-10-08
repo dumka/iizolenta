@@ -104,3 +104,42 @@ def test_all_errors_reported_together():
     text = " | ".join(info.value.reasons)
     assert "category" in text and "importance" in text and "title" in text
     assert len(info.value.reasons) == 3
+
+
+# posts from X
+
+from izolenta.schema import PostSummary, validate_post  # noqa: E402
+
+POST_TEXT = "Карпаты пишет, что модели неплохо знают географию: достаточно спросить координаты."
+
+
+def test_valid_post_ok_keeps_paragraphs():
+    result = validate_post({"id": "x:123", "status": "ok", "text": "  Первый   абзац поста про модели.\n\n Второй\nабзац с выводом. "})
+    assert result == PostSummary(id="x:123", text="Первый абзац поста про модели.\n\nВторой абзац с выводом.")
+
+
+@pytest.mark.parametrize(
+    "text, field",
+    [
+        ("Коротко.", "text"),
+        ("Слово " * 130, "text"),
+        ("Models know geography surprisingly well, just ask them.", "text"),
+        ("Смотрите <a href='x'>ссылку</a> на исследование про модели.", "text"),
+        ("\n\n".join(["Абзац про модели номер один."] * 4), "text"),
+    ],
+)
+def test_post_too_long_or_untranslated_rejected(text, field):
+    with pytest.raises(ValidationError) as info:
+        validate_post({"id": "x:1", "status": "ok", "text": text})
+    assert any(field in reason for reason in info.value.reasons)
+
+
+@pytest.mark.parametrize("post_id", ["123", "x:", "x:12a", "92be971aec513c1f", 5])
+def test_post_id_without_x_prefix_rejected(post_id):
+    with pytest.raises(ValidationError) as info:
+        validate_post({"id": post_id, "status": "ok", "text": POST_TEXT})
+    assert any("id" in reason for reason in info.value.reasons)
+
+
+def test_post_skip_accepted():
+    assert validate_post({"id": "x:9", "status": "skip", "reason": "личное"}) == Skip(id="x:9", reason="личное")
