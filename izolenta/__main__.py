@@ -1,4 +1,4 @@
-"""CLI: python -m izolenta collect | merge"""
+"""CLI: python -m izolenta collect | check | merge"""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from pathlib import Path
 from izolenta.collect import collect
 from izolenta.config import ConfigError, load_config
 from izolenta.http import make_fetcher
-from izolenta.merge import merge
+from izolenta.merge import check, merge
 from izolenta.state import StateError
 
 EXIT_FATAL = 2
@@ -28,6 +28,17 @@ def run_collect(args: argparse.Namespace) -> None:
     print(result.summary())
     for error in result.errors:
         print(f"  feed error: {error['feed']}: {error['error']}")
+
+
+def run_check(args: argparse.Namespace) -> int:
+    result = check(args.state_dir)
+    if result.nothing_to_check:
+        print("nothing to check (no state/pending.json)")
+        return 0
+    for problem in result.problems:
+        print(f"  {problem}")
+    print("ok: every pending item has a valid summary" if result.ok else f"{len(result.problems)} problem(s)")
+    return 0 if result.ok else 1
 
 
 def run_merge(args: argparse.Namespace) -> None:
@@ -52,6 +63,10 @@ def main(argv: list[str] | None = None) -> int:
     collect_cmd.add_argument("--state-dir", type=Path, default=Path("state"))
     collect_cmd.set_defaults(handler=run_collect)
 
+    check_cmd = commands.add_parser("check", help="validate state/summaries.json without merging")
+    check_cmd.add_argument("--state-dir", type=Path, default=Path("state"))
+    check_cmd.set_defaults(handler=run_check)
+
     merge_cmd = commands.add_parser("merge", help="validate summaries and update news.json")
     merge_cmd.add_argument("--state-dir", type=Path, default=Path("state"))
     merge_cmd.add_argument("--news", type=Path, default=Path("site/data/news.json"))
@@ -59,11 +74,11 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     try:
-        args.handler(args)
+        code = args.handler(args)
     except (ConfigError, StateError) as exc:
         print(f"izolenta: fatal: {exc}", file=sys.stderr)
         return EXIT_FATAL
-    return 0
+    return code or 0
 
 
 if __name__ == "__main__":

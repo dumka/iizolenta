@@ -39,3 +39,25 @@ def test_merge_without_pending_exits_0(tmp_path, capsys):
     code = main(["merge", "--state-dir", str(tmp_path), "--news", str(tmp_path / "news.json")])
     assert code == 0
     assert "nothing to merge" in capsys.readouterr().out
+
+
+def _check_env(tmp_path, summaries):
+    from tests.test_merge import Env, pending_item
+
+    env = Env(tmp_path)
+    env.setup([pending_item("a1")], summaries)
+    return env
+
+
+def test_check_exit_0_when_valid(tmp_path, capsys):
+    from tests.test_merge import ok_summary
+
+    env = _check_env(tmp_path, [ok_summary("a1")])
+    assert main(["check", "--state-dir", str(env.state)]) == 0
+    assert "ok" in capsys.readouterr().out
+
+
+def test_check_exit_1_with_problems(tmp_path, capsys):
+    env = _check_env(tmp_path, [])
+    assert main(["check", "--state-dir", str(env.state)]) == 1
+    assert "missing a1" in capsys.readouterr().out

@@ -228,3 +228,22 @@ def test_summary_line_reports_counts(tmp_path):
     web = FakeWeb({feed_url("A"): rss([post]), post[0]: ARTICLE, feed_url("B"): FetchError("x")})
     result, _, _ = run(tmp_path, make_config(["A", "B"]), web)
     assert result.summary() == "feeds ok=1 failed=1 | candidates=1 | selected=1 (article=1, snippet=0)"
+
+
+def test_og_image_used_when_feed_has_no_image(tmp_path):
+    post = ("https://a.example/post", "Post", NOW)
+    web = FakeWeb({feed_url("A"): rss([post]), post[0]: ARTICLE})
+    _, pending, _ = run(tmp_path, make_config(["A"]), web)
+    assert pending["items"][0]["image"] == "https://cdn.example.com/og/gpt7.jpg"
+
+
+def test_feed_image_wins_over_og_image(tmp_path):
+    feed = (
+        '<?xml version="1.0"?><rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">'
+        "<channel><title>T</title><item><title>Post</title><link>https://a.example/post</link>"
+        f"<pubDate>{NOW.strftime('%a, %d %b %Y %H:%M:%S +0000')}</pubDate>"
+        '<media:content url="https://cdn.example.com/feed.jpg" medium="image"/></item></channel></rss>'
+    ).encode()
+    web = FakeWeb({feed_url("A"): feed, "https://a.example/post": ARTICLE})
+    _, pending, _ = run(tmp_path, make_config(["A"]), web)
+    assert pending["items"][0]["image"] == "https://cdn.example.com/feed.jpg"

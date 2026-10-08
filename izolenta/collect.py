@@ -94,11 +94,11 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
 
     selected = _round_robin(per_feed, settings.max_items_per_run)
     with ThreadPoolExecutor(max_workers=settings.fetch_workers) as pool:
-        texts = list(
+        articles = list(
             pool.map(lambda item: article_text(item, fetch, settings.article_text_limit), selected)
         )
 
-    for item, (text, text_source) in zip(selected, texts):
+    for item, article in zip(selected, articles):
         result.items.append(
             {
                 "id": item.id,
@@ -106,10 +106,10 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
                 "source": item.source,
                 "title": item.title,
                 "snippet": item.snippet,
-                "text": text,
-                "text_source": text_source,
+                "text": article.text,
+                "text_source": article.text_source,
                 "published_at": iso_z(item.published_at),
-                "image": item.image,
+                "image": item.image or article.image,
                 "default_category": item.default_category,
             }
         )

@@ -62,6 +62,36 @@ def _load_news(path: Path) -> list[dict[str, Any]]:
     return items
 
 
+def _load_pending(path: Path) -> list[dict[str, Any]]:
+    items = read_json_object(path).get("items")
+    if not isinstance(items, list):
+        raise StateError(f"{path}: 'items' must be a list")
+    return items
+
+
+@dataclass
+class SummaryIndex:
+    by_id: dict[str, Any] = field(default_factory=dict)
+    unknown_ids: list[str] = field(default_factory=list)
+    duplicate_ids: list[str] = field(default_factory=list)
+    without_id: int = 0
+
+
+def _index_summaries(raw_summaries: list[Any], pending_ids: set[str]) -> SummaryIndex:
+    index = SummaryIndex()
+    for raw in raw_summaries:
+        raw_id = raw.get("id") if isinstance(raw, dict) else None
+        if not isinstance(raw_id, str):
+            index.without_id += 1
+        elif raw_id not in pending_ids:
+            index.unknown_ids.append(raw_id)
+        elif raw_id in index.by_id:
+            index.duplicate_ids.append(raw_id)
+        else:
+            index.by_id[raw_id] = raw
+    return index
+
+
 def _news_record(item: dict[str, Any], summary: Summary) -> dict[str, Any]:
     # url, source, date and image come from the collector, never from Claude's output
     return {
@@ -96,25 +126,16 @@ def merge(
         return result
 
     # Read everything that must be intact before writing anything.
-    pending_items = read_json_object(pending_path).get("items")
-    if not isinstance(pending_items, list):
-        raise StateError(f"{pending_path}: 'items' must be a list")
+    pending_items = _load_pending(pending_path)
     seen = load_seen(seen_path)
     news = {record["id"]: record for record in _load_news(news_path)}
 
     raw_summaries, result.summaries_error = _load_summaries(summaries_path)
-    pending_ids = {item["id"] for item in pending_items}
-    by_id: dict[str, Any] = {}
-    for raw in raw_summaries:
-        raw_id = raw.get("id") if isinstance(raw, dict) else None
-        if not isinstance(raw_id, str):
-            result.invalid.append(("?", ["entry without a string id"]))
-        elif raw_id not in pending_ids:
-            result.unknown_ids.append(raw_id)
-        elif raw_id in by_id:
-            result.duplicate_ids.append(raw_id)
-        else:
-            by_id[raw_id] = raw
+    index = _index_summaries(raw_summaries, {item["id"] for item in pending_items})
+    by_id = index.by_id
+    result.unknown_ids = index.unknown_ids
+    result.duplicate_ids = index.duplicate_ids
+    result.invalid.extend(("?", ["entry without a string id"]) for _ in range(index.without_id))
 
     for item in pending_items:
         entry = seen.setdefault(
@@ -154,4 +175,43 @@ def merge(
     save_json_atomic(seen_path, seen)
     pending_path.unlink()
     summaries_path.unlink(missing_ok=True)
+    return result
+
+
+@dataclass
+class CheckResult:
+    nothing_to_check: bool = False
+    problems: list[str] = field(default_factory=list)
+
+    @property
+    def ok(self) -> bool:
+        return not self.problems
+
+
+def check(state_dir: Path) -> CheckResult:
+    """Validate state/summaries.json against state/pending.json without changing anything."""
+    state_dir = Path(state_dir)
+    pending_path = state_dir / "pending.json"
+    result = CheckResult()
+    if not pending_path.exists():
+        result.nothing_to_check = True
+        return result
+
+    pending_items = _load_pending(pending_path)
+    raw_summaries, summaries_error = _load_summaries(state_dir / "summaries.json")
+    if summaries_error:
+        result.problems.append(f"cannot read summaries: {summaries_error}")
+    index = _index_summaries(raw_summaries, {item["id"] for item in pending_items})
+    result.problems.extend("entry without a string id" for _ in range(index.without_id))
+    result.problems.extend(f"unknown id {item_id} (not in pending.json)" for item_id in index.unknown_ids)
+    result.problems.extend(f"duplicate id {item_id} (only the first is used)" for item_id in index.duplicate_ids)
+    for item in pending_items:
+        raw = index.by_id.get(item["id"])
+        if raw is None:
+            result.problems.append(f"missing {item['id']}: no summary for \"{item['title']}\"")
+            continue
+        try:
+            validate_summary(raw)
+        except ValidationError as exc:
+            result.problems.append(f"invalid {item['id']}: {'; '.join(exc.reasons)}")
     return result
