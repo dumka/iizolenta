@@ -1,6 +1,6 @@
 # Task 4: Промпт routine, самопроверка выжимок, деплой Pages — локально и с пробным прогоном
 
-Epic: `docs/plans/epic-izolenta.md` · Статус: open (SRE review: approved) · Оценка: 6 часов · Зависит от: Task 1-3 (closed)
+Epic: `docs/plans/epic-izolenta.md` · Статус: closed (2026-10-08) · Оценка: 6 часов · Зависит от: Task 1-3 (closed)
 
 ## Goal
 
@@ -79,3 +79,12 @@ Epic: `docs/plans/epic-izolenta.md` · Статус: open (SRE review: approved)
 - [ ] Скриншоты сайта с реальными данными на 1280 и 360 просмотрены, на 360 нет горизонтального скролла.
 - [ ] `.github/workflows/pages.yml` и `tests.yml` проходят `actionlint` (если инструмент недоступен — ручная сверка с документацией actions и пометка об этом).
 - [ ] `state/seen.json` и `site/data/news.json` закоммичены; push не выполнялся.
+
+## Result (2026-10-08)
+
+- `uv run pytest`: 107/107 (новые: og:image — 5 в `test_extract.py`, 2 в `test_collect.py`; `check` — 4 в `test_check.py`, 2 в `test_cli.py`). `node --test`: 30/30.
+- `actionlint` (через `uvx --from actionlint-py`) по `pages.yml` и `tests.yml` — без замечаний.
+- Пробный прогон по `routine/PROMPT.md`: `collect` — `feeds ok=12 failed=2 | candidates=101 | selected=15 (article=13, snippet=2)`; выжимки — 9 `ok`, 6 `skip` (2 дубля мероприятия Microsoft, 2 сниппета без фактов, цитата без новости, не-IT стартап); `check` — код 0 с первой попытки; `merge` — `merged=9 skipped=6 invalid=0 missing=0 failed=0 | news total=9`; картинки у 9 из 9 (og:image сработал).
+- Headless-проверки на реальных данных: 13/13 PASS, ошибок в консоли нет.
+- По итогам прогона в `PROMPT.md` уточнены правила: двоеточие в заголовке только для атрибуции; аналитика без события — важность 1.
+- Отклонение: `article_text` теперь возвращает `ArticleContent(text, text_source, image)` вместо кортежа.
