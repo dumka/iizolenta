@@ -12,6 +12,11 @@ from izolenta.state import StateError
 from izolenta.xposts import API_URL
 
 NOW = datetime(2026, 10, 8, 12, 0, tzinfo=UTC)
+
+
+@pytest.fixture(autouse=True)
+def no_retry_delay(monkeypatch):
+    monkeypatch.setattr("izolenta.collect.ACCOUNT_RETRY_DELAY", 0)
 ARTICLE = (Path(__file__).parent / "fixtures" / "article.html").read_bytes()
 
 
@@ -310,3 +315,22 @@ def test_old_posts_dropped(tmp_path):
     })
     _, pending, _ = run(tmp_path, make_config(["F"], accounts=["alice"]), web)
     assert [p["text"] for p in pending["posts"]] == ["Fresh"]
+
+
+def test_failing_account_retried_once(tmp_path):
+    calls = {"n": 0}
+    good = fx("alice", [("1", "Post", NOW)])
+
+    class Flaky(FakeWeb):
+        def __call__(self, url):
+            if url == x_url("alice"):
+                calls["n"] += 1
+                if calls["n"] == 1:
+                    raise FetchError("api.fxtwitter.com: HTTP 404")
+                return good
+            return super().__call__(url)
+
+    _, pending, _ = run(tmp_path, make_config(["F"], accounts=["alice"]), Flaky({feed_url("F"): rss([])}))
+    assert calls["n"] == 2
+    assert [p["id"] for p in pending["posts"]] == ["x:1"]
+    assert not any(e["feed"] == "@alice" for e in pending["errors"])

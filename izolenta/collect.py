@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
@@ -17,6 +18,7 @@ from izolenta.state import load_seen, prune_seen, save_json_atomic
 from izolenta.xposts import XError, XPost, fetch_posts
 
 FINAL_STATUSES = {"done", "skipped", "failed"}
+ACCOUNT_RETRY_DELAY = 2  # seconds before retrying a failed X account
 
 
 def iso_z(moment: datetime) -> str:
@@ -57,7 +59,12 @@ def _fetch_feed(feed: Feed, fetch: Fetch, now: datetime) -> list[FeedItem]:
 
 
 def _fetch_account(account: XAccount, fetch: Fetch, now: datetime) -> list[XPost]:
-    return fetch_posts(account.handle, fetch, now)
+    # FxTwitter sometimes answers 404 for an existing profile from cloud IPs; one retry
+    try:
+        return fetch_posts(account.handle, fetch, now)
+    except (FetchError, XError):
+        time.sleep(ACCOUNT_RETRY_DELAY)
+        return fetch_posts(account.handle, fetch, now)
 
 
 def _round_robin(per_feed: list[list[Any]], limit: int) -> list[Any]:

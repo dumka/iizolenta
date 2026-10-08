@@ -51,3 +51,22 @@ def test_transport_error_raises_fetch_error():
 
     with pytest.raises(FetchError, match="timed out"):
         fetcher_for(handler)("https://x.example/slow")
+
+
+def test_proxy_deny_reason_included_in_error():
+    def handler(request):
+        return httpx.Response(403, headers={"x-deny-reason": "host_not_allowed"}, content=b"Forbidden")
+
+    with pytest.raises(FetchError, match="403.*host_not_allowed"):
+        fetcher_for(handler)("https://blocked.example/feed")
+
+
+def test_error_body_snippet_included_in_error():
+    def handler(request):
+        return httpx.Response(404, content=b'{"code":404,"message":"User not found"}' + b"x" * 500)
+
+    with pytest.raises(FetchError) as info:
+        fetcher_for(handler)("https://api.example/profile")
+    message = str(info.value)
+    assert "User not found" in message
+    assert len(message) < 250

@@ -13,6 +13,24 @@ class FetchError(Exception):
     pass
 
 
+ERROR_SNIPPET_BYTES = 120
+
+
+def _error_detail(response: httpx.Response) -> str:
+    """Why a request failed: the cloud egress proxy names the reason in a header
+    (e.g. host_not_allowed); APIs usually explain it at the start of the body."""
+    deny_reason = response.headers.get("x-deny-reason")
+    if deny_reason:
+        return f" ({deny_reason})"
+    snippet = b""
+    for chunk in response.iter_bytes():
+        snippet += chunk
+        if len(snippet) >= ERROR_SNIPPET_BYTES:
+            break
+    text = " ".join(snippet[:ERROR_SNIPPET_BYTES].decode("utf-8", "replace").split())
+    return f" ({text})" if text else ""
+
+
 def make_fetcher(
     timeout: float,
     user_agent: str,
@@ -30,7 +48,7 @@ def make_fetcher(
         try:
             with client.stream("GET", url) as response:
                 if not response.is_success:
-                    raise FetchError(f"{url}: HTTP {response.status_code}")
+                    raise FetchError(f"{url}: HTTP {response.status_code}{_error_detail(response)}")
                 chunks: list[bytes] = []
                 size = 0
                 for chunk in response.iter_bytes():
