@@ -1,6 +1,6 @@
 # Task 2: Валидация выжимок и слияние в `news.json` (`izolenta merge`)
 
-Epic: `docs/plans/epic-izolenta.md` · Статус: open (SRE review: approved) · Оценка: 4-5 часов · Зависит от: Task 1 (closed)
+Epic: `docs/plans/epic-izolenta.md` · Статус: closed (2026-10-08) · Оценка: 4-5 часов · Зависит от: Task 1 (closed)
 
 ## Goal
 
@@ -109,3 +109,9 @@ Epic: `docs/plans/epic-izolenta.md` · Статус: open (SRE review: approved)
 - [ ] Повторный `collect` после этого не отбирает эти две статьи.
 - [ ] Битый `site/data/news.json`: код выхода 2, файл не изменён.
 - [ ] `grep -rn "TODO" izolenta/` пусто.
+
+## Result (2026-10-08)
+
+- 95 тестов зелёные (41 новый: schema 21, merge 18, cli 2).
+- E2E вручную: `collect` → `summaries.json` (1 ok с подложным `url`, 1 skip) → `merge`: `merged=1 skipped=1 invalid=0 missing=13 failed=0 | news total=1`; в news ссылка из pending, подложный url проигнорирован; seen: `done`, `skipped`; повторный `collect` их не отбирает.
+- Дополнительно к плану: `read_json_object` в `state.py` (общий загрузчик с `StateError`), записи summaries без строкового id попадают в `invalid` как `"?"`.

@@ -16,12 +16,9 @@ class StateError(Exception):
     pass
 
 
-def load_seen(path: Path) -> Seen:
-    """Load seen.json. A missing file is an empty state; a corrupted one is fatal,
-    because silently starting over would re-summarize everything already processed."""
+def read_json_object(path: Path) -> dict[str, Any]:
+    """Read a JSON object from disk; any problem is a StateError."""
     path = Path(path)
-    if not path.exists():
-        return {}
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -29,6 +26,15 @@ def load_seen(path: Path) -> Seen:
     if not isinstance(data, dict):
         raise StateError(f"{path}: expected a JSON object, got {type(data).__name__}")
     return data
+
+
+def load_seen(path: Path) -> Seen:
+    """Load seen.json. A missing file is an empty state; a corrupted one is fatal,
+    because silently starting over would re-summarize everything already processed."""
+    path = Path(path)
+    if not path.exists():
+        return {}
+    return read_json_object(path)
 
 
 def save_json_atomic(path: Path, data: Any) -> None:
