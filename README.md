@@ -68,7 +68,7 @@ uv run python -m http.server -d site      # дашборд на http://localhost
 
 Окружение `iizolenta` (claude.ai → Code → Environments):
 
-- **Network access:** Custom, плюс галочка «Also include default list of common package managers» (PyPI для `uv`). Разрешённые домены: `techcrunch.com`, `*.techcrunch.com`, `theverge.com`, `*.theverge.com`, `technologyreview.com`, `*.technologyreview.com`, `arstechnica.com`, `*.arstechnica.com`, `wired.com`, `*.wired.com`, `venturebeat.com`, `*.venturebeat.com`, `simonwillison.net`, `github.blog`, `thenewstack.io`, `blog.google`, `huggingface.co`, `openai.com`, `hnrss.org`.
+- **Network access:** Custom, плюс галочка «Also include default list of common package managers» (PyPI для `uv`). Разрешённые домены: `techcrunch.com`, `*.techcrunch.com`, `theverge.com`, `*.theverge.com`, `technologyreview.com`, `*.technologyreview.com`, `arstechnica.com`, `*.arstechnica.com`, `wired.com`, `*.wired.com`, `simonwillison.net`, `github.blog`, `thenewstack.io`, `blog.google`, `huggingface.co`, `openai.com`.
 - **Setup script:** `pip install --quiet uv`.
 
 Новый источник в `feeds.toml` требует добавить его домен в этот список, иначе лента будет падать с `403 host_not_allowed`.

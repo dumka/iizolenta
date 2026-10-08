@@ -42,11 +42,6 @@ url = "https://www.wired.com/feed/tag/ai/latest/rss"
 default_category = "ai"
 
 [[feeds]]
-name = "VentureBeat"
-url = "https://venturebeat.com/category/ai/feed/"
-default_category = "business"
-
-[[feeds]]
 name = "Simon Willison"
 url = "https://simonwillison.net/atom/everything/"
 default_category = "dev"
@@ -75,8 +70,3 @@ default_category = "ai"
 name = "OpenAI"
 url = "https://openai.com/news/rss.xml"
 default_category = "ai"
-
-[[feeds]]
-name = "Hacker News"
-url = "https://hnrss.org/frontpage?points=150"
-default_category = "dev"
