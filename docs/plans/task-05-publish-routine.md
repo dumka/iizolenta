@@ -1,6 +1,6 @@
 # Task 5: Публикация на GitHub Pages и запуск routine
 
-Epic: `docs/plans/epic-izolenta.md` · Статус: open (SRE review: approved) · Оценка: 3-4 часа (плюс ожидание запусков по расписанию) · Зависит от: Task 4 (closed)
+Epic: `docs/plans/epic-izolenta.md` · Статус: closed (2026-10-08) · Оценка: 3-4 часа (плюс ожидание запусков по расписанию) · Зависит от: Task 4 (closed)
 
 ## Goal
 
@@ -63,3 +63,17 @@ Epic: `docs/plans/epic-izolenta.md` · Статус: open (SRE review: approved)
 - [ ] Ручной запуск routine создал коммит `news: +N` в `main`, Pages передеплоился, новые новости видны на сайте.
 - [ ] В README есть раздел про routine: окружение, домены, setup script, промпт, расписание, ручной запуск.
 - [ ] Расписание routine — каждый час в `:07`; запуски по расписанию проверяются в Task 6 (критерий эпика «3 запуска подряд»).
+
+## Result (2026-10-08)
+
+- Публикация: история проверена на секреты (чисто); email в коммитах по просьбе пользователя заменён на `3381914+dumka@users.noreply.github.com` (`git filter-branch` до первого push, `user.email` задан локально для репозитория). Репозиторий создан как `dumka/izolenta`, затем по просьбе пользователя переименован в `dumka/iizolenta`, бренд — «ИИзоЛента».
+- Pages: `https://dumka.github.io/iizolenta/` — 200; `data/news.json`, `sites.txt`, шрифты — 200.
+- Workflows: первый push в пустой репозиторий не запустил workflow с фильтром `paths` — Pages запущен через `workflow_dispatch`. Затем: обновление actions до мажоров на Node 24 (`checkout@v7`, `configure-pages@v6`, `upload-pages-artifact@v5`, `deploy-pages@v5`, `setup-node@v7`); `astral-sh/setup-uv` с v8 не публикует плавающие мажорные теги — закреплён `v10.2.0`. После этого `Tests` и `Deploy` зелёные на каждом push.
+- Окружение `iizolenta` (`env_013kFErvjdth5uBGHUHhYUjy`) настроил пользователь: Custom network + setup script `pip install --quiet uv`.
+- Routine `trig_01EJgo1DR8d2EZsSriRkoTua`: `7 * * * *`, `claude-sonnet-5-5`, Bash/Read/Write/Edit/Glob/Grep. Сервер сам прикрепил MCP-коннекторы Claude_Docs и Claude_Code_Remote — убраны (`clear_mcp_connections`).
+- Ручной запуск (сессия `cse_01UzNBDJydNCazVfQuzQtfvQ`, 109 с): `feeds ok=13 failed=1` (VentureBeat — HTTP 429, как и локально; Ars Technica и hnrss из облака доступны); `check` — с первой попытки; `merged=12 skipped=3 invalid=0 missing=0 failed=0 | news total=21`; коммит `e24b6ac news: +12` только с `news.json` и `seen.json`; Pages передеплоился; на сайте 21 новость, у всех картинки.
+
+### Выводы
+- VentureBeat отдаёт 429 и локально, и из облака — кандидат на удаление из `feeds.toml`.
+- В режиме Custom ссылки HN ведут на неразрешённые домены: у них только сниппет «Article URL: ...», routine их пропускает. Каждый запуск один слот round-robin уходит на HN впустую — решить с пользователем (оставить, убрать HN или перейти на Full).
+- Расход подписки за запуск — смотреть https://claude.ai/settings/usage после первых суток.
