@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import re
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlsplit
 
 CATEGORIES = ("ai", "dev", "business")
+HANDLE = re.compile(r"[A-Za-z0-9_]{1,15}")
 
 
 class ConfigError(Exception):
@@ -31,12 +33,20 @@ class Settings:
     seen_retention_days: int
     fetch_workers: int
     user_agent: str
+    max_posts_per_run: int = 10
+    post_max_age_hours: int = 48
+
+
+@dataclass(frozen=True)
+class XAccount:
+    handle: str
 
 
 @dataclass(frozen=True)
 class Config:
     settings: Settings
     feeds: tuple[Feed, ...]
+    x_accounts: tuple[XAccount, ...] = ()
 
 
 def is_http_url(url: object) -> bool:
@@ -80,4 +90,18 @@ def load_config(path: Path) -> Config:
         seen_names.add(feed.name)
         feeds.append(feed)
 
-    return Config(settings=settings, feeds=tuple(feeds))
+    return Config(settings=settings, feeds=tuple(feeds), x_accounts=_load_x_accounts(raw))
+
+
+def _load_x_accounts(raw: dict) -> tuple[XAccount, ...]:
+    accounts: list[XAccount] = []
+    seen: set[str] = set()
+    for entry in raw.get("x_accounts") or []:
+        handle = entry.get("handle") if isinstance(entry, dict) else None
+        if not isinstance(handle, str) or not HANDLE.fullmatch(handle):
+            raise ConfigError(f"x_accounts: invalid handle {handle!r}")
+        if handle.lower() in seen:
+            raise ConfigError(f"x_accounts: duplicate handle {handle!r}")
+        seen.add(handle.lower())
+        accounts.append(XAccount(handle))
+    return tuple(accounts)

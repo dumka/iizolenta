@@ -8,7 +8,9 @@ article_text_limit = 8000
 http_timeout = 15
 max_response_bytes = 5_000_000
 seen_retention_days = 14
-fetch_workers = 8
+fetch_workers = 12
+max_posts_per_run = 10
+post_max_age_hours = 48
 user_agent = "Mozilla/5.0 (compatible; IzolentaBot/0.1; +https://github.com/dumka/iizolenta)"
 
 [[feeds]]
@@ -70,3 +72,67 @@ default_category = "ai"
 name = "OpenAI"
 url = "https://openai.com/news/rss.xml"
 default_category = "ai"
+
+[[feeds]]
+name = "Andrej Karpathy"
+url = "https://karpathy.bearblog.dev/feed/"
+default_category = "ai"
+
+[[feeds]]
+name = "Boris Cherny"
+url = "https://borischerny.com/feed.xml"
+default_category = "dev"
+
+[[feeds]]
+name = "One Useful Thing"
+url = "https://www.oneusefulthing.org/feed"
+default_category = "ai"
+
+[[feeds]]
+name = "The Batch"
+url = "https://charonhub.deeplearning.ai/rss/"
+default_category = "ai"
+
+# Posts from X via api.fxtwitter.com (block «Пишут в X»).
+
+[[x_accounts]]
+handle = "karpathy"
+
+[[x_accounts]]
+handle = "bcherny"
+
+[[x_accounts]]
+handle = "sama"
+
+[[x_accounts]]
+handle = "emollick"
+
+[[x_accounts]]
+handle = "DrJimFan"
+
+[[x_accounts]]
+handle = "fchollet"
+
+[[x_accounts]]
+handle = "simonw"
+
+[[x_accounts]]
+handle = "OfficialLoganK"
+
+[[x_accounts]]
+handle = "swyx"
+
+[[x_accounts]]
+handle = "AndrewYNg"
+
+[[x_accounts]]
+handle = "gdb"
+
+[[x_accounts]]
+handle = "demishassabis"
+
+[[x_accounts]]
+handle = "JeffDean"
+
+[[x_accounts]]
+handle = "AmandaAskell"
