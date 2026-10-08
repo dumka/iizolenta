@@ -52,3 +52,30 @@ uv run python -m http.server -d site      # дашборд на http://localhost
 ## Шрифт
 
 `site/fonts/izolenta-sans-*.woff2` — Lato 2.015 (Łukasz Dziedzic, SIL Open Font License 1.1), урезанный до латиницы и кириллицы и переименованный по требованию OFL. Лицензия — `site/fonts/OFL.txt`, сборка — `scripts/subset_fonts.py`.
+
+## Routine (обновление новостей)
+
+Новости раз в час собирает облачная Claude Code routine «ИИзоЛента: новости AI/IT»: https://claude.ai/code/routines/trig_01EJgo1DR8d2EZsSriRkoTua
+
+| Параметр | Значение |
+|---|---|
+| Расписание | `7 * * * *` — каждый час в :07 UTC |
+| Репозиторий | `dumka/iizolenta`, ветка `main` |
+| Модель | `claude-sonnet-5-5` |
+| Инструменты | Bash, Read, Write, Edit, Glob, Grep; MCP-коннекторов нет |
+| Промпт | «Прочитай целиком файл routine/PROMPT.md в корне репозитория и выполни инструкцию из него. Пушь только в ветку main.» |
+| Окружение | `iizolenta` |
+
+Окружение `iizolenta` (claude.ai → Code → Environments):
+
+- **Network access:** Custom, плюс галочка «Also include default list of common package managers» (PyPI для `uv`). Разрешённые домены: `techcrunch.com`, `*.techcrunch.com`, `theverge.com`, `*.theverge.com`, `technologyreview.com`, `*.technologyreview.com`, `arstechnica.com`, `*.arstechnica.com`, `wired.com`, `*.wired.com`, `venturebeat.com`, `*.venturebeat.com`, `simonwillison.net`, `github.blog`, `thenewstack.io`, `blog.google`, `huggingface.co`, `openai.com`, `hnrss.org`.
+- **Setup script:** `pip install --quiet uv`.
+
+Новый источник в `feeds.toml` требует добавить его домен в этот список, иначе лента будет падать с `403 host_not_allowed`.
+
+**Ручной запуск:** кнопка «Run now» на странице routine или `/schedule run` в Claude Code. **Логи:** список запусков на той же странице.
+
+**Что может сломать routine:**
+- защита ветки `main` в настройках GitHub — routine перестанет пушить;
+- отключение GitHub от Claude — запуски пропускаются до 72 часов, затем routine выключается (переподключить: `/web-setup`);
+- исчерпание лимитов подписки — запуски отклоняются до сброса; расход видно на https://claude.ai/settings/usage, снизить его можно через `max_items_per_run` в `feeds.toml`.
