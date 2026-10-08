@@ -49,6 +49,8 @@ uv run python -m http.server -d site      # дашборд на http://localhost
 - **Новый источник:** добавить `[[feeds]]` в `feeds.toml` (`name`, `url`, `default_category` = `ai` | `dev` | `business`). Если routine работает в окружении с режимом сети Custom, добавить домен ленты и её статей в список разрешённых.
 - **Новый сайт для перехвата:** добавить домен строкой в `site/sites.txt`. LeechBlock на устройствах перечитывает список при запуске браузера.
 
+Настройка перехвата на устройствах (Zen, Vivaldi): [docs/setup-leechblock.md](docs/setup-leechblock.md).
+
 ## Шрифт
 
 `site/fonts/izolenta-sans-*.woff2` — Lato 2.015 (Łukasz Dziedzic, SIL Open Font License 1.1), урезанный до латиницы и кириллицы и переименованный по требованию OFL. Лицензия — `site/fonts/OFL.txt`, сборка — `scripts/subset_fonts.py`.
