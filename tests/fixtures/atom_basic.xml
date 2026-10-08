@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Example Blog</title>
+  <id>https://blog.example.org/</id>
+  <updated>2026-10-08T11:00:00Z</updated>
+  <entry>
+    <title>Notes on «LLM» evaluation</title>
+    <link href="https://blog.example.org/2026/Oct/8/llm-evals/" rel="alternate"/>
+    <id>https://blog.example.org/2026/Oct/8/llm-evals/</id>
+    <published>2026-10-08T11:00:00Z</published>
+    <updated>2026-10-08T11:00:00Z</updated>
+    <summary type="html">&lt;p&gt;Some thoughts on evals.&lt;/p&gt;</summary>
+  </entry>
+  <entry>
+    <title>Undated entry</title>
+    <link href="https://blog.example.org/undated/" rel="alternate"/>
+    <id>https://blog.example.org/undated/</id>
+    <summary>No date here.</summary>
+  </entry>
+</feed>

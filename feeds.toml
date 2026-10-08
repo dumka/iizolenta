@@ -1,0 +1,82 @@
+# Izolenta news sources and collector settings.
+# default_category is a hint for the summarizer: ai | dev | business.
+
+[settings]
+max_items_per_run = 15
+max_age_hours = 48
+article_text_limit = 8000
+http_timeout = 15
+max_response_bytes = 5_000_000
+seen_retention_days = 14
+fetch_workers = 8
+user_agent = "Mozilla/5.0 (compatible; IzolentaBot/0.1; +https://github.com/dumka/izolenta)"
+
+[[feeds]]
+name = "TechCrunch"
+url = "https://techcrunch.com/category/artificial-intelligence/feed/"
+default_category = "ai"
+
+[[feeds]]
+name = "TechCrunch Startups"
+url = "https://techcrunch.com/category/startups/feed/"
+default_category = "business"
+
+[[feeds]]
+name = "The Verge"
+url = "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml"
+default_category = "ai"
+
+[[feeds]]
+name = "MIT Technology Review"
+url = "https://www.technologyreview.com/topic/artificial-intelligence/feed"
+default_category = "ai"
+
+[[feeds]]
+name = "Ars Technica"
+url = "https://arstechnica.com/ai/feed/"
+default_category = "ai"
+
+[[feeds]]
+name = "Wired"
+url = "https://www.wired.com/feed/tag/ai/latest/rss"
+default_category = "ai"
+
+[[feeds]]
+name = "VentureBeat"
+url = "https://venturebeat.com/category/ai/feed/"
+default_category = "business"
+
+[[feeds]]
+name = "Simon Willison"
+url = "https://simonwillison.net/atom/everything/"
+default_category = "dev"
+
+[[feeds]]
+name = "GitHub Blog"
+url = "https://github.blog/feed/"
+default_category = "dev"
+
+[[feeds]]
+name = "The New Stack"
+url = "https://thenewstack.io/feed/"
+default_category = "dev"
+
+[[feeds]]
+name = "Google AI Blog"
+url = "https://blog.google/technology/ai/rss/"
+default_category = "ai"
+
+[[feeds]]
+name = "Hugging Face"
+url = "https://huggingface.co/blog/feed.xml"
+default_category = "ai"
+
+[[feeds]]
+name = "OpenAI"
+url = "https://openai.com/news/rss.xml"
+default_category = "ai"
+
+[[feeds]]
+name = "Hacker News"
+url = "https://hnrss.org/frontpage?points=150"
+default_category = "dev"

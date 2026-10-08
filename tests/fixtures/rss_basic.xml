@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>Example Tech</title>
+    <link>https://tech.example.com</link>
+    <description>Example feed</description>
+    <item>
+      <title>OpenAI ships &lt;b&gt;GPT-7&lt;/b&gt; &amp; new API</title>
+      <link>https://tech.example.com/2026/10/08/gpt-7/?utm_source=rss&amp;utm_medium=feed</link>
+      <pubDate>Thu, 08 Oct 2026 10:00:00 +0000</pubDate>
+      <description>&lt;p&gt;The new model is &lt;em&gt;faster&lt;/em&gt; and cheaper.&lt;/p&gt;</description>
+      <media:content url="https://cdn.example.com/gpt7.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>Startup raises $50M for AI agents</title>
+      <link>https://tech.example.com/2026/10/08/agents-funding/</link>
+      <pubDate>Thu, 08 Oct 2026 09:00:00 +0000</pubDate>
+      <description>Series B led by Example Ventures.</description>
+      <enclosure url="https://cdn.example.com/funding.png" type="image/png" length="1234"/>
+    </item>
+    <item>
+      <title>Rust 2.0 released</title>
+      <link>https://tech.example.com/2026/10/07/rust-2/</link>
+      <pubDate>Wed, 07 Oct 2026 20:00:00 +0000</pubDate>
+      <description>Big release.</description>
+    </item>
+  </channel>
+</rss>

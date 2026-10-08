@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Broken feed</title>
+    <item>
+      <title>Still readable item</title>
+      <link>https://broken.example.com/item-1</link>
+      <pubDate>Thu, 08 Oct 2026 08:00:00 +0000</pubDate>
+      <description>Unclosed <b>bold
+    </item>
+  </channel>
