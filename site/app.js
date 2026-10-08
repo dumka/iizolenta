@@ -120,7 +120,7 @@ function articleView(items, id) {
   const item = items.find((candidate) => candidate.id === id);
   if (!item) {
     document.title = SITE_TITLE;
-    return stateView("Новость не найдена — возможно, она старше недели.", el("a", { class: "state__link", href: "#/" }, "На главную"));
+    return stateView("Эту новость уже смотали: она старше недели.", el("a", { class: "state__link", href: "#/" }, "На главную"));
   }
   document.title = `${item.title} — ИИзоЛента`;
   const more = related(items, item, RELATED_LIMIT);
@@ -144,11 +144,11 @@ function stateView(message, ...extra) {
 }
 
 function banner() {
-  if (!state.blockedHost) return null;
+  if (state.blockedHost === null) return null;
   return el(
     "div",
     { class: "banner", role: "status" },
-    el("span", {}, `Вы хотели открыть ${state.blockedHost}. Вот что почитать вместо этого.`),
+    el("span", {}, `${state.blockedHost ? `Сайт ${state.blockedHost}` : "Этот сайт"} заизолирован. Держите ИИзоЛенту — тут полезнее.`),
     el("button", {
       class: "banner__close",
       type: "button",
@@ -173,7 +173,7 @@ function updateChrome(route) {
 function render() {
   let route = parseRoute(location.hash);
   if (route.view === "blocked") {
-    state.blockedHost = blockedHost(route.url) || "этот сайт";
+    state.blockedHost = blockedHost(route.url) || "";
     history.replaceState(null, "", "#/");
     route = { view: "home" };
   }
@@ -183,13 +183,13 @@ function render() {
   let content;
   if (state.error) {
     content = stateView(
-      "Не удалось загрузить новости.",
-      el("button", { class: "state__button", type: "button", onclick: () => load() }, "Повторить"),
+      "Лента порвалась.",
+      el("button", { class: "state__button", type: "button", onclick: () => load() }, "Подклеить"),
     );
   } else if (!state.data) {
-    content = stateView("Загрузка...");
+    content = stateView("Разматываем ленту...");
   } else if (!state.data.items.length) {
-    content = stateView("Новостей пока нет — первая подборка появится после ближайшего обновления.");
+    content = stateView("Свежую ленту ещё наматывают. Загляните через час.");
   } else if (route.view === "article") {
     content = articleView(state.data.items, route.id);
   } else if (route.view === "category") {
