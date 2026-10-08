@@ -1,6 +1,6 @@
 # Task 2.2: Переводы постов — схема, check, merge в `posts.json`, инструкция routine
 
-Epic: `docs/plans/epic-x-posts.md` · Статус: open (SRE review: approved) · Оценка: 4 часа · Ветка: `x-posts` · Зависит от: Task 2.1 (closed)
+Epic: `docs/plans/epic-x-posts.md` · Статус: closed (2026-10-08) · Оценка: 4 часа · Ветка: `x-posts` · Зависит от: Task 2.1 (closed)
 
 ## Goal
 
@@ -56,3 +56,11 @@ Routine пишет для постов из `pending.json["posts"]` записи
 - [ ] Ручной прогон: `collect` → `summaries.json` с 2 статьями и 2 постами (ok + skip каждого) → `check` = 0 → `merge`: `posts.json` с 1 постом, ссылка из pending; `news.json` с 1 новостью.
 - [ ] `PROMPT.md` описывает посты; пробный прогон по нему (Claude в этой сессии) даёт `check` = 0.
 - [ ] Всё в ветке `x-posts`; `main` не тронут.
+
+## Result (2026-10-08)
+
+- `uv run pytest`: 152 passed (новые: 4 группы в `test_schema.py`, 7 в `test_merge.py`, 1 в `test_check.py`, 1 в `test_cli.py`). Старые тесты merge/check прошли без изменений — обратная совместимость сохранена.
+- `merge.py` переписан на общий обработчик видов контента (`Kind`: статьи и посты) — без дублирования логики попыток, пропусков и проверок; `MergeResult.news_total` оставлен свойством для совместимости.
+- `PROMPT.md`: шаги 3-8 учитывают посты, новый раздел «Посты из X» (что пропускать, как переводить), раздел «Безопасность» распространён на посты.
+- Пробный прогон по `PROMPT.md` во временной папке (2 статьи, 10 постов): выжимки и переводы писал Claude в этой сессии; `check` — код 0 с первой попытки; `merge`: `merged=1 skipped=1 ... | posts: merged=7 skipped=3 invalid=0 missing=0 failed=0 | total=7`; ссылки постов — из pending. Пропущены: пост со ссылкой без смысла без неё, фрагментарный пост, личный пост.
+- Данные пробного прогона в репозиторий не попали (ветка не должна менять `news.json`/`seen.json`, иначе конфликт с коммитами routine в `main`).
