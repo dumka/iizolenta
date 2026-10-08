@@ -14,7 +14,7 @@ const REFRESH_MS = 15 * 60 * 1000;
 const LATEST_LIMIT = 30;
 const IMPORTANT_LIMIT = 8;
 const RELATED_LIMIT = 5;
-const SITE_TITLE = "Изолента — новости AI и IT";
+const SITE_TITLE = "ИИзоЛента — новости AI и IT";
 
 const app = document.getElementById("app");
 const state = { data: null, error: null, blockedHost: null };
@@ -122,7 +122,7 @@ function articleView(items, id) {
     document.title = SITE_TITLE;
     return stateView("Новость не найдена — возможно, она старше недели.", el("a", { class: "state__link", href: "#/" }, "На главную"));
   }
-  document.title = `${item.title} — Изолента`;
+  document.title = `${item.title} — ИИзоЛента`;
   const more = related(items, item, RELATED_LIMIT);
   return el(
     "article",
@@ -210,7 +210,7 @@ async function load() {
     state.data = data;
     state.error = null;
   } catch (error) {
-    console.error("Изолента: не удалось загрузить новости", error);
+    console.error("ИИзоЛента: не удалось загрузить новости", error);
     // keep showing stale data if we already have some
     if (!state.data) state.error = error;
   }

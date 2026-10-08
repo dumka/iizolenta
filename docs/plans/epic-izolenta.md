@@ -45,7 +45,7 @@
 
 ## Approach
 
-Перехват делает готовое расширение LeechBlock NG. Оно есть в AMO (для Zen) и в Chrome Web Store (для Vivaldi Android), поддерживается (v1.8, сентябрь 2026) и умеет две нужные вещи. Первая: загружать список сайтов по URL (`sites.txt` с GitHub Pages). Вторая: перенаправлять на свой адрес с подстановкой исходного URL (`https://<user>.github.io/izolenta/#$U`). Запасной вариант для Android — расширение AdGuard с trusted-правилом `$urltransform`.
+Перехват делает готовое расширение LeechBlock NG. Оно есть в AMO (для Zen) и в Chrome Web Store (для Vivaldi Android), поддерживается (v1.8, сентябрь 2026) и умеет две нужные вещи. Первая: загружать список сайтов по URL (`sites.txt` с GitHub Pages). Вторая: перенаправлять на свой адрес с подстановкой исходного URL (`https://<user>.github.io/iizolenta/#$U`). Запасной вариант для Android — расширение AdGuard с trusted-правилом `$urltransform`.
 
 Новости собирает Claude Code routine раз в час. Запуск устроен так. Скрипт `collect` скачивает RSS-ленты, отсеивает уже виденное, извлекает текст новых статей и пишет `pending.json` (не больше N штук). Claude читает его и пишет `summaries.json`: рубрику, русский заголовок, лид, выжимку и важность, либо `skip`. Скрипт `merge` валидирует результат, вливает его в `site/data/news.json`, чистит старое и обновляет состояние просмотренных статей. Затем коммит и пуш в `main`. GitHub Actions деплоит `site/` на Pages.
 
@@ -173,6 +173,7 @@ RSS-ленты --> izolenta collect --> state/pending.json
 | Хостинг | GitHub Pages, публично | R8; бренд Ленты не копируем |
 | Перехват | LeechBlock NG | Approach 1; AdGuard запасной |
 | Дизайн целиком | Утверждён | — |
+| Название (после публикации) | «ИИзоЛента» (ИИ + Лента), репозиторий `dumka/iizolenta` | Бренд на сайте и в промпте; Pages: `https://dumka.github.io/iizolenta/`; внутренние имена (`izolenta` пакет, `Izolenta Sans`) без изменений |
 
 ### Dead-End Paths
 - DNS-подмена: HTTPS и выбор сайта по Host на Pages дают 404 или ошибку сертификата.

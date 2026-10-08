@@ -89,7 +89,7 @@ a:hover { color: var(--accent); }
   bottom: 2px;
   height: 11px;
   background: var(--accent);
-  opacity: .85;
+  opacity: .28;
   transform: rotate(-2deg);
   z-index: -1;
 }
@@ -285,3 +285,6 @@ a:hover { color: var(--accent); }
   .article__title { font-size: 26px; }
   .page-title { font-size: 24px; }
 }
+
+/* "ИИ" in the wordmark: the AI pun in ИИзоЛента */
+.logo__ai { color: var(--accent); }
