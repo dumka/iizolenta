@@ -1,6 +1,6 @@
 # Task 3: Дашборд в стиле lenta.ru (`site/`)
 
-Epic: `docs/plans/epic-izolenta.md` · Статус: open (SRE review: approved) · Оценка: 6-7 часов · Зависит от: Task 2 (closed, формат `news.json` зафиксирован)
+Epic: `docs/plans/epic-izolenta.md` · Статус: closed (2026-10-08) · Оценка: 6-7 часов · Зависит от: Task 2 (closed, формат `news.json` зафиксирован)
 
 ## Goal
 
@@ -94,3 +94,17 @@ Epic: `docs/plans/epic-izolenta.md` · Статус: open (SRE review: approved)
 - [ ] Проверка в headless Edge (`C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe`) через puppeteer-core, установленный во временную папку (не в проект).
 - [ ] `grep -nE "innerHTML|insertAdjacentHTML|document\.write" site/*.js` пусто.
 - [ ] Пустой `news.json` → «Новостей пока нет»; недоступный `news.json` → сообщение об ошибке и кнопка «Повторить».
+
+## Result (2026-10-08)
+
+- `node --test "tests/js/*.test.mjs"`: 30/30 (на Windows `node --test <папка>` не работает, нужен glob). Тесты перенесены из `site/tests/` в `tests/js/`, чтобы не публиковать их на Pages.
+- `uv run pytest`: 95/95.
+- Headless Edge + puppeteer-core (временная папка, `puppeteer.connect` к Edge с `--remote-debugging-port`; `launch` не работает, т.к. `msedge.exe` передаёт запуск дочернему процессу): 12 проверок PASS — главная 1280/360, статья 360 (scrollWidth = 360), активная рубрика, баннер `lenta.ru` и замена хэша на `#/`, закрытие баннера, «Новость не найдена», пустые данные, 404 + «Повторить».
+- Единственная ошибка в консоли — картинка `media.wired.com` недоступна отсюда (`ERR_CONNECTION_RESET`); обработчик `error` убирает `<img>`, вёрстка цела.
+- Грепы на `innerHTML`/`document.write` и абсолютные пути — пусто.
+
+### Отклонения от плана
+- **Шрифт.** Lato из Google Fonts не содержит кириллицы: латиница и кириллица в заголовках рендерились разными шрифтами. Вместо Google Fonts — Lato 2.015 (npm `lato-font@3.0.0`, SIL OFL), урезанный до Latin-1 + кириллица и переименованный в «Izolenta Sans» (требование OFL о Reserved Font Name). Файлы `site/fonts/izolenta-sans-{400,700,900}.woff2` по ~31 КБ + `OFL.txt`; скрипт сборки — `scripts/subset_fonts.py`.
+
+### Выводы для следующих задач
+- У TechCrunch и The Verge в лентах нет картинок, а у страниц статей есть `og:image`. `collect` уже скачивает страницу — можно брать картинку оттуда (`trafilatura.extract_metadata(page).image`), если в ленте её нет.

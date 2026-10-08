@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Изолента — новости AI и IT</title>
+  <meta name="description" content="Мировые новости искусственного интеллекта и IT на русском языке">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='10' width='28' height='12' rx='2' fill='%23cc3333' transform='rotate(-12 16 16)'/%3E%3C/svg%3E">
+  <link rel="preload" href="fonts/izolenta-sans-900.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header__top container">
+      <a class="logo" href="#/">Изолента</a>
+      <div class="header__info">
+        <span class="header__date" id="today"></span>
+        <span class="header__tagline">AI и IT вместо прокрастинации</span>
+      </div>
+    </div>
+    <nav class="menu container" aria-label="Рубрики">
+      <a class="menu__link" href="#/" data-category="">Главное</a>
+      <a class="menu__link" href="#/ai" data-category="ai">ИИ и модели</a>
+      <a class="menu__link" href="#/dev" data-category="dev">Разработка</a>
+      <a class="menu__link" href="#/business" data-category="business">Бизнес и стартапы</a>
+    </nav>
+  </header>
+
+  <main class="container" id="app" aria-live="polite"></main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span id="updated"></span>
+      <span>Изолента — выжимки мировых новостей AI и IT. Подробности — по ссылкам на источники.</span>
+      <a class="footer__link" href="https://github.com/dumka/izolenta" target="_blank" rel="noopener noreferrer">Исходники</a>
+    </div>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
