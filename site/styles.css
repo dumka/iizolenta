@@ -289,3 +289,36 @@ a:hover { color: var(--accent); }
 
 /* "ИИ" in the wordmark: the AI pun in ИИзоЛента */
 .logo__ai { color: var(--accent); }
+
+/* «Пишут в X» */
+
+.posts-block {
+  margin-bottom: 28px;
+  padding: 14px 16px 6px;
+  background: var(--bg-soft);
+}
+.posts-block .section-title a { color: inherit; }
+.posts-block .section-title a:hover { color: var(--accent); }
+.posts-block__note { margin: 6px 0 10px; color: var(--text-faint); font-size: 14px; }
+.posts-block__more { display: inline-block; margin: 6px 0 10px; color: var(--accent); font-weight: 700; font-size: 14px; }
+
+.post { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.posts-block .post { border-bottom-color: #e0e0e0; }
+.post__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font-size: 13px; line-height: 16px; }
+.post__author { font-weight: 700; color: var(--text); }
+.post__handle, .post__time { color: var(--text-faint); }
+.post__text { margin: 6px 0 0; font-size: 15px; line-height: 1.4; }
+.post__link { display: inline-block; margin-top: 6px; color: var(--accent); font-size: 13px; font-weight: 700; }
+
+.posts-page { max-width: 760px; padding: 12px 0 40px; }
+.posts-page .post__text { font-size: 16px; }
+
+/* on the home page the block is a teaser: first paragraph, 4 lines; full text lives on #/x */
+.posts-block .post__text:not(:first-of-type) { display: none; }
+.posts-block .post__text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+}

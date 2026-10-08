@@ -15,6 +15,8 @@ http_timeout = 15
 max_response_bytes = 1000000
 seen_retention_days = 14
 fetch_workers = 4
+max_posts_per_run = 3
+post_max_age_hours = 48
 user_agent = "test"
 """
 
@@ -106,3 +108,37 @@ def test_malformed_toml_raises_config_error(tmp_path):
     path.write_text("[settings\nbroken", encoding="utf-8")
     with pytest.raises(ConfigError):
         load_config(path)
+
+
+FEED = """
+[[feeds]]
+name = "A"
+url = "https://a.example/feed"
+default_category = "ai"
+"""
+
+
+def test_x_accounts_optional(tmp_path):
+    config = load_config(write_config(tmp_path, FEED))
+    assert config.x_accounts == ()
+
+
+def test_x_accounts_parsed(tmp_path):
+    config = load_config(write_config(tmp_path, FEED + '\n[[x_accounts]]\nhandle = "karpathy"\n\n[[x_accounts]]\nhandle = "bcherny"\n'))
+    assert [a.handle for a in config.x_accounts] == ["karpathy", "bcherny"]
+    assert config.settings.max_posts_per_run == 3
+
+
+@pytest.mark.parametrize(
+    "handles",
+    [
+        ["bad handle"],
+        ["../evil"],
+        ["way_too_long_handle_123"],
+        ["karpathy", "Karpathy"],
+    ],
+)
+def test_invalid_or_duplicate_handle_rejected(tmp_path, handles):
+    accounts = "".join(f'\n[[x_accounts]]\nhandle = "{h}"\n' for h in handles)
+    with pytest.raises(ConfigError, match="handle"):
+        load_config(write_config(tmp_path, FEED + accounts))

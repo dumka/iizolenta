@@ -1,6 +1,6 @@
 # ИИзоЛента
 
-Если прокрастинировать, то с пользой. При попытке открыть lenta.ru (или другой сайт из списка) браузер показывает «ИИзоЛенту»: страницу в стиле lenta.ru с русскими выжимками мировых новостей AI и IT и ссылками на оригиналы.
+Если прокрастинировать, то с пользой. При попытке открыть lenta.ru (или другой сайт из списка) браузер показывает «ИИзоЛенту»: страницу в стиле lenta.ru с русскими выжимками мировых новостей AI и IT, ссылками на оригиналы и блоком «Пишут в X» — переводами постов Карпаты, Бориса Черного, Альтмана и других.
 
 - Дашборд: https://dumka.github.io/iizolenta/
 - Список перехватываемых сайтов: https://dumka.github.io/iizolenta/sites.txt
@@ -24,7 +24,7 @@ RSS-ленты --> izolenta collect --> state/pending.json
 - `izolenta/` — Python-конвейер: сбор лент, извлечение текста статей, проверка выжимок, слияние.
 - `routine/PROMPT.md` — инструкция для облачной Claude Code routine, которая раз в час пишет выжимки.
 - `site/` — статичный дашборд без сборки (публикуется на Pages как есть).
-- `feeds.toml` — источники и настройки сбора.
+- `feeds.toml` — источники (RSS-ленты и аккаунты X) и настройки сбора.
 - `state/seen.json` — какие статьи уже обработаны (коммитит routine).
 - `docs/plans/` — эпик и задачи: требования, решения и их обоснование.
 
@@ -47,6 +47,7 @@ uv run python -m http.server -d site      # дашборд на http://localhost
 ## Как расширять
 
 - **Новый источник:** добавить `[[feeds]]` в `feeds.toml` (`name`, `url`, `default_category` = `ai` | `dev` | `business`). Если routine работает в окружении с режимом сети Custom, добавить домен ленты и её статей в список разрешённых.
+- **Новый автор в «Пишут в X»:** добавить `[[x_accounts]]` с `handle = "..."` в `feeds.toml`. Посты берутся через FxTwitter API (`api.fxtwitter.com`) — неофициальный бесплатный сервис; если он перестанет работать, блок покажет «Посты из X временно не обновляются», запасной вариант — официальный X API (см. `docs/plans/epic-x-posts.md`).
 - **Новый сайт для перехвата:** добавить домен строкой в `site/sites.txt`. LeechBlock на устройствах перечитывает список при запуске браузера.
 
 Настройка перехвата на устройствах (Zen, Vivaldi): [docs/setup-leechblock.md](docs/setup-leechblock.md).
@@ -70,7 +71,7 @@ uv run python -m http.server -d site      # дашборд на http://localhost
 
 Окружение `iizolenta` (claude.ai → Code → Environments):
 
-- **Network access:** Custom, плюс галочка «Also include default list of common package managers» (PyPI для `uv`). Разрешённые домены: `techcrunch.com`, `*.techcrunch.com`, `theverge.com`, `*.theverge.com`, `technologyreview.com`, `*.technologyreview.com`, `arstechnica.com`, `*.arstechnica.com`, `wired.com`, `*.wired.com`, `simonwillison.net`, `github.blog`, `thenewstack.io`, `blog.google`, `huggingface.co`, `openai.com`.
+- **Network access:** Custom, плюс галочка «Also include default list of common package managers» (PyPI для `uv`). Разрешённые домены: `techcrunch.com`, `*.techcrunch.com`, `theverge.com`, `*.theverge.com`, `technologyreview.com`, `*.technologyreview.com`, `arstechnica.com`, `*.arstechnica.com`, `wired.com`, `*.wired.com`, `simonwillison.net`, `github.blog`, `thenewstack.io`, `blog.google`, `huggingface.co`, `openai.com`, `api.fxtwitter.com`, `karpathy.bearblog.dev`, `borischerny.com`, `www.oneusefulthing.org`, `charonhub.deeplearning.ai`.
 - **Setup script:** `pip install --quiet uv`.
 
 Новый источник в `feeds.toml` требует добавить его домен в этот список, иначе лента будет падать с `403 host_not_allowed`.

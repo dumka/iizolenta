@@ -5,16 +5,17 @@ from pathlib import Path
 import pytest
 
 from izolenta.collect import collect
-from izolenta.config import Config, Feed, Settings
+from izolenta.config import Config, Feed, Settings, XAccount
 from izolenta.feeds import item_id
 from izolenta.http import FetchError
 from izolenta.state import StateError
+from izolenta.xposts import API_URL
 
 NOW = datetime(2026, 10, 8, 12, 0, tzinfo=UTC)
 ARTICLE = (Path(__file__).parent / "fixtures" / "article.html").read_bytes()
 
 
-def make_config(feeds, max_items=15, max_age_hours=48):
+def make_config(feeds, max_items=15, max_age_hours=48, accounts=(), max_posts=10):
     return Config(
         settings=Settings(
             max_items_per_run=max_items,
@@ -25,8 +26,11 @@ def make_config(feeds, max_items=15, max_age_hours=48):
             seen_retention_days=14,
             fetch_workers=4,
             user_agent="test",
+            max_posts_per_run=max_posts,
+            post_max_age_hours=48,
         ),
         feeds=tuple(Feed(name, f"https://{name.lower()}.example/feed", "ai") for name in feeds),
+        x_accounts=tuple(XAccount(h) for h in accounts),
     )
 
 
@@ -247,3 +251,62 @@ def test_feed_image_wins_over_og_image(tmp_path):
     web = FakeWeb({feed_url("A"): feed, "https://a.example/post": ARTICLE})
     _, pending, _ = run(tmp_path, make_config(["A"]), web)
     assert pending["items"][0]["image"] == "https://cdn.example.com/feed.jpg"
+
+
+def fx(handle, posts):
+    """FxTwitter-style response; posts: list of (status_id, text, published datetime)."""
+    results = [
+        {
+            "type": "status", "id": sid, "text": text, "created_timestamp": int(ts.timestamp()),
+            "author": {"screen_name": handle, "name": handle.title()},
+            "replying_to": None, "reposted_by": None, "lang": "en",
+        }
+        for sid, text, ts in posts
+    ]
+    return json.dumps({"code": 200, "results": results}).encode()
+
+
+def x_url(handle):
+    return API_URL.format(handle=handle)
+
+
+def test_posts_collected_into_pending_with_cap_and_round_robin(tmp_path):
+    a_posts = [(str(100 + i), f"A post {i}", NOW - timedelta(minutes=10 * i)) for i in range(5)]
+    web = FakeWeb({
+        feed_url("F"): rss(entries("F", 1)),
+        x_url("alice"): fx("alice", a_posts),
+        x_url("bob"): fx("bob", [("200", "B post", NOW - timedelta(hours=3))]),
+    })
+    result, pending, seen = run(tmp_path, make_config(["F"], accounts=["alice", "bob"], max_posts=3), web)
+    posts = pending["posts"]
+    assert [p["text"] for p in posts] == ["A post 0", "B post", "A post 1"]
+    assert set(posts[0]) == {"id", "url", "author_handle", "author_name", "published_at", "text", "quote", "lang"}
+    assert posts[0]["id"] == "x:100" and posts[0]["url"] == "https://x.com/alice/status/100"
+    assert seen["x:100"]["status"] == "pending"
+    assert "x:102" not in seen  # over the cap: not marked
+    assert "posts: accounts ok=2 failed=0 | candidates=6 | selected=3" in result.summary()
+
+
+def test_seen_posts_not_selected_again(tmp_path):
+    web = FakeWeb({x_url("alice"): fx("alice", [("100", "Old", NOW), ("101", "New", NOW)]), feed_url("F"): rss([])})
+    seen = {"x:100": seen_entry("done", 1)}
+    _, pending, _ = run(tmp_path, make_config(["F"], accounts=["alice"]), web, seen)
+    assert [p["id"] for p in pending["posts"]] == ["x:101"]
+
+
+def test_failing_account_recorded_and_articles_still_collected(tmp_path):
+    web = FakeWeb({feed_url("F"): rss(entries("F", 2)), x_url("alice"): FetchError("api.fxtwitter.com: HTTP 503")})
+    result, pending, _ = run(tmp_path, make_config(["F"], accounts=["alice"]), web)
+    assert len(pending["items"]) == 2
+    assert pending["posts"] == []
+    assert any(e["feed"] == "@alice" and "503" in e["error"] for e in pending["errors"])
+    assert "posts: accounts ok=0 failed=1" in result.summary()
+
+
+def test_old_posts_dropped(tmp_path):
+    web = FakeWeb({
+        feed_url("F"): rss([]),
+        x_url("alice"): fx("alice", [("1", "Fresh", NOW - timedelta(hours=47)), ("2", "Stale", NOW - timedelta(hours=49))]),
+    })
+    _, pending, _ = run(tmp_path, make_config(["F"], accounts=["alice"]), web)
+    assert [p["text"] for p in pending["posts"]] == ["Fresh"]

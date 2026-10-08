@@ -1,6 +1,6 @@
 from izolenta.merge import check
 
-from tests.test_merge import Env, ok_summary, pending_item
+from tests.test_merge import POST_RU, Env, ok_summary, pending_item, pending_post
 
 
 def snapshot(env):
@@ -50,3 +50,24 @@ def test_check_without_pending_is_ok(tmp_path):
     result = check(env.state)
     assert result.ok
     assert result.nothing_to_check
+
+
+def test_check_reports_post_problems(tmp_path):
+    env = Env(tmp_path)
+    env.setup(
+        [pending_item("a1")],
+        [ok_summary("a1")],
+        posts=[pending_post("1"), pending_post("2"), pending_post("3")],
+        post_summaries=[
+            {"id": "x:1", "status": "ok", "text": "Not translated at all, sorry about that"},
+            {"id": "x:3", "status": "ok", "text": POST_RU},
+            {"id": "x:77", "status": "ok", "text": POST_RU},
+        ],
+    )
+    result = check(env.state)
+    text = "\n".join(result.problems)
+    assert not result.ok
+    assert "invalid post x:1" in text
+    assert "missing post x:2" in text
+    assert "unknown post id x:77" in text
+    assert "a1" not in text  # the article is fine

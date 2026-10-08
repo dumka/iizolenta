@@ -12,6 +12,9 @@ export function parseRoute(hash) {
     return { view: "blocked", url: value };
   }
   const parts = value.replace(/^\//, "").split("/");
+  if (parts[0] === "x" && parts.length === 1) {
+    return { view: "x" };
+  }
   if (parts[0] === "news" && parts[1]) {
     return { view: "article", id: parts[1] };
   }
@@ -82,4 +85,19 @@ export function filterByCategory(items, category) {
 
 export function related(items, item, n) {
   return items.filter((other) => other.category === item.category && other.id !== item.id).slice(0, n);
+}
+
+const STALE_POSTS_HOURS = 48;
+
+// True when there is nothing fresh to show in the posts block.
+export function postsStale(items, now = new Date(), hours = STALE_POSTS_HOURS) {
+  const newest = Math.max(...items.map((item) => new Date(item.published_at).getTime()).filter(Number.isFinite));
+  return !Number.isFinite(newest) || now.getTime() - newest > hours * 3600 * 1000;
+}
+
+export function paragraphs(text) {
+  return (text || "")
+    .split(/\n\s*\n/)
+    .map((part) => part.trim())
+    .filter(Boolean);
 }

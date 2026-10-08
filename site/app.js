@@ -4,20 +4,25 @@ import {
   filterByCategory,
   formatTime,
   isSafeUrl,
+  paragraphs,
   parseRoute,
   pickTopStory,
+  postsStale,
   related,
 } from "./lib.js";
 
 const DATA_URL = "data/news.json";
+const POSTS_URL = "data/posts.json";
 const REFRESH_MS = 15 * 60 * 1000;
 const LATEST_LIMIT = 30;
 const IMPORTANT_LIMIT = 8;
 const RELATED_LIMIT = 5;
+const HOME_POSTS_LIMIT = 5;
 const SITE_TITLE = "ИИзоЛента — новости AI и IT";
 
 const app = document.getElementById("app");
-const state = { data: null, error: null, blockedHost: null };
+// news and posts load independently: a broken posts.json must not take the news down
+const state = { data: null, error: null, posts: null, postsError: null, blockedHost: null };
 
 // Build DOM nodes; strings become text nodes, so feed data never turns into markup.
 function el(tag, props = {}, ...children) {
@@ -28,7 +33,7 @@ function el(tag, props = {}, ...children) {
     else if (key === "onclick") node.addEventListener("click", value);
     else node.setAttribute(key, value);
   }
-  for (const child of children.flat()) {
+  for (const child of children.flat(Infinity)) {
     if (child === null || child === undefined || child === false) continue;
     node.append(typeof child === "string" ? document.createTextNode(child) : child);
   }
@@ -88,7 +93,63 @@ function miniCard(item) {
   );
 }
 
-function feedView(items, title) {
+function postCard(post) {
+  return el(
+    "article",
+    { class: "post" },
+    el(
+      "div",
+      { class: "post__head" },
+      el("span", { class: "post__author" }, post.author_name),
+      el("span", { class: "post__handle" }, `@${post.author_handle}`),
+      el("span", { class: "post__time" }, formatTime(post.published_at)),
+    ),
+    paragraphs(post.text).map((paragraph) => el("p", { class: "post__text" }, paragraph)),
+    isSafeUrl(post.url)
+      ? el("a", { class: "post__link", href: post.url, target: "_blank", rel: "noopener noreferrer" }, "Открыть в X →")
+      : null,
+  );
+}
+
+const STALE_POSTS = "Посты из X временно не обновляются.";
+
+function postsBlock() {
+  if (!state.posts) return null; // still loading or failed: the home page works without the block
+  const items = state.posts.items;
+  return el(
+    "section",
+    { class: "posts-block" },
+    el("h2", { class: "section-title" }, el("a", { href: "#/x" }, "Пишут в X")),
+    postsStale(items)
+      ? el("p", { class: "posts-block__note" }, STALE_POSTS)
+      : [items.slice(0, HOME_POSTS_LIMIT).map(postCard), el("a", { class: "posts-block__more", href: "#/x" }, "Все посты →")],
+  );
+}
+
+function postsView() {
+  document.title = "Пишут в X — ИИзоЛента";
+  const title = el("h1", { class: "page-title" }, "Пишут в X");
+  if (state.postsError) {
+    return [
+      title,
+      stateView("Лента порвалась.", el("button", { class: "state__button", type: "button", onclick: () => load() }, "Подклеить")),
+    ];
+  }
+  if (!state.posts) return [title, stateView("Разматываем ленту...")];
+  const items = state.posts.items;
+  if (!items.length) return [title, stateView("Пока тихо: свежих постов нет.")];
+  return [
+    title,
+    el(
+      "div",
+      { class: "posts-page" },
+      postsStale(items) ? el("p", { class: "posts-block__note" }, STALE_POSTS) : null,
+      items.map(postCard),
+    ),
+  ];
+}
+
+function feedView(items, title, { withPosts = false } = {}) {
   const top = pickTopStory(items);
   const important = items
     .filter((item) => item !== top && item.importance >= 2)
@@ -109,6 +170,7 @@ function feedView(items, title) {
       el(
         "aside",
         { class: "latest" },
+        withPosts ? postsBlock() : null,
         el("h2", { class: "section-title" }, "Последние новости"),
         items.slice(0, LATEST_LIMIT).map(miniCard),
       ),
@@ -162,7 +224,7 @@ function banner() {
 }
 
 function updateChrome(route) {
-  const active = route.view === "category" ? route.category : "";
+  const active = route.view === "category" ? route.category : route.view === "x" ? "x" : "";
   for (const link of document.querySelectorAll(".menu__link")) {
     link.classList.toggle("is-active", route.view !== "article" && link.dataset.category === active);
   }
@@ -181,7 +243,9 @@ function render() {
   updateChrome(route);
 
   let content;
-  if (state.error) {
+  if (route.view === "x") {
+    content = postsView();
+  } else if (state.error) {
     content = stateView(
       "Лента порвалась.",
       el("button", { class: "state__button", type: "button", onclick: () => load() }, "Подклеить"),
@@ -195,24 +259,36 @@ function render() {
   } else if (route.view === "category") {
     content = feedView(filterByCategory(state.data.items, route.category), CATEGORIES[route.category]);
   } else {
-    content = feedView(state.data.items, null);
+    content = feedView(state.data.items, null, { withPosts: true });
   }
   app.replaceChildren(...[banner(), content].flat().filter(Boolean));
 }
 
+async function loadJson(url) {
+  const cacheBust = Math.floor(Date.now() / 60000);
+  const response = await fetch(`${url}?t=${cacheBust}`, { cache: "no-cache" });
+  if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`);
+  const data = await response.json();
+  if (!Array.isArray(data?.items)) throw new Error(`${url}: items is not a list`);
+  return data;
+}
+
 async function load() {
-  try {
-    const cacheBust = Math.floor(Date.now() / 60000);
-    const response = await fetch(`${DATA_URL}?t=${cacheBust}`, { cache: "no-cache" });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
-    if (!Array.isArray(data?.items)) throw new Error("news.json: items is not a list");
-    state.data = data;
+  const [news, posts] = await Promise.allSettled([loadJson(DATA_URL), loadJson(POSTS_URL)]);
+  // keep showing stale data if we already have some
+  if (news.status === "fulfilled") {
+    state.data = news.value;
     state.error = null;
-  } catch (error) {
-    console.error("ИИзоЛента: не удалось загрузить новости", error);
-    // keep showing stale data if we already have some
-    if (!state.data) state.error = error;
+  } else {
+    console.error("ИИзоЛента: не удалось загрузить новости", news.reason);
+    if (!state.data) state.error = news.reason;
+  }
+  if (posts.status === "fulfilled") {
+    state.posts = posts.value;
+    state.postsError = null;
+  } else {
+    console.warn("ИИзоЛента: не удалось загрузить посты", posts.reason);
+    if (!state.posts) state.postsError = posts.reason;
   }
   render();
 }

@@ -61,3 +61,20 @@ def test_check_exit_1_with_problems(tmp_path, capsys):
     env = _check_env(tmp_path, [])
     assert main(["check", "--state-dir", str(env.state)]) == 1
     assert "missing a1" in capsys.readouterr().out
+
+
+def test_merge_writes_posts_to_given_path_and_reports_invalid(tmp_path, capsys):
+    from tests.test_merge import POST_RU, Env, pending_post
+
+    env = Env(tmp_path)
+    env.setup([], [], posts=[pending_post("1"), pending_post("2")], post_summaries=[
+        {"id": "x:1", "status": "ok", "text": POST_RU},
+        {"id": "x:2", "status": "ok", "text": "English only, not translated"},
+    ])
+    posts_path = tmp_path / "out" / "posts.json"
+    code = main(["merge", "--state-dir", str(env.state), "--news", str(env.news), "--posts", str(posts_path)])
+    out = capsys.readouterr().out
+    assert code == 0
+    assert posts_path.exists() and not env.posts.exists()
+    assert "posts: merged=1" in out
+    assert "invalid post x:2" in out

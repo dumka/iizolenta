@@ -1,0 +1,311 @@
+{
+ "code": 200,
+ "results": [
+  {
+   "type": "status",
+   "url": "https://x.com/testdev/status/140",
+   "id": "140",
+   "text": "Post from the future",
+   "raw_text": {
+    "text": "Post from the future",
+    "facets": []
+   },
+   "author": {
+    "screen_name": "testdev",
+    "name": "Test Dev",
+    "url": "https://x.com/testdev",
+    "id": "1",
+    "type": "profile"
+   },
+   "created_timestamp": 1791468000,
+   "created_at": "ignored",
+   "is_note_tweet": false,
+   "lang": "en",
+   "replying_to": null,
+   "reposted_by": null,
+   "media": {},
+   "provider": "twitter",
+   "likes": 10
+  },
+  {
+   "type": "status",
+   "url": "https://x.com/testdev/status/130",
+   "id": "130",
+   "text": "Somebody else's post",
+   "raw_text": {
+    "text": "Somebody else's post",
+    "facets": []
+   },
+   "author": {
+    "screen_name": "famous",
+    "name": "Famous Person",
+    "url": "https://x.com/famous",
+    "id": "1",
+    "type": "profile"
+   },
+   "created_timestamp": 1791459000,
+   "created_at": "ignored",
+   "is_note_tweet": false,
+   "lang": "en",
+   "replying_to": null,
+   "reposted_by": {
+    "screen_name": "testdev",
+    "name": "Test Dev",
+    "id": "1"
+   },
+   "media": {},
+   "provider": "twitter",
+   "likes": 10
+  },
+  {
+   "type": "status",
+   "url": "https://x.com/testdev/status/100",
+   "id": "100",
+   "text": "Root post about LLM evals.",
+   "raw_text": {
+    "text": "Root post about LLM evals.",
+    "facets": []
+   },
+   "author": {
+    "screen_name": "testdev",
+    "name": "Test Dev",
+    "url": "https://x.com/testdev",
+    "id": "1",
+    "type": "profile"
+   },
+   "created_timestamp": 1791457200,
+   "created_at": "ignored",
+   "is_note_tweet": false,
+   "lang": "en",
+   "replying_to": null,
+   "reposted_by": null,
+   "media": {},
+   "provider": "twitter",
+   "likes": 10
+  },
+  {
+   "type": "status",
+   "url": "https://x.com/testdev/status/103",
+   "id": "103",
+   "text": "@someone agreed, nice work",
+   "raw_text": {
+    "text": "@someone agreed, nice work",
+    "facets": []
+   },
+   "author": {
+    "screen_name": "testdev",
+    "name": "Test Dev",
+    "url": "https://x.com/testdev",
+    "id": "1",
+    "type": "profile"
+   },
+   "created_timestamp": 1791455400,
+   "created_at": "ignored",
+   "is_note_tweet": false,
+   "lang": "en",
+   "replying_to": {
+    "screen_name": "someone",
+    "status": "999",
+    "url": "https://x.com/someone/status/999"
+   },
+   "reposted_by": null,
+   "media": {},
+   "provider": "twitter",
+   "likes": 10
+  },
+  {
+   "type": "status",
+   "url": "https://x.com/testdev/status/101",
+   "id": "101",
+   "text": "Paragraph 1: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 2: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 3: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 4: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 5: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 6: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 7: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 8: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 9: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 10: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text",
+   "raw_text": {
+    "text": "Paragraph 1: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 2: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 3: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 4: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 5: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 6: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 7: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 8: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 9: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text\n\nParagraph 10: long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text long note tweet text",
+    "facets": []
+   },
+   "author": {
+    "screen_name": "testdev",
+    "name": "Test Dev",
+    "url": "https://x.com/testdev",
+    "id": "1",
+    "type": "profile"
+   },
+   "created_timestamp": 1791453600,
+   "created_at": "ignored",
+   "is_note_tweet": true,
+   "lang": "en",
+   "replying_to": null,
+   "reposted_by": null,
+   "media": {},
+   "provider": "twitter",
+   "likes": 10
+  },
+  {
+   "type": "status",
+   "url": "https://x.com/testdev/status/102",
+   "id": "102",
+   "text": "Great results here",
+   "raw_text": {
+    "text": "Great results here",
+    "facets": []
+   },
+   "author": {
+    "screen_name": "testdev",
+    "name": "Test Dev",
+    "url": "https://x.com/testdev",
+    "id": "1",
+    "type": "profile"
+   },
+   "created_timestamp": 1791450000,
+   "created_at": "ignored",
+   "is_note_tweet": false,
+   "lang": "en",
+   "replying_to": null,
+   "reposted_by": null,
+   "media": {},
+   "provider": "twitter",
+   "likes": 10,
+   "quote": {
+    "type": "status",
+    "url": "https://x.com/testdev/status/555",
+    "id": "555",
+    "text": "results for all claudes",
+    "raw_text": {
+     "text": "results for all claudes",
+     "facets": []
+    },
+    "author": {
+     "screen_name": "other",
+     "name": "Other Person",
+     "url": "https://x.com/other",
+     "id": "1",
+     "type": "profile"
+    },
+    "created_timestamp": 1791352800,
+    "created_at": "ignored",
+    "is_note_tweet": false,
+    "lang": "en",
+    "replying_to": null,
+    "reposted_by": null,
+    "media": {},
+    "provider": "twitter",
+    "likes": 10
+   }
+  },
+  {
+   "type": "status",
+   "url": "https://x.com/testdev/status/112",
+   "id": "112",
+   "text": "Part 3: conclusions.",
+   "raw_text": {
+    "text": "Part 3: conclusions.",
+    "facets": []
+   },
+   "author": {
+    "screen_name": "testdev",
+    "name": "Test Dev",
+    "url": "https://x.com/testdev",
+    "id": "1",
+    "type": "profile"
+   },
+   "created_timestamp": 1791443520,
+   "created_at": "ignored",
+   "is_note_tweet": false,
+   "lang": "en",
+   "replying_to": {
+    "screen_name": "testdev",
+    "status": "111",
+    "url": "https://x.com/testdev/status/111"
+   },
+   "reposted_by": null,
+   "media": {},
+   "provider": "twitter",
+   "likes": 10
+  },
+  {
+   "type": "status",
+   "url": "https://x.com/testdev/status/111",
+   "id": "111",
+   "text": "Part 2: details.",
+   "raw_text": {
+    "text": "Part 2: details.",
+    "facets": []
+   },
+   "author": {
+    "screen_name": "testdev",
+    "name": "Test Dev",
+    "url": "https://x.com/testdev",
+    "id": "1",
+    "type": "profile"
+   },
+   "created_timestamp": 1791443160,
+   "created_at": "ignored",
+   "is_note_tweet": false,
+   "lang": "en",
+   "replying_to": {
+    "screen_name": "testdev",
+    "status": "110",
+    "url": "https://x.com/testdev/status/110"
+   },
+   "reposted_by": null,
+   "media": {},
+   "provider": "twitter",
+   "likes": 10
+  },
+  {
+   "type": "status",
+   "url": "https://x.com/testdev/status/110",
+   "id": "110",
+   "text": "Thread start 1/",
+   "raw_text": {
+    "text": "Thread start 1/",
+    "facets": []
+   },
+   "author": {
+    "screen_name": "testdev",
+    "name": "Test Dev",
+    "url": "https://x.com/testdev",
+    "id": "1",
+    "type": "profile"
+   },
+   "created_timestamp": 1791442800,
+   "created_at": "ignored",
+   "is_note_tweet": false,
+   "lang": "en",
+   "replying_to": null,
+   "reposted_by": null,
+   "media": {},
+   "provider": "twitter",
+   "likes": 10
+  },
+  {
+   "type": "status",
+   "url": "https://x.com/testdev/status/120",
+   "id": "120",
+   "text": "Continuation of an old thread",
+   "raw_text": {
+    "text": "Continuation of an old thread",
+    "facets": []
+   },
+   "author": {
+    "screen_name": "testdev",
+    "name": "Test Dev",
+    "url": "https://x.com/testdev",
+    "id": "1",
+    "type": "profile"
+   },
+   "created_timestamp": 1791439200,
+   "created_at": "ignored",
+   "is_note_tweet": false,
+   "lang": "en",
+   "replying_to": {
+    "screen_name": "TestDev",
+    "status": "50",
+    "url": "https://x.com/testdev/status/50"
+   },
+   "reposted_by": null,
+   "media": {},
+   "provider": "twitter",
+   "likes": 10
+  }
+ ]
+}

@@ -7,8 +7,10 @@ import {
   filterByCategory,
   formatTime,
   isSafeUrl,
+  paragraphs,
   parseRoute,
   pickTopStory,
+  postsStale,
   related,
 } from "../../site/lib.js";
 
@@ -158,5 +160,32 @@ describe("filterByCategory and related", () => {
   test("categories have Russian labels", () => {
     assert.deepEqual(Object.keys(CATEGORIES), ["ai", "dev", "business"]);
     assert.equal(CATEGORIES.ai, "ИИ и модели");
+  });
+});
+
+describe("posts", () => {
+  test("route #/x", () => {
+    assert.deepEqual(parseRoute("#/x"), { view: "x" });
+  });
+
+  test("postsStale: empty list is stale", () => {
+    assert.equal(postsStale([], NOW), true);
+  });
+
+  test("postsStale: fresh newest post is not stale", () => {
+    const items = [{ published_at: "2026-10-06T13:00:00Z" }, { published_at: "2026-10-08T11:00:00Z" }];
+    assert.equal(postsStale(items, NOW), false);
+  });
+
+  test("postsStale: newest post older than 48h is stale", () => {
+    assert.equal(postsStale([{ published_at: "2026-10-06T11:59:00Z" }], NOW), true);
+  });
+
+  test("paragraphs splits on blank lines and drops empty ones", () => {
+    assert.deepEqual(paragraphs("Первый абзац.\n\n\n Второй абзац. \n\n"), ["Первый абзац.", "Второй абзац."]);
+  });
+
+  test("paragraphs of empty text is empty", () => {
+    assert.deepEqual(paragraphs(""), []);
   });
 });
