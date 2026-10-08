@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 state/pending.json
 state/summaries.json
+*.stackdump
