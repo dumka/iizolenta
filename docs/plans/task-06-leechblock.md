@@ -1,6 +1,6 @@
 # Task 6: Перехват lenta.ru в Zen и Vivaldi (LeechBlock NG) и финальная проверка эпика
 
-Epic: `docs/plans/epic-izolenta.md` · Статус: open (SRE review: approved) · Оценка: 2-3 часа (большая часть — ручные шаги пользователя на устройствах) · Зависит от: Task 5 (closed)
+Epic: `docs/plans/epic-izolenta.md` · Статус: closed (2026-10-08) · Оценка: 2-3 часа (большая часть — ручные шаги пользователя на устройствах) · Зависит от: Task 5 (closed)
 
 ## Goal
 
@@ -49,3 +49,11 @@ Epic: `docs/plans/epic-izolenta.md` · Статус: open (SRE review: approved)
 - [ ] Новый домен из `sites.txt` перехватывается на обоих устройствах без правки настроек.
 - [ ] Не меньше 3 запусков routine по расписанию подряд — success.
 - [ ] `review-implementation` одобрил эпик.
+
+## Result (2026-10-08)
+
+- `docs/setup-leechblock.md` написан и связан из README. Метки полей сверены с `options.html` LeechBlock NG 1.8. Найдено при сверке: поле «Load list of sites from URL» скрыто под «Show Advanced Options»; по умолчанию LeechBlock ловит только домен и `www.` (`patternToRegExp` в `common.js`), поэтому в инструкции включается «Block all subdomains (not just www)»; адрес списка с `?t=$T`, чтобы браузер не брал копию из кеша (`max-age=600`).
+- Пользователь подтвердил: перехват lenta.ru работает в Zen и Vivaldi Android (LeechBlock, AdGuard не понадобился).
+- Расширяемость: добавлены `rsdn.org`, `ya62.ru` (коммит `9131c44`); после «Save Options» перехватываются на обоих устройствах (подтверждение пользователя).
+- Routine: три плановых запуска подряд успешны (13:20, 14:13, 15:09 UTC; `news: +10`, `+9`, `+11`). В логе 15:09 найдено: при плановых запусках рабочая копия в detached HEAD, `git push origin main` отклонялся (агент сам перешёл на `HEAD:main`), время в сообщении коммита вписывалось вручную — `PROMPT.md` исправлен (`5d1f3c5`).
+- Финальное ревью: первый отчёт субагента `review-implementation` отброшен — агент не сделал ни одного вызова инструментов и описал несуществующий код (проверено: таких файлов, вызовов и коммитов в репозитории нет). Ревью проведено вручную, см. эпик, раздел «Final Review».
