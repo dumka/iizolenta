@@ -9,13 +9,13 @@
 | Поле в LeechBlock NG | Значение |
 |---|---|
 | Enter the domain names of the sites to block | оставить **пустым** |
-| Load list of sites from URL (раздел **Advanced Options** — сначала нажмите кнопку **Show Advanced Options**) | `https://dumka.github.io/iizolenta/sites.txt` |
+| Load list of sites from URL (раздел **Advanced Options** — сначала нажмите кнопку **Show Advanced Options**) | `https://dumka.github.io/iizolenta/sites.txt?t=$T` |
 | Enter the time periods within which to block these sites | нажать кнопку **All Day** (получится `0000-2400`) |
 | Дни недели под временем | отметить **все семь** |
 | Enter the fully specified URL of the page to show instead of these blocked sites | `https://dumka.github.io/iizolenta/#$U` |
 | вкладка General → раздел Miscellaneous → Block all subdomains (not just www) | **включить** (иначе `m.lenta.ru` и другие поддомены не перехватываются) |
 
-`$U` — LeechBlock подставит адрес, который вы пытались открыть; по нему ИИзоЛента пишет, какой сайт заизолирован.
+`$U` — LeechBlock подставит адрес, который вы пытались открыть; по нему ИИзоЛента пишет, какой сайт заизолирован. `$T` — текущее время: из-за него адрес списка каждый раз новый, и браузер не берёт устаревшую копию из кеша.
 
 ## Zen (Windows)
 
@@ -54,7 +54,7 @@ Vivaldi на Android поддерживает не все функции рас�
 ## Как добавить сайт в перехват
 
 1. Добавьте домен строкой в `site/sites.txt` (например, `pikabu.ru`) и запушьте в `main` — или отредактируйте файл прямо на GitHub: https://github.com/dumka/iizolenta/edit/main/site/sites.txt
-2. Через 1-2 минуты GitHub Pages опубликует файл; ещё до 10 минут его может держать кеш.
+2. Через 1-2 минуты GitHub Pages опубликует файл. Если в настройках адрес списка без `?t=$T`, браузер может ещё до 10 минут брать старую копию из кеша.
 3. LeechBlock перечитывает список при запуске браузера и при сохранении настроек: перезапустите браузер или откройте настройки LeechBlock и нажмите **Save Options**.
 
 Не добавляйте в список `github.io` и `dumka.github.io` — иначе ИИзоЛента перехватит сама себя и получится бесконечный редирект.
