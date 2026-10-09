@@ -20,7 +20,7 @@ def no_retry_delay(monkeypatch):
 ARTICLE = (Path(__file__).parent / "fixtures" / "article.html").read_bytes()
 
 
-def make_config(feeds, max_items=15, max_age_hours=48, accounts=(), max_posts=10, hn=False):
+def make_config(feeds, max_items=15, max_age_hours=48, accounts=(), max_posts=10, hn=False, habr_feeds=(), max_habr=10):
     return Config(
         settings=Settings(
             max_items_per_run=max_items,
@@ -39,8 +39,10 @@ def make_config(feeds, max_items=15, max_age_hours=48, accounts=(), max_posts=10
             hn_max_age_hours=36,
             max_discussions_per_run=2,
             hn_top_comments=5,
+            max_habr_per_run=max_habr,
         ),
-        feeds=tuple(Feed(name, f"https://{name.lower()}.example/feed", "ai") for name in feeds),
+        feeds=tuple(Feed(name, f"https://{name.lower()}.example/feed", "ai") for name in feeds)
+        + tuple(Feed(name, f"https://{name.lower()}.example/feed", "ai", "habr") for name in habr_feeds),
         x_accounts=tuple(XAccount(h) for h in accounts),
     )
 
@@ -420,3 +422,33 @@ def test_source_stats_hn_failure(tmp_path):
     _, pending, _ = run(tmp_path, make_config(["F"], hn=True), web)
     hn = next(s for s in pending["stats"]["sources"] if s["kind"] == "hn")
     assert hn["ok"] is False and "503" in hn["error"]
+
+
+def test_habr_feed_articles_go_to_habr_list_with_own_limit(tmp_path):
+    web = FakeWeb({feed_url("News"): rss(entries("News", 2)), feed_url("Habr"): rss(entries("Habr", 3))})
+    result, pending, seen = run(tmp_path, make_config(["News"], habr_feeds=["Habr"], max_habr=2), web)
+    assert [i["source"] for i in pending["items"]] == ["News", "News"]
+    habr = pending["habr"]
+    assert [h["title"] for h in habr] == ["Habr post 0", "Habr post 1"]
+    assert all(h["id"].startswith("habr:") and len(h["id"]) == 21 for h in habr)
+    assert set(habr[0]) == {"id", "url", "source", "author", "title", "snippet", "text", "text_source", "published_at"}
+    assert all(seen[h["id"]]["status"] == "pending" for h in habr)
+    stats = next(s for s in pending["stats"]["sources"] if s["name"] == "Habr")
+    assert (stats["candidates"], stats["selected"]) == (3, 2)
+    assert "habr: candidates=3 selected=2" in result.summary()
+
+
+def test_processed_habr_articles_not_selected_again(tmp_path):
+    from izolenta.feeds import canonical_url, item_id
+
+    habr_entries = entries("Habr", 2)
+    done = "habr:" + item_id(canonical_url(habr_entries[0][0]))
+    web = FakeWeb({feed_url("Habr"): rss(habr_entries)})
+    _, pending, _ = run(tmp_path, make_config([], habr_feeds=["Habr"]), web, seen={done: seen_entry("skipped")})
+    assert [h["title"] for h in pending["habr"]] == ["Habr post 1"]
+
+
+def test_without_habr_feeds_habr_list_is_empty(tmp_path):
+    result, pending, _ = run(tmp_path, make_config(["F"]), FakeWeb({feed_url("F"): rss(entries("F", 1))}))
+    assert pending["habr"] == []
+    assert "habr:" not in result.summary()

@@ -19,6 +19,8 @@ import {
 const DATA_URL = "data/news.json";
 const POSTS_URL = "data/posts.json";
 const HN_URL = "data/hn.json";
+const HABR_URL = "data/habr.json";
+const HOME_HABR_LIMIT = 4;
 const STATUS_URL = "data/status.json";
 const STATUS_MATERIALS_LIMIT = 200;
 const HOME_DISCUSSIONS_LIMIT = 4;
@@ -31,7 +33,10 @@ const SITE_TITLE = "ИИзоЛента — новости AI и IT";
 
 const app = document.getElementById("app");
 // news and posts load independently: a broken posts.json must not take the news down
-const state = { data: null, error: null, posts: null, postsError: null, hn: null, hnError: null, blockedHost: null };
+const state = {
+  data: null, error: null, posts: null, postsError: null, hn: null, hnError: null, habr: null, habrError: null,
+  blockedHost: null,
+};
 // the hidden #/status page loads its own data only when opened
 const statusPage = { data: null, error: null, loading: false, filter: "all", showAll: false };
 
@@ -213,6 +218,50 @@ function discussionsView() {
   return [title, el("div", { class: "posts-page" }, state.hn.items.map(discussionCard))];
 }
 
+function habrCard(a) {
+  return el(
+    "article",
+    { class: "discussion" },
+    el(
+      "div",
+      { class: "post__head" },
+      el("span", { class: "post__time" }, formatTime(a.published_at)),
+      a.author ? el("span", { class: "post__author" }, a.author) : null,
+      el("span", { class: "post__handle" }, a.source),
+    ),
+    externalLink(a.url, a.title, "discussion__title"),
+    el("p", { class: "post__text discussion__summary" }, a.summary),
+    isSafeUrl(a.url)
+      ? el("a", { class: "post__link", href: a.url, target: "_blank", rel: "noopener noreferrer" }, "Читать на Хабре →")
+      : null,
+  );
+}
+
+function habrBlock() {
+  if (!state.habr || !state.habr.items.length) return null; // still loading, failed or empty: no block
+  return el(
+    "section",
+    { class: "posts-block habr-block" },
+    el("h2", { class: "section-title" }, el("a", { href: "#/habr" }, "Пишут на Хабре")),
+    state.habr.items.slice(0, HOME_HABR_LIMIT).map(habrCard),
+    el("a", { class: "posts-block__more", href: "#/habr" }, "Все статьи →"),
+  );
+}
+
+function habrView() {
+  document.title = "Пишут на Хабре — ИИзоЛента";
+  const title = el("h1", { class: "page-title" }, "Пишут на Хабре");
+  if (state.habrError) {
+    return [
+      title,
+      stateView("Лента порвалась.", el("button", { class: "state__button", type: "button", onclick: () => load() }, "Подклеить")),
+    ];
+  }
+  if (!state.habr) return [title, stateView("Разматываем ленту...")];
+  if (!state.habr.items.length) return [title, stateView("Пока тихо: свежих статей нет.")];
+  return [title, el("div", { class: "posts-page" }, state.habr.items.map(habrCard))];
+}
+
 function feedView(items, title, { withPosts = false } = {}) {
   const top = pickTopStory(items);
   const important = items
@@ -236,6 +285,7 @@ function feedView(items, title, { withPosts = false } = {}) {
         { class: "latest" },
         withPosts ? postsBlock() : null,
         withPosts ? discussionsBlock() : null,
+        withPosts ? habrBlock() : null,
         el("h2", { class: "section-title" }, "Последние новости"),
         items.slice(0, LATEST_LIMIT).map(miniCard),
       ),
@@ -273,7 +323,7 @@ const OUTCOMES = {
   missing: "Нет выжимки, будет повтор",
   failed: "Снято после 3 попыток",
 };
-const MATERIAL_KINDS = { article: "Статья", post: "Пост X", discussion: "HN" };
+const MATERIAL_KINDS = { article: "Статья", habr: "Хабр", post: "Пост X", discussion: "HN" };
 const SOURCE_KINDS = { feed: "лента", x: "X", hn: "HN" };
 const STATUS_FILTERS = [
   ["all", "Все"],
@@ -356,7 +406,7 @@ function sourcesTable(rows) {
 function siteHref(material) {
   if (material.outcome !== "published") return null;
   if (material.kind === "article") return articleHref(material);
-  return material.kind === "post" ? "#/x" : "#/hn";
+  return { post: "#/x", discussion: "#/hn", habr: "#/habr" }[material.kind] || null;
 }
 
 function materialCard(m) {
@@ -491,7 +541,7 @@ function banner() {
 }
 
 function updateChrome(route) {
-  const active = route.view === "category" ? route.category : route.view === "x" || route.view === "hn" ? route.view : "";
+  const active = route.view === "category" ? route.category : ["x", "hn", "habr"].includes(route.view) ? route.view : "";
   for (const link of document.querySelectorAll(".menu__link")) {
     const highlighted = route.view !== "article" && route.view !== "status" && link.dataset.category === active;
     link.classList.toggle("is-active", highlighted);
@@ -515,6 +565,8 @@ function render() {
     content = postsView();
   } else if (route.view === "hn") {
     content = discussionsView();
+  } else if (route.view === "habr") {
+    content = habrView();
   } else if (route.view === "status") {
     if (!statusPage.data && !statusPage.error && !statusPage.loading) loadStatus();
     content = statusView();
@@ -563,7 +615,12 @@ async function loadStatus() {
 }
 
 async function load() {
-  const [news, posts, hn] = await Promise.allSettled([loadJson(DATA_URL), loadJson(POSTS_URL), loadJson(HN_URL)]);
+  const [news, posts, hn, habr] = await Promise.allSettled([
+    loadJson(DATA_URL),
+    loadJson(POSTS_URL),
+    loadJson(HN_URL),
+    loadJson(HABR_URL),
+  ]);
   // keep showing stale data if we already have some
   if (news.status === "fulfilled") {
     state.data = news.value;
@@ -585,6 +642,13 @@ async function load() {
   } else {
     console.warn("ИИзоЛента: не удалось загрузить обсуждения HN", hn.reason);
     if (!state.hn) state.hnError = hn.reason;
+  }
+  if (habr.status === "fulfilled") {
+    state.habr = habr.value;
+    state.habrError = null;
+  } else {
+    console.warn("ИИзоЛента: не удалось загрузить статьи с Хабра", habr.reason);
+    if (!state.habr) state.habrError = habr.reason;
   }
   render();
 }

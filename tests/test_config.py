@@ -142,3 +142,24 @@ def test_invalid_or_duplicate_handle_rejected(tmp_path, handles):
     accounts = "".join(f'\n[[x_accounts]]\nhandle = "{h}"\n' for h in handles)
     with pytest.raises(ConfigError, match="handle"):
         load_config(write_config(tmp_path, FEED + accounts))
+
+
+def test_feed_kind_defaults_to_news(tmp_path):
+    [feed] = load_config(write_config(tmp_path, FEED)).feeds
+    assert feed.kind == "news"
+
+
+def test_feed_kind_habr_parsed(tmp_path):
+    [feed] = load_config(write_config(tmp_path, FEED + 'kind = "habr"\n')).feeds
+    assert feed.kind == "habr"
+
+
+def test_unknown_feed_kind_rejected(tmp_path):
+    with pytest.raises(ConfigError, match="kind"):
+        load_config(write_config(tmp_path, FEED + 'kind = "blog"\n'))
+
+
+def test_project_habr_hubs_go_to_habr_block_and_habr_news_stays_news():
+    kinds = {feed.name: feed.kind for feed in load_config(ROOT / "feeds.toml").feeds}
+    assert kinds["Хабр: ИИ"] == kinds["Хабр: ML"] == "habr"
+    assert kinds["Хабр Новости"] == "news"

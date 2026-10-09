@@ -14,6 +14,8 @@ LEAD_LEN = (20, 400)
 PARAGRAPH_LEN = (40, 1500)
 BODY_PARAGRAPHS = (3, 5)
 REASON_MAX = 300
+# "not important enough" is not a reason to drop a relevant story: it goes out with importance 1
+LOW_IMPORTANCE_SKIP = re.compile(r"недостаточно\s+значим|малозначим|не\s+вошл\w*\s+в\s+выпуск", re.IGNORECASE)
 
 
 class ValidationError(Exception):
@@ -72,6 +74,8 @@ def validate_summary(raw: Any) -> Summary | Skip:
         reason = normalize(reason) if isinstance(reason, str) else ""
         if not reason or len(reason) > REASON_MAX:
             errors.append(f"reason: must be a non-empty string up to {REASON_MAX} chars")
+        elif LOW_IMPORTANCE_SKIP.search(reason):
+            errors.append(f"reason: {reason!r} is not a reason to skip; publish a relevant story with importance 1")
         if errors:
             raise ValidationError(errors)
         return Skip(id=item_id, reason=reason)
@@ -187,12 +191,37 @@ def _is_discussion_id(value: Any) -> bool:
 
 
 def validate_discussion(raw: Any) -> DiscussionSummary | Skip:
+    return _validate_retelling(raw, _is_discussion_id, "'hn:<digits>'", DISCUSSION_SUMMARY_LEN, DiscussionSummary)
+
+
+# Habr author articles: {"id": "habr:<16 hex>", "status": "ok", "title": "...", "summary": "..."} or a skip.
+
+HABR_SUMMARY_LEN = (120, 800)
+HABR_ID = re.compile(r"habr:[0-9a-f]{16}")
+
+
+@dataclass(frozen=True)
+class HabrSummary:
+    id: str
+    title: str
+    summary: str
+
+
+def validate_habr(raw: Any) -> HabrSummary | Skip:
+    def is_habr_id(value: Any) -> bool:
+        return isinstance(value, str) and HABR_ID.fullmatch(value) is not None
+
+    return _validate_retelling(raw, is_habr_id, "'habr:<16 hex>'", HABR_SUMMARY_LEN, HabrSummary)
+
+
+def _validate_retelling(raw: Any, is_valid_id, id_hint: str, summary_len: tuple[int, int], result_type):
+    """A title plus a one-paragraph retelling (HN discussions, Habr articles) or a skip."""
     if not isinstance(raw, dict):
         raise ValidationError(["entry: must be a JSON object"])
     errors: list[str] = []
-    discussion_id = raw.get("id")
-    if not _is_discussion_id(discussion_id):
-        errors.append(f"id: must look like 'hn:<digits>', got {discussion_id!r}")
+    entry_id = raw.get("id")
+    if not is_valid_id(entry_id):
+        errors.append(f"id: must look like {id_hint}, got {entry_id!r}")
 
     status = raw.get("status")
     if status == "skip":
@@ -202,7 +231,7 @@ def validate_discussion(raw: Any) -> DiscussionSummary | Skip:
             errors.append(f"reason: must be a non-empty string up to {REASON_MAX} chars")
         if errors:
             raise ValidationError(errors)
-        return Skip(id=discussion_id, reason=reason)
+        return Skip(id=entry_id, reason=reason)
     if status != "ok":
         raise ValidationError(errors + [f"status: must be 'ok' or 'skip', got {status!r}"])
 
@@ -212,7 +241,7 @@ def validate_discussion(raw: Any) -> DiscussionSummary | Skip:
         errors.append("summary: must be a single paragraph")
         summary = ""
     else:
-        summary = _check_text("summary", raw_summary, DISCUSSION_SUMMARY_LEN, errors)
+        summary = _check_text("summary", raw_summary, summary_len, errors)
     if errors:
         raise ValidationError(errors)
-    return DiscussionSummary(id=discussion_id, title=title, summary=summary)
+    return result_type(id=entry_id, title=title, summary=summary)

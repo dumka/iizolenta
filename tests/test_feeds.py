@@ -141,3 +141,13 @@ def test_bozo_feed_with_entries_is_parsed():
 def test_html_page_instead_of_feed_raises_feed_error():
     with pytest.raises(FeedError):
         parse_feed("Cloudflare", fixture("not_a_feed.html"), "ai", NOW)
+
+
+def test_author_parsed_when_present():
+    raw = rss(
+        "<item><title>With author</title><link>https://a.example/1</link>"
+        "<dc:creator xmlns:dc='http://purl.org/dc/elements/1.1/'>ivanov</dc:creator></item>"
+        "<item><title>Without author</title><link>https://a.example/2</link></item>"
+    )
+    with_author, without_author = parse_feed("A", raw, "ai", NOW)
+    assert (with_author.author, without_author.author) == ("ivanov", None)

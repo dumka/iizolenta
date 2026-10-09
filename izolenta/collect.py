@@ -20,6 +20,7 @@ from izolenta.xposts import XError, XPost, fetch_posts
 
 FINAL_STATUSES = {"done", "skipped", "failed"}
 ACCOUNT_RETRY_DELAY = 2  # seconds before retrying a failed X account
+HABR_PREFIX = "habr:"  # Habr articles live in their own id space: the same URL is a different job
 
 
 def iso_z(moment: datetime) -> str:
@@ -39,6 +40,8 @@ class CollectResult:
     posts: list[dict[str, Any]] | None = None  # None when no X accounts are configured
     discussions: list[dict[str, Any]] | None = None  # None when HN discussions are off
     sources: list[dict[str, Any]] = field(default_factory=list)  # per-source stats for the status page
+    habr_candidates: int = 0
+    habr: list[dict[str, Any]] | None = None  # None when no feed has kind = "habr"
 
     def summary(self) -> str:
         from_article = sum(1 for i in self.items if i["text_source"] == "article")
@@ -47,7 +50,12 @@ class CollectResult:
             f"feeds ok={self.feeds_ok} failed={self.feeds_failed} | "
             f"candidates={self.candidates} | selected={len(self.items)} "
             f"(article={from_article}, snippet={len(self.items) - from_article})"
-        ) + self._posts_summary() + hn
+        ) + self._posts_summary() + hn + self._habr_summary()
+
+    def _habr_summary(self) -> str:
+        if self.habr is None:
+            return ""
+        return f" | habr: candidates={self.habr_candidates} selected={len(self.habr)}"
 
     def _posts_summary(self) -> str:
         if self.posts is None:
@@ -81,6 +89,10 @@ def _source_stats(name: str, kind: str, error: str | None, entries: int, fresh: 
         "candidates": len(fresh),
         "selected": sum(1 for x in fresh if x.id in picked),
     }
+
+
+def _state_id(feed: Feed, item: FeedItem) -> str:
+    return HABR_PREFIX + item.id if feed.kind == "habr" else item.id
 
 
 def _round_robin(per_feed: list[list[Any]], limit: int) -> list[Any]:
@@ -136,28 +148,54 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
     oldest_allowed = now - timedelta(hours=settings.max_age_hours)
     taken_ids: set[str] = set()
     per_feed: list[list[FeedItem]] = []
-    for items in fetched:
+    for feed, items in zip(config.feeds, fetched):
         fresh: list[FeedItem] = []
         for item in sorted(items, key=lambda i: i.published_at, reverse=True):
             if item.id in taken_ids:
                 continue
             taken_ids.add(item.id)
-            if seen.get(item.id, {}).get("status") in FINAL_STATUSES:
+            if seen.get(_state_id(feed, item), {}).get("status") in FINAL_STATUSES:
                 continue
             if item.published_at < oldest_allowed:
                 continue
             fresh.append(item)
         per_feed.append(fresh)
-    result.candidates = sum(len(items) for items in per_feed)
+    news_lists = [fresh for feed, fresh in zip(config.feeds, per_feed) if feed.kind == "news"]
+    habr_lists = [fresh for feed, fresh in zip(config.feeds, per_feed) if feed.kind == "habr"]
+    result.candidates = sum(len(items) for items in news_lists)
 
-    selected = _round_robin(per_feed, settings.max_items_per_run)
-    picked = {item.id for item in selected}
+    selected = _round_robin(news_lists, settings.max_items_per_run)
+    habr_selected = _round_robin(habr_lists, settings.max_habr_per_run)
+    picked = {item.id for item in selected + habr_selected}
     for feed, error, items, fresh in zip(config.feeds, feed_errors, fetched, per_feed):
         result.sources.append(_source_stats(feed.name, "feed", error, len(items), fresh, picked))
     with ThreadPoolExecutor(max_workers=settings.fetch_workers) as pool:
         articles = list(
-            pool.map(lambda item: article_text(item, fetch, settings.article_text_limit), selected)
+            pool.map(lambda item: article_text(item, fetch, settings.article_text_limit), selected + habr_selected)
         )
+    habr_articles = articles[len(selected):]
+
+    if any(feed.kind == "habr" for feed in config.feeds):
+        result.habr_candidates = sum(len(items) for items in habr_lists)
+        result.habr = []
+        for item, article in zip(habr_selected, habr_articles):
+            result.habr.append(
+                {
+                    "id": HABR_PREFIX + item.id,
+                    "url": item.url,
+                    "source": item.source,
+                    "author": item.author,
+                    "title": item.title,
+                    "snippet": item.snippet,
+                    "text": article.text,
+                    "text_source": article.text_source,
+                    "published_at": iso_z(item.published_at),
+                }
+            )
+            entry = seen.setdefault(
+                HABR_PREFIX + item.id, {"first_seen": now.isoformat(), "status": "pending", "attempts": 0}
+            )
+            entry["status"] = "pending"
 
     for item, article in zip(selected, articles):
         result.items.append(
@@ -222,6 +260,7 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
             "items": result.items,
             "posts": result.posts or [],
             "discussions": result.discussions or [],
+            "habr": result.habr or [],
             "errors": result.errors,
             "stats": {"sources": result.sources},
         },

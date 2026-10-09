@@ -12,7 +12,7 @@ export function parseRoute(hash) {
     return { view: "blocked", url: value };
   }
   const parts = value.replace(/^\//, "").split("/");
-  if ((parts[0] === "x" || parts[0] === "hn" || parts[0] === "status") && parts.length === 1) {
+  if (["x", "hn", "habr", "status"].includes(parts[0]) && parts.length === 1) {
     return { view: parts[0] };
   }
   if (parts[0] === "news" && parts[1]) {
@@ -131,7 +131,7 @@ export function pluralRu(n, [one, few, many]) {
 // Status page (#/status): what the pipeline did with every source and material over the last 48 hours.
 
 const PROBLEM_OUTCOMES = new Set(["invalid", "missing", "failed"]);
-const KIND_BY_MATERIAL = { article: "feed", post: "x", discussion: "hn" };
+const KIND_BY_MATERIAL = { article: "feed", habr: "feed", post: "x", discussion: "hn" };
 
 export function outcomeGroup(outcome) {
   return PROBLEM_OUTCOMES.has(outcome) ? "problems" : outcome;

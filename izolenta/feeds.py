@@ -31,6 +31,7 @@ class FeedItem:
     published_at: datetime
     image: str | None
     default_category: str
+    author: str | None = None
 
 
 def canonical_url(url: str) -> str:
@@ -125,6 +126,7 @@ def parse_feed(name: str, raw: bytes, default_category: str, now: datetime) -> l
                 published_at=_published(entry, now),
                 image=_image(entry),
                 default_category=default_category,
+                author=html_to_text(entry.get("author", "")) or None,
             )
         )
     return items

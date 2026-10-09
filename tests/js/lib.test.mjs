@@ -302,3 +302,9 @@ describe("status page", async () => {
     assert.deepEqual(countOutcomes(materials), { all: 5, published: 1, skipped: 1, problems: 3 });
   });
 });
+
+describe("habr", () => {
+  test("route #/habr", () => {
+    assert.deepEqual(parseRoute("#/habr"), { view: "habr" });
+  });
+});

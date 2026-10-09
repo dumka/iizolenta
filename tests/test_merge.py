@@ -65,18 +65,21 @@ class Env:
         self.news = tmp_path / "site" / "data" / "news.json"
         self.posts = tmp_path / "site" / "data" / "posts.json"
         self.hn = tmp_path / "site" / "data" / "hn.json"
+        self.habr = tmp_path / "site" / "data" / "habr.json"
 
     def write(self, name, data, raw=False, encoding="utf-8"):
         path = self.state / name
         path.write_text(data if raw else json.dumps(data, ensure_ascii=False), encoding=encoding)
 
     def setup(self, items, summaries, seen=None, news=None, posts=None, post_summaries=None, posts_store=None,
-              discussions=None, discussion_summaries=None, hn_store=None):
+              discussions=None, discussion_summaries=None, hn_store=None, habr=None, habr_summaries=None):
         pending = {"generated_at": iso(NOW), "items": items, "errors": []}
         if posts is not None:
             pending["posts"] = posts
         if discussions is not None:
             pending["discussions"] = discussions
+        if habr is not None:
+            pending["habr"] = habr
         self.write("pending.json", pending)
         if summaries is not None:
             data = {"items": summaries}
@@ -84,10 +87,12 @@ class Env:
                 data["posts"] = post_summaries
             if discussion_summaries is not None:
                 data["discussions"] = discussion_summaries
+            if habr_summaries is not None:
+                data["habr"] = habr_summaries
             self.write("summaries.json", data)
         default_seen = {
             i["id"]: {"first_seen": NOW.isoformat(), "status": "pending", "attempts": 0}
-            for i in items + (posts or []) + (discussions or [])
+            for i in items + (posts or []) + (discussions or []) + (habr or [])
         }
         self.write("seen.json", seen if seen is not None else default_seen)
         if news is not None:
@@ -577,3 +582,63 @@ def test_corrupted_status_is_started_afresh(env):
     env.run()
     assert [m["id"] for m in status(env)["materials"]] == ["a1"]
     assert [r["id"] for r in env.news_items()] == ["a1"]
+
+
+# --- Habr author articles: retold into habr.json for the «Пишут на Хабре» block ---
+
+HABR_RU = (
+    "Автор полтора месяца пытался ускорить MoE-модель на старой видеокарте и сравнил десяток приёмов. "
+    "Выиграл штатный флаг llama.cpp, а самописные оптимизации дали меньше процента."
+)
+
+
+def pending_habr(n, published=NOW - timedelta(hours=3)):
+    return {
+        "id": f"habr:{n:016x}",
+        "url": f"https://habr.com/ru/articles/{n}/",
+        "source": "Хабр: ИИ",
+        "author": "ivanov",
+        "title": "Полтора месяца ускорял MoE на GTX 1660",
+        "snippet": "snippet",
+        "text": "text",
+        "text_source": "article",
+        "published_at": iso(published),
+    }
+
+
+def test_habr_article_merged_with_collector_metadata(env):
+    forged = {"id": "habr:0000000000000001", "status": "ok", "title": "Как ускорить MoE на старой видеокарте",
+              "summary": HABR_RU, "url": "https://evil.example", "author": "evil"}
+    env.setup([], [], habr=[pending_habr(1), pending_habr(2)],
+              habr_summaries=[forged, {"id": "habr:0000000000000002", "status": "skip", "reason": "корпоративный пиар"}])
+    result = env.run()
+    assert (result.habr.merged, result.habr.skipped) == (1, 1)
+    [record] = json.loads(env.habr.read_text(encoding="utf-8"))["items"]
+    assert record == {
+        "id": "habr:0000000000000001", "url": "https://habr.com/ru/articles/1/", "source": "Хабр: ИИ",
+        "author": "ivanov", "published_at": iso(NOW - timedelta(hours=3)),
+        "title": "Как ускорить MoE на старой видеокарте", "summary": HABR_RU,
+    }
+    assert "habr: merged=1 skipped=1" in result.summary()
+    by_id = materials(env)
+    assert (by_id["habr:0000000000000001"]["kind"], by_id["habr:0000000000000001"]["outcome"]) == ("habr", "published")
+    assert by_id["habr:0000000000000002"]["reason"] == "корпоративный пиар"
+
+
+def test_habr_articles_kept_for_a_week(env):
+    old = {"id": "habr:00000000000000aa", "url": "https://habr.com/ru/articles/170/", "source": "Хабр: ИИ", "author": None,
+           "published_at": iso(NOW - timedelta(days=8)), "title": "Старая статья с Хабра", "summary": HABR_RU}
+    recent = {**old, "id": "habr:00000000000000bb", "published_at": iso(NOW - timedelta(days=6))}
+    env.habr.parent.mkdir(parents=True, exist_ok=True)
+    env.habr.write_text(json.dumps({"generated_at": "x", "items": [old, recent]}), encoding="utf-8")
+    env.setup([], [], habr=[])
+    env.run()
+    assert [r["id"] for r in json.loads(env.habr.read_text(encoding="utf-8"))["items"]] == ["habr:00000000000000bb"]
+
+
+def test_check_reports_missing_habr_summary(env):
+    from izolenta.merge import check
+
+    env.setup([], [], habr=[pending_habr(1)], habr_summaries=[])
+    result = check(env.state)
+    assert any("habr" in p and "habr:0000000000000001" in p for p in result.problems)

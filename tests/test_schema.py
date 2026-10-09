@@ -179,3 +179,47 @@ def test_invalid_discussion_rejected(overrides, field):
 
 def test_discussion_skip_accepted():
     assert validate_discussion({"id": "hn:5", "status": "skip", "reason": "политика"}) == Skip(id="hn:5", reason="политика")
+
+
+@pytest.mark.parametrize("reason", ["не вошло в выпуск: недостаточно значимо", "Недостаточно значимая новость", "малозначимо"])
+def test_skip_for_low_importance_rejected(reason):
+    # a minor but relevant story is published with importance 1, not dropped
+    with pytest.raises(ValidationError) as info:
+        validate_summary({"id": "a1", "status": "skip", "reason": reason})
+    assert any("importance 1" in r for r in info.value.reasons)
+
+
+from izolenta.schema import HabrSummary, validate_habr  # noqa: E402
+
+HABR_SUMMARY = (
+    "Автор полтора месяца пытался ускорить MoE-модель на старой видеокарте и сравнил десяток приёмов. "
+    "Выиграл штатный флаг llama.cpp, а самописные оптимизации дали меньше процента."
+)
+
+
+def test_valid_habr_accepted():
+    raw = {"id": "habr:0123456789abcdef", "status": "ok", "title": "Как ускорить MoE на GTX 1660", "summary": HABR_SUMMARY}
+    assert validate_habr(raw) == HabrSummary(id="habr:0123456789abcdef", title="Как ускорить MoE на GTX 1660", summary=HABR_SUMMARY)
+
+
+@pytest.mark.parametrize(
+    "overrides, field",
+    [
+        ({"summary": "Коротко о статье."}, "summary"),
+        ({"summary": HABR_SUMMARY + "\n\n" + HABR_SUMMARY}, "summary"),
+        ({"title": "Short"}, "title"),
+        ({"id": "0123456789abcdef"}, "id"),
+        ({"id": "hn:123"}, "id"),
+    ],
+)
+def test_invalid_habr_rejected(overrides, field):
+    raw = {"id": "habr:0123456789abcdef", "status": "ok", "title": "Заголовок статьи с Хабра", "summary": HABR_SUMMARY, **overrides}
+    with pytest.raises(ValidationError) as info:
+        validate_habr(raw)
+    assert any(field in reason for reason in info.value.reasons)
+
+
+def test_habr_skip_accepted():
+    assert validate_habr({"id": "habr:0123456789abcdef", "status": "skip", "reason": "корпоративный пиар"}) == Skip(
+        id="habr:0123456789abcdef", reason="корпоративный пиар"
+    )

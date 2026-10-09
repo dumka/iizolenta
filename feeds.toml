@@ -10,6 +10,7 @@ max_response_bytes = 5_000_000
 seen_retention_days = 14
 fetch_workers = 12
 max_posts_per_run = 10
+max_habr_per_run = 10
 post_max_age_hours = 48
 hn_discussions = true
 hn_min_points = 200
@@ -122,16 +123,19 @@ url = "https://www.siliconrepublic.com/feed"
 default_category = "ai"
 
 # Russian-language sources: active during Moscow daytime; the routine retells them, not copies.
+# kind = "habr": author articles, not news; they go to the «Пишут на Хабре» block.
 
 [[feeds]]
 name = "Хабр: ИИ"
 url = "https://habr.com/ru/rss/hubs/artificial_intelligence/articles/?fl=ru"
 default_category = "ai"
+kind = "habr"
 
 [[feeds]]
 name = "Хабр: ML"
 url = "https://habr.com/ru/rss/hubs/machine_learning/articles/?fl=ru"
 default_category = "ai"
+kind = "habr"
 
 [[feeds]]
 name = "Хабр Новости"

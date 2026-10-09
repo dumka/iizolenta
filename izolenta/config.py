@@ -9,6 +9,8 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 CATEGORIES = ("ai", "dev", "business")
+# news: summaries in the main feed; habr: author articles retold in the «Пишут на Хабре» block
+FEED_KINDS = ("news", "habr")
 HANDLE = re.compile(r"[A-Za-z0-9_]{1,15}")
 
 
@@ -21,6 +23,7 @@ class Feed:
     name: str
     url: str
     default_category: str
+    kind: str = "news"
 
 
 @dataclass(frozen=True)
@@ -41,6 +44,7 @@ class Settings:
     hn_max_age_hours: int = 36
     max_discussions_per_run: int = 4
     hn_top_comments: int = 12
+    max_habr_per_run: int = 10
 
 
 @dataclass(frozen=True)
@@ -91,6 +95,8 @@ def load_config(path: Path) -> Config:
                 f"feed {feed.name}: category must be one of {CATEGORIES}, "
                 f"got {feed.default_category!r}"
             )
+        if feed.kind not in FEED_KINDS:
+            raise ConfigError(f"feed {feed.name}: kind must be one of {FEED_KINDS}, got {feed.kind!r}")
         if not is_http_url(feed.url):
             raise ConfigError(f"feed {feed.name}: url must be http(s), got {feed.url!r}")
         seen_names.add(feed.name)

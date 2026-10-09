@@ -327,7 +327,8 @@ a:hover { color: var(--accent); }
 .discussion__title { display: block; margin-top: 4px; font-weight: 700; font-size: 16px; line-height: 1.3; color: var(--text); }
 .discussion__links { display: flex; flex-wrap: wrap; gap: 4px 16px; }
 .discussion__article { color: var(--text-muted); }
-.hn-block .discussion__summary {
+.hn-block .discussion__summary,
+.habr-block .discussion__summary {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 4;

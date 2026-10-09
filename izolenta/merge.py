@@ -14,11 +14,13 @@ from izolenta.collect import iso_z
 from izolenta.hn import ERROR_SOURCE as HN_SOURCE
 from izolenta.schema import (
     DiscussionSummary,
+    HabrSummary,
     PostSummary,
     Skip,
     Summary,
     ValidationError,
     validate_discussion,
+    validate_habr,
     validate_post,
     validate_summary,
 )
@@ -27,6 +29,7 @@ from izolenta.state import StateError, load_seen, read_json_object, save_json_at
 RETENTION_DAYS = 7
 POST_RETENTION_DAYS = 3
 DISCUSSION_RETENTION_DAYS = 3
+HABR_RETENTION_DAYS = 7
 MAX_ATTEMPTS = 3
 STATUS_HOURS = 48
 PREVIEW_CHARS = 120
@@ -69,6 +72,19 @@ def _discussion_record(discussion: dict[str, Any], summary: DiscussionSummary) -
         "points": discussion["points"],
         "comments": discussion["comments"],
         "published_at": discussion["published_at"],
+        "title": summary.title,
+        "summary": summary.summary,
+    }
+
+
+def _habr_record(article: dict[str, Any], summary: HabrSummary) -> dict[str, Any]:
+    # link, hub, author and date come from the collector; Claude writes only the title and the retelling
+    return {
+        "id": article["id"],
+        "url": article["url"],
+        "source": article["source"],
+        "author": article.get("author"),
+        "published_at": article["published_at"],
         "title": summary.title,
         "summary": summary.summary,
     }
@@ -122,7 +138,16 @@ DISCUSSIONS = Kind(
     "discussion",
     _discussion_material,
 )
-OPTIONAL_KINDS = (POSTS, DISCUSSIONS)
+HABR = Kind(
+    "habr",
+    "habr ",
+    validate_habr,
+    _habr_record,
+    lambda article: article.get("title", ""),
+    "habr",
+    _article_material,
+)
+OPTIONAL_KINDS = (POSTS, DISCUSSIONS, HABR)
 
 
 @dataclass
@@ -155,6 +180,7 @@ class MergeResult(KindResult):
     summaries_error: str | None = None
     posts: KindResult | None = None  # None when pending.json has no posts list
     discussions: KindResult | None = None  # None when pending.json has no discussions list
+    habr: KindResult | None = None  # None when pending.json has no habr list
 
     @property
     def news_total(self) -> int:
@@ -168,10 +194,12 @@ class MergeResult(KindResult):
             line += f" | posts: {self.posts.counts()} | total={self.posts.total}"
         if self.discussions is not None:
             line += f" | hn: {self.discussions.counts()} | total={self.discussions.total}"
+        if self.habr is not None:
+            line += f" | habr: {self.habr.counts()} | total={self.habr.total}"
         return line
 
 
-SUMMARY_KEYS = ("items", "posts", "discussions")
+SUMMARY_KEYS = ("items", "posts", "discussions", "habr")
 
 
 def _summary_files(state_dir: Path) -> list[Path]:
@@ -226,7 +254,7 @@ def _load_pending(path: Path) -> dict[str, list[dict[str, Any]] | None]:
 def _pending_lists(data: dict[str, Any], path: Path) -> dict[str, list[dict[str, Any]] | None]:
     """Lists of pending.json by key; optional kinds are None when absent."""
     lists: dict[str, list[dict[str, Any]] | None] = {}
-    for key in ("items", "posts", "discussions"):
+    for key in SUMMARY_KEYS:
         value = data.get(key)
         if value is None and key != "items":
             lists[key] = None
@@ -405,13 +433,19 @@ def merge(
     posts_path: Path | None = None,
     hn_path: Path | None = None,
     status_path: Path | None = None,
+    habr_path: Path | None = None,
 ) -> MergeResult:
     state_dir, news_path = Path(state_dir), Path(news_path)
     store_paths = {
         POSTS.key: Path(posts_path) if posts_path else news_path.parent / "posts.json",
         DISCUSSIONS.key: Path(hn_path) if hn_path else news_path.parent / "hn.json",
+        HABR.key: Path(habr_path) if habr_path else news_path.parent / "habr.json",
     }
-    retention = {POSTS.key: POST_RETENTION_DAYS, DISCUSSIONS.key: DISCUSSION_RETENTION_DAYS}
+    retention = {
+        POSTS.key: POST_RETENTION_DAYS,
+        DISCUSSIONS.key: DISCUSSION_RETENTION_DAYS,
+        HABR.key: HABR_RETENTION_DAYS,
+    }
     pending_path = state_dir / "pending.json"
     seen_path = state_dir / "seen.json"
     result = MergeResult()
