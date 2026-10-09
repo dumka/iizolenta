@@ -120,9 +120,10 @@ describe("formatTime", () => {
 });
 
 describe("pickTopStory", () => {
-  test("highest importance wins", () => {
+  // NOW = 2026-10-08T12:00Z; news() defaults to 10:00Z (2 hours ago)
+  test("highest importance wins within the window", () => {
     const items = [news("a", { importance: 1 }), news("b", { importance: 3 }), news("c", { importance: 2 })];
-    assert.equal(pickTopStory(items).id, "b");
+    assert.equal(pickTopStory(items, NOW).id, "b");
   });
 
   test("freshest among equal importance", () => {
@@ -130,11 +131,44 @@ describe("pickTopStory", () => {
       news("old", { importance: 3, published_at: "2026-10-08T08:00:00Z" }),
       news("new", { importance: 3, published_at: "2026-10-08T11:00:00Z" }),
     ];
-    assert.equal(pickTopStory(items).id, "new");
+    assert.equal(pickTopStory(items, NOW).id, "new");
+  });
+
+  test("an old top story gives way to a fresher less important one", () => {
+    const items = [
+      news("gpt6-yesterday", { importance: 3, published_at: "2026-10-06T22:00:00Z" }),
+      news("fresh", { importance: 2, published_at: "2026-10-08T11:00:00Z" }),
+    ];
+    assert.equal(pickTopStory(items, NOW).id, "fresh");
+  });
+
+  test("story older than 12h loses to anything inside 12h", () => {
+    const items = [
+      news("13h-ago", { importance: 3, published_at: "2026-10-07T23:00:00Z" }),
+      news("1h-ago", { importance: 1, published_at: "2026-10-08T11:00:00Z" }),
+    ];
+    assert.equal(pickTopStory(items, NOW).id, "1h-ago");
+  });
+
+  test("quiet night: falls back to the best of the last 24h", () => {
+    const items = [
+      news("20h-ago-important", { importance: 3, published_at: "2026-10-07T16:00:00Z" }),
+      news("18h-ago", { importance: 1, published_at: "2026-10-07T18:00:00Z" }),
+      news("3-days-ago", { importance: 3, published_at: "2026-10-05T12:00:00Z" }),
+    ];
+    assert.equal(pickTopStory(items, NOW).id, "20h-ago-important");
+  });
+
+  test("nothing in 24h: the freshest story", () => {
+    const items = [
+      news("older", { importance: 3, published_at: "2026-10-05T12:00:00Z" }),
+      news("newer", { importance: 1, published_at: "2026-10-06T12:00:00Z" }),
+    ];
+    assert.equal(pickTopStory(items, NOW).id, "newer");
   });
 
   test("empty list is null", () => {
-    assert.equal(pickTopStory([]), null);
+    assert.equal(pickTopStory([], NOW), null);
   });
 });
 

@@ -111,3 +111,25 @@ def test_merge_with_default_paths_never_touches_repo_data(tmp_path):
     env.setup([], [], posts=[pending_post("1")], post_summaries=[])
     assert main(["merge", "--state-dir", str(env.state)]) == 0
     assert {p.name: p.read_bytes() for p in repo_data.glob("*.json")} == before
+
+
+def test_recent_lists_published_news_of_last_hours(tmp_path, capsys):
+    import json
+    from datetime import UTC, datetime, timedelta
+
+    now = datetime.now(UTC)
+    iso = lambda dt: dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    news = tmp_path / "news.json"
+    news.write_text(json.dumps({"generated_at": iso(now), "items": [
+        {"id": "fresh1", "published_at": iso(now - timedelta(hours=2)), "source": "The Verge", "title": "OpenAI выпустила GPT-6"},
+        {"id": "old1", "published_at": iso(now - timedelta(hours=60)), "source": "Wired", "title": "Старое событие"},
+    ]}, ensure_ascii=False), encoding="utf-8")
+    assert main(["recent", "--news", str(news), "--hours", "48"]) == 0
+    out = capsys.readouterr().out
+    assert "fresh1" in out and "OpenAI выпустила GPT-6" in out and "The Verge" in out
+    assert "old1" not in out
+
+
+def test_recent_without_news_file_is_empty(tmp_path, capsys):
+    assert main(["recent", "--news", str(tmp_path / "missing.json")]) == 0
+    assert "no news" in capsys.readouterr().out

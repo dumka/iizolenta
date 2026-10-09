@@ -1,10 +1,11 @@
-"""CLI: python -m izolenta collect | check | merge"""
+"""CLI: python -m izolenta collect | check | merge | recent"""
 
 from __future__ import annotations
 
 import argparse
 import sys
-from datetime import UTC, datetime
+import json
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from izolenta.collect import collect
@@ -57,6 +58,23 @@ def run_merge(args: argparse.Namespace) -> None:
             print(f"  duplicate {label}id ignored: {item_id}")
 
 
+def run_recent(args: argparse.Namespace) -> None:
+    """Already published news of the last hours, so the routine can skip duplicates."""
+    if not args.news.exists():
+        print("no news published yet")
+        return
+    try:
+        items = json.loads(args.news.read_text(encoding="utf-8")).get("items") or []
+    except json.JSONDecodeError as exc:
+        raise StateError(f"cannot read {args.news}: {exc}") from exc
+    since = datetime.now(UTC) - timedelta(hours=args.hours)
+    recent = [i for i in items if datetime.fromisoformat(i["published_at"]) >= since]
+    if not recent:
+        print(f"no news in the last {args.hours} hours")
+    for item in recent:
+        print(f"{item['id']} | {item['published_at']} | {item['source']} | {item['title']}")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="izolenta")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -76,6 +94,11 @@ def main(argv: list[str] | None = None) -> int:
     merge_cmd.add_argument("--posts", type=Path, default=Path("site/data/posts.json"))
     merge_cmd.add_argument("--hn", type=Path, default=Path("site/data/hn.json"))
     merge_cmd.set_defaults(handler=run_merge)
+
+    recent_cmd = commands.add_parser("recent", help="list news published in the last hours")
+    recent_cmd.add_argument("--news", type=Path, default=Path("site/data/news.json"))
+    recent_cmd.add_argument("--hours", type=int, default=48)
+    recent_cmd.set_defaults(handler=run_recent)
 
     args = parser.parse_args(argv)
     try:

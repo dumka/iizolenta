@@ -65,7 +65,9 @@ export function formatTime(iso, now = new Date(), timeZone = undefined) {
   return `${dayMonth}, ${time}`;
 }
 
-export function pickTopStory(items) {
+const TOP_STORY_WINDOWS_HOURS = [12, 24];
+
+function mostImportant(items) {
   let top = null;
   for (const item of items) {
     if (
@@ -77,6 +79,21 @@ export function pickTopStory(items) {
     }
   }
   return top;
+}
+
+// The top story is the most important one of the last 12 hours (then 24 hours), not of the whole week:
+// otherwise a single big story would stay on top for days.
+export function pickTopStory(items, now = new Date()) {
+  for (const hours of TOP_STORY_WINDOWS_HOURS) {
+    const since = now.getTime() - hours * 3600 * 1000;
+    const recent = items.filter((item) => new Date(item.published_at).getTime() >= since);
+    if (recent.length) return mostImportant(recent);
+  }
+  let freshest = null;
+  for (const item of items) {
+    if (!freshest || item.published_at > freshest.published_at) freshest = item;
+  }
+  return freshest;
 }
 
 export function filterByCategory(items, category) {
