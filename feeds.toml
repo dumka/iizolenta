@@ -74,11 +74,6 @@ url = "https://openai.com/news/rss.xml"
 default_category = "ai"
 
 [[feeds]]
-name = "Andrej Karpathy"
-url = "https://karpathy.bearblog.dev/feed/"
-default_category = "ai"
-
-[[feeds]]
 name = "Boris Cherny"
 url = "https://borischerny.com/feed.xml"
 default_category = "dev"
@@ -91,6 +86,33 @@ default_category = "ai"
 [[feeds]]
 name = "The Batch"
 url = "https://charonhub.deeplearning.ai/rss/"
+default_category = "ai"
+
+# Sources active in European and Asian hours (the US ones are quiet during the Moscow morning).
+
+[[feeds]]
+name = "The Decoder"
+url = "https://the-decoder.com/feed/"
+default_category = "ai"
+
+[[feeds]]
+name = "AI News"
+url = "https://www.artificialintelligence-news.com/feed/"
+default_category = "ai"
+
+[[feeds]]
+name = "MarkTechPost"
+url = "https://www.marktechpost.com/feed/"
+default_category = "ai"
+
+[[feeds]]
+name = "The Register"
+url = "https://www.theregister.com/software/ai_ml/headlines.atom"
+default_category = "ai"
+
+[[feeds]]
+name = "r/LocalLLaMA"
+url = "https://www.reddit.com/r/LocalLLaMA/top/.rss?t=day"
 default_category = "ai"
 
 # Posts from X via api.fxtwitter.com (block «Пишут в X»).
