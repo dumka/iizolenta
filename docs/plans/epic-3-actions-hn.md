@@ -15,12 +15,12 @@
 
 ## Success Criteria (MUST ALL BE TRUE)
 
-- [ ] `dumka/iizolenta-work` приватный, workflow `collect` отрабатывает по расписанию 3 раза подряд и коммитит `state/`.
-- [ ] Routine работает в окружении с сетью Trusted и публикует новости, посты и обсуждения из `pending.json`, собранного в Actions.
-- [ ] В публичном репозитории нет `state/`; `git grep` по текущему дереву не находит текстов статей.
-- [ ] На сайте есть новость из статьи с HN (домен вне прежнего allowlist).
-- [ ] Блок «Обсуждают на HN» на главной и страница `#/hn`; headless-проверки (1280, 360, без горизонтального скролла) зелёные.
-- [ ] `pytest`, `node --test`, CI зелёные.
+- [ ] `dumka/iizolenta-work` приватный, workflow `collect` отрабатывает 3 запуска routine подряд и коммитит `state/` (исходно — по расписанию; заменено сбором по запросу routine, см. Task 3.1 Update).
+- [x] Routine работает в окружении с сетью Trusted и публикует новости, посты и обсуждения из `pending.json`, собранного в Actions.
+- [x] В публичном репозитории нет `state/`; `git grep` по текущему дереву не находит текстов статей.
+- [x] На сайте есть новость из статьи с HN (домен вне прежнего allowlist).
+- [x] Блок «Обсуждают на HN» на главной и страница `#/hn`; headless-проверки (1280, 360, без горизонтального скролла) зелёные.
+- [x] `pytest`, `node --test`, CI зелёные.
 
 ## Anti-patterns (FORBIDDEN)
 
@@ -54,6 +54,7 @@
 
 ## Tasks
 
-- `task-3-01-actions-collector.md` — приватный репозиторий, сбор в Actions, перенос routine (in review)
+- `task-3-01-actions-collector.md` — приватный репозиторий, сбор в Actions, перенос routine (closed; сбор по запросу routine)
 - Task 3.2 — HN как обычный источник новостей (сделано в рамках 3.1, `045f29e`)
-- `task-3-03-hn-discussions.md` — сбор обсуждений HN, схема, merge в `hn.json`, промпт (следующая)
+- `task-3-03-hn-discussions.md` — сбор обсуждений HN, схема, merge в `hn.json`, промпт (closed)
+- `task-3-04-hn-ui-release.md` — блок на сайте и выкатка (closed)
