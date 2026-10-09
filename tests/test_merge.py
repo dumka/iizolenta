@@ -448,3 +448,22 @@ def test_missing_discussion_summary_counts_attempt(env):
     result = env.run()
     assert result.discussions.missing == 1
     assert env.seen()["hn:3"]["attempts"] == 1
+
+
+def test_summaries_split_into_parts_are_combined_and_removed(env):
+    env.setup([pending_item("a1"), pending_item("a2")], None, posts=[pending_post("1")])
+    env.write("summaries.1.json", {"items": [ok_summary("a1")]})
+    env.write("summaries.2.json", {"items": [ok_summary("a2")], "posts": [{"id": "x:1", "status": "ok", "text": POST_RU}]})
+    result = env.run()
+    assert sorted(r["id"] for r in env.news_items()) == ["a1", "a2"]
+    assert result.posts.merged == 1
+    assert not list(env.state.glob("summaries*.json"))
+
+
+def test_broken_summaries_part_reported_others_used(env):
+    env.setup([pending_item("a1"), pending_item("a2")], [ok_summary("a1")])
+    env.write("summaries.2.json", "{not json", raw=True)
+    result = env.run()
+    assert [r["id"] for r in env.news_items()] == ["a1"]
+    assert result.missing == 1
+    assert "summaries.2.json" in (result.summaries_error or "")

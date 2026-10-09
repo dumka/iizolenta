@@ -137,12 +137,39 @@ class MergeResult(KindResult):
         return line
 
 
-def _load_summaries(path: Path) -> tuple[dict[str, list[Any]], str | None]:
+SUMMARY_KEYS = ("items", "posts", "discussions")
+
+
+def _summary_files(state_dir: Path) -> list[Path]:
+    """summaries.json plus parts summaries.<n>.json (big runs are written in portions)."""
+    main = state_dir / "summaries.json"
+    parts = sorted(
+        (p for p in state_dir.glob("summaries.*.json") if p.name != main.name),
+        key=lambda p: (len(p.name), p.name),
+    )
+    return ([main] if main.exists() else []) + parts
+
+
+def _load_summaries(state_dir: Path) -> tuple[dict[str, list[Any]], str | None]:
+    """All summary files combined; problems with any file are reported, never fatal."""
+    combined: dict[str, list[Any]] = {key: [] for key in SUMMARY_KEYS}
+    files = _summary_files(state_dir)
+    if not files:
+        return combined, "summaries.json not found"
+    errors = []
+    for path in files:
+        lists, error = _load_summary_file(path)
+        if error:
+            errors.append(error)
+        for key in SUMMARY_KEYS:
+            combined[key].extend(lists[key])
+    return combined, "; ".join(errors) or None
+
+
+def _load_summary_file(path: Path) -> tuple[dict[str, list[Any]], str | None]:
     """Claude's output is untrusted: problems are reported, never fatal.
     A bare list means article summaries only."""
-    empty: dict[str, list[Any]] = {"items": [], "posts": [], "discussions": []}
-    if not path.exists():
-        return empty, f"{path.name} not found"
+    empty: dict[str, list[Any]] = {key: [] for key in SUMMARY_KEYS}
     try:
         data = json.loads(path.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -151,7 +178,7 @@ def _load_summaries(path: Path) -> tuple[dict[str, list[Any]], str | None]:
         return {**empty, "items": data}, None
     if not isinstance(data, dict):
         return empty, f'{path.name}: expected {{"items": [...], "posts": [...]}} or a list'
-    lists = {key: data.get(key) or [] for key in ("items", "posts", "discussions")}
+    lists = {key: data.get(key) or [] for key in SUMMARY_KEYS}
     bad = [key for key, value in lists.items() if not isinstance(value, list)]
     if bad:
         return empty, f"{path.name}: {', '.join(bad)} must be a list"
@@ -273,7 +300,6 @@ def merge(
     }
     retention = {POSTS.key: POST_RETENTION_DAYS, DISCUSSIONS.key: DISCUSSION_RETENTION_DAYS}
     pending_path = state_dir / "pending.json"
-    summaries_path = state_dir / "summaries.json"
     seen_path = state_dir / "seen.json"
     result = MergeResult()
 
@@ -287,7 +313,7 @@ def merge(
     news = _load_store(news_path)
     stores = {kind.key: _load_store(store_paths[kind.key]) for kind in OPTIONAL_KINDS}
 
-    summaries, result.summaries_error = _load_summaries(summaries_path)
+    summaries, result.summaries_error = _load_summaries(state_dir)
     _apply(ARTICLES, pending["items"], summaries["items"], news, seen, now, max_attempts, result)
     for kind in OPTIONAL_KINDS:
         if pending[kind.key] is not None:
@@ -309,7 +335,8 @@ def merge(
         save_json_atomic(path, {"generated_at": iso_z(now), "items": kept})
     save_json_atomic(seen_path, seen)
     pending_path.unlink()
-    summaries_path.unlink(missing_ok=True)
+    for path in _summary_files(state_dir):
+        path.unlink(missing_ok=True)
     return result
 
 
@@ -352,7 +379,7 @@ def check(state_dir: Path) -> CheckResult:
         return result
 
     pending = _load_pending(pending_path)
-    summaries, summaries_error = _load_summaries(state_dir / "summaries.json")
+    summaries, summaries_error = _load_summaries(state_dir)
     if summaries_error:
         result.problems.append(f"cannot read summaries: {summaries_error}")
     result.problems.extend(_check_kind(ARTICLES, pending["items"], summaries["items"]))

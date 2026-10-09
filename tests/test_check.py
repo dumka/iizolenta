@@ -84,3 +84,12 @@ def test_check_reports_discussion_problems(tmp_path):
     text = "\n".join(result.problems)
     assert "invalid discussion hn:1" in text
     assert "missing discussion hn:2" in text
+
+
+def test_check_reads_summary_parts(tmp_path):
+    env = Env(tmp_path)
+    env.setup([pending_item("a1"), pending_item("a2")], None)
+    env.write("summaries.1.json", {"items": [ok_summary("a1")]})
+    env.write("summaries.2.json", {"items": [ok_summary("a2")]})
+    result = check(env.state)
+    assert result.ok, result.problems
