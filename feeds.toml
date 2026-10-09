@@ -83,26 +83,11 @@ name = "One Useful Thing"
 url = "https://www.oneusefulthing.org/feed"
 default_category = "ai"
 
-[[feeds]]
-name = "The Batch"
-url = "https://charonhub.deeplearning.ai/rss/"
-default_category = "ai"
-
 # Sources active in European and Asian hours (the US ones are quiet during the Moscow morning).
 
 [[feeds]]
 name = "The Decoder"
 url = "https://the-decoder.com/feed/"
-default_category = "ai"
-
-[[feeds]]
-name = "AI News"
-url = "https://www.artificialintelligence-news.com/feed/"
-default_category = "ai"
-
-[[feeds]]
-name = "MarkTechPost"
-url = "https://www.marktechpost.com/feed/"
 default_category = "ai"
 
 [[feeds]]
