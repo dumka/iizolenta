@@ -20,7 +20,7 @@ def no_retry_delay(monkeypatch):
 ARTICLE = (Path(__file__).parent / "fixtures" / "article.html").read_bytes()
 
 
-def make_config(feeds, max_items=15, max_age_hours=48, accounts=(), max_posts=10):
+def make_config(feeds, max_items=15, max_age_hours=48, accounts=(), max_posts=10, hn=False):
     return Config(
         settings=Settings(
             max_items_per_run=max_items,
@@ -33,6 +33,12 @@ def make_config(feeds, max_items=15, max_age_hours=48, accounts=(), max_posts=10
             user_agent="test",
             max_posts_per_run=max_posts,
             post_max_age_hours=48,
+            hn_discussions=hn,
+            hn_min_points=200,
+            hn_min_comments=80,
+            hn_max_age_hours=36,
+            max_discussions_per_run=2,
+            hn_top_comments=5,
         ),
         feeds=tuple(Feed(name, f"https://{name.lower()}.example/feed", "ai") for name in feeds),
         x_accounts=tuple(XAccount(h) for h in accounts),
@@ -334,3 +340,46 @@ def test_failing_account_retried_once(tmp_path):
     assert calls["n"] == 2
     assert [p["id"] for p in pending["posts"]] == ["x:1"]
     assert not any(e["feed"] == "@alice" for e in pending["errors"])
+
+
+def hn_pages():
+    from izolenta.hn import ALGOLIA_URL, ITEM_URL
+
+    hits = [
+        {"objectID": "500", "title": "Big thread", "url": "https://example.com/big", "points": 400,
+         "num_comments": 300, "created_at_i": int((NOW - timedelta(hours=3)).timestamp())},
+    ]
+    pages = {ALGOLIA_URL: json.dumps({"hits": hits}).encode(),
+             ITEM_URL.format(id=500): json.dumps({"id": 500, "kids": [1, 2, 3]}).encode()}
+    for kid in (1, 2, 3):
+        pages[ITEM_URL.format(id=kid)] = json.dumps({"id": kid, "text": f"comment {kid}"}).encode()
+    return pages
+
+
+def test_hn_discussions_collected_and_marked_pending(tmp_path):
+    web = FakeWeb({feed_url("F"): rss(entries("F", 1)), **hn_pages()})
+    result, pending, seen = run(tmp_path, make_config(["F"], hn=True), web)
+    [d] = pending["discussions"]
+    assert d["id"] == "hn:500" and d["top_comments"] == ["comment 1", "comment 2", "comment 3"]
+    assert seen["hn:500"]["status"] == "pending"
+    assert "hn: selected=1" in result.summary()
+
+
+def test_hn_disabled_gives_empty_list_and_no_requests(tmp_path):
+    from izolenta.hn import ALGOLIA_URL
+
+    web = FakeWeb({feed_url("F"): rss(entries("F", 1)), **hn_pages()})
+    result, pending, _ = run(tmp_path, make_config(["F"], hn=False), web)
+    assert pending["discussions"] == []
+    assert ALGOLIA_URL not in web.requested
+    assert "hn:" not in result.summary()
+
+
+def test_hn_failure_recorded_and_articles_collected(tmp_path):
+    from izolenta.hn import ALGOLIA_URL
+
+    web = FakeWeb({feed_url("F"): rss(entries("F", 2)), ALGOLIA_URL: FetchError("hn.algolia.com: HTTP 503")})
+    _, pending, _ = run(tmp_path, make_config(["F"], hn=True), web)
+    assert len(pending["items"]) == 2
+    assert pending["discussions"] == []
+    assert any(e["feed"] == "HN discussions" for e in pending["errors"])
