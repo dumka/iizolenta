@@ -121,6 +121,38 @@ name = "Silicon Republic"
 url = "https://www.siliconrepublic.com/feed"
 default_category = "ai"
 
+# Russian-language sources: active during Moscow daytime; the routine retells them, not copies.
+
+[[feeds]]
+name = "Хабр: ИИ"
+url = "https://habr.com/ru/rss/hubs/artificial_intelligence/articles/?fl=ru"
+default_category = "ai"
+
+[[feeds]]
+name = "Хабр: ML"
+url = "https://habr.com/ru/rss/hubs/machine_learning/articles/?fl=ru"
+default_category = "ai"
+
+[[feeds]]
+name = "Хабр Новости"
+url = "https://habr.com/ru/rss/news/?fl=ru"
+default_category = "dev"
+
+[[feeds]]
+name = "CNews"
+url = "https://www.cnews.ru/inc/rss/news.xml"
+default_category = "business"
+
+[[feeds]]
+name = "3DNews"
+url = "https://3dnews.ru/software-news/rss/"
+default_category = "dev"
+
+[[feeds]]
+name = "Код Дурова"
+url = "https://kod.ru/rss/"
+default_category = "dev"
+
 # Hacker News front page: articles live on arbitrary domains, which works now that collection runs in GitHub Actions.
 [[feeds]]
 name = "Hacker News"
