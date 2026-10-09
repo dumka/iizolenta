@@ -54,4 +54,6 @@
 
 ## Tasks
 
-- `task-3-01-actions-collector.md` — приватный репозиторий, сбор в Actions, перенос routine (первая задача)
+- `task-3-01-actions-collector.md` — приватный репозиторий, сбор в Actions, перенос routine (in review)
+- Task 3.2 — HN как обычный источник новостей (сделано в рамках 3.1, `045f29e`)
+- `task-3-03-hn-discussions.md` — сбор обсуждений HN, схема, merge в `hn.json`, промпт (следующая)

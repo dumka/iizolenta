@@ -1,6 +1,6 @@
 # Task 3.1: Приватный `iizolenta-work`, сбор в GitHub Actions, перенос routine
 
-Epic: `docs/plans/epic-3-actions-hn.md` · Статус: open (SRE review: approved) · Оценка: 3-4 часа + ожидание запусков
+Epic: `docs/plans/epic-3-actions-hn.md` · Статус: in review (2026-10-09; ждёт: сеть окружения Trusted у пользователя и 3 плановых сбора) · Оценка: 3-4 часа + ожидание запусков
 
 ## Goal
 
@@ -48,3 +48,12 @@ Epic: `docs/plans/epic-3-actions-hn.md` · Статус: open (SRE review: appro
 - [ ] Routine (ручной запуск) в окружении Trusted: читает `pending.json` из `iizolenta-work`, публикует на сайт, коммитит в оба репозитория.
 - [ ] В `iizolenta` нет `state/`; README описывает новую схему.
 - [ ] 3 плановых сбора подряд в Actions успешны (проверка `gh run list -R dumka/iizolenta-work`).
+
+## Result (2026-10-09)
+
+- Routine на время переноса выключалась (`enabled: false`), чтобы плановый запуск не записал `seen.json` в старое место; `seen.json` (171 запись) скопирован из коммита `1889453`; routine включена обратно.
+- `dumka/iizolenta-work` (PRIVATE): `state/`, `collect.yml` (actionlint чистый). Ручные сборы: `feeds ok=18 failed=2 | candidates=45 | selected=15`, затем с HN `feeds ok=19 failed=2 | candidates=44`; коммиты `collect: ...` от `github-actions[bot]`.
+- Routine с двумя источниками (ручной запуск `cse_01UJFoEEmD5HpHGbwqyV3Laz`): репозитории в `/home/user/iizolenta` и `/home/user/iizolenta-work`, рабочий каталог — `/home/user` (промпт поправлен: сначала перейти в корень `iizolenta`); `check` = 0; `merged=6 skipped=9`; коммиты `news: +6` в `iizolenta` и `summaries: +6` в `iizolenta-work`.
+- В `iizolenta` удалён `state/`, `.gitignore`: `state/`; README описывает новую схему.
+- Источники из Actions: HN-статьи с произвольных доменов скачиваются полностью (frontiersin.org, ken.arneson.name, ...). Не работают из адресов GitHub и убраны: MarkTechPost (только аннотации), The Batch (Cloudflare), AI News (битый XML).
+- Task 3.2 (HN как источник новостей) выполнена здесь же: лента `hnrss.org/frontpage?points=150` (`045f29e`).
