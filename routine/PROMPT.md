@@ -4,14 +4,14 @@
 
 ## Два репозитория
 
-- `iizolenta` — код и сайт; это рабочий каталог (здесь лежит этот файл).
+- `iizolenta` — код и сайт (здесь лежит этот файл). Запуск может начаться в другом каталоге — сначала перейди в корень `iizolenta`.
 - `iizolenta-work` — приватное состояние: `state/pending.json` (новые статьи и посты, их раз в час собирает GitHub Actions) и `state/seen.json`.
 
 В интернет за новостями ты не ходишь: всё нужное уже лежит в `state/pending.json`.
 
 ## Шаги
 
-1. **Окружение.** Из корня `iizolenta`: `uv sync --frozen` (если `uv` не найден — `pip install --quiet uv`, затем `uv sync --frozen`). Найди `iizolenta-work` и сохрани путь:
+1. **Окружение.** Перейди в корень `iizolenta` (каталог с этим файлом, обычно `/home/user/iizolenta`) и выполни `uv sync --frozen` (если `uv` не найден — `pip install --quiet uv`, затем `uv sync --frozen`). Найди `iizolenta-work` и сохрани путь:
    ```
    WORK=$(cd .. && pwd)/iizolenta-work
    [ -d "$WORK/.git" ] || WORK=$(find / -maxdepth 4 -type d -name iizolenta-work 2>/dev/null | head -1)

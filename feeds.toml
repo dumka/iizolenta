@@ -115,6 +115,12 @@ name = "r/LocalLLaMA"
 url = "https://www.reddit.com/r/LocalLLaMA/top/.rss?t=day"
 default_category = "ai"
 
+# Hacker News front page: articles live on arbitrary domains, which works now that collection runs in GitHub Actions.
+[[feeds]]
+name = "Hacker News"
+url = "https://hnrss.org/frontpage?points=150"
+default_category = "dev"
+
 # Posts from X via api.fxtwitter.com (block «Пишут в X»).
 
 [[x_accounts]]
