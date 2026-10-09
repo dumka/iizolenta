@@ -102,9 +102,29 @@ url = "https://www.theregister.com/software/ai_ml/headlines.atom"
 default_category = "ai"
 
 [[feeds]]
-name = "r/LocalLLaMA"
-url = "https://www.reddit.com/r/LocalLLaMA/top/.rss?t=day"
+name = "The Guardian"
+url = "https://www.theguardian.com/technology/artificialintelligenceai/rss"
 default_category = "ai"
+
+[[feeds]]
+name = "The Next Web"
+url = "https://thenextweb.com/feed"
+default_category = "ai"
+
+[[feeds]]
+name = "Tech.eu"
+url = "https://tech.eu/feed/"
+default_category = "business"
+
+[[feeds]]
+name = "Silicon Republic"
+url = "https://www.siliconrepublic.com/feed"
+default_category = "ai"
+
+[[feeds]]
+name = "Rest of World"
+url = "https://restofworld.org/feed/latest"
+default_category = "business"
 
 # Hacker News front page: articles live on arbitrary domains, which works now that collection runs in GitHub Actions.
 [[feeds]]
