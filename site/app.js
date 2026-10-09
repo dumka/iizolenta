@@ -429,9 +429,13 @@ function statusView() {
   document.title = "Состояние конвейера — ИИзоЛента";
   const title = el("h1", { class: "page-title" }, "Состояние конвейера");
   if (statusPage.error) {
+    const notYet = String(statusPage.error.message || "").includes("HTTP 404");
     return [
       title,
-      stateView("Не удалось загрузить состояние.", el("button", { class: "state__button", type: "button", onclick: () => loadStatus() }, "Повторить")),
+      stateView(
+        notYet ? "Данных ещё нет: они появятся после ближайшего запуска с новыми материалами." : "Не удалось загрузить состояние.",
+        el("button", { class: "state__button", type: "button", onclick: () => rerenderStatus({ error: null }) }, "Повторить"),
+      ),
     ];
   }
   if (!statusPage.data) return [title, stateView("Разматываем ленту...")];
