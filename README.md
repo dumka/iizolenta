@@ -8,7 +8,7 @@
 ## Как это устроено
 
 ```
-RSS-ленты, X  --> GitHub Actions в приватном iizolenta-work (после каждого запуска routine)
+RSS-ленты, X  --> GitHub Actions в приватном iizolenta-work (по запросу routine)
                   izolenta collect --> state/pending.json, state/seen.json
                                          |
                                          v
@@ -25,7 +25,7 @@ RSS-ленты, X  --> GitHub Actions в приватном iizolenta-work (по
 - `routine/PROMPT.md` — инструкция для облачной Claude Code routine, которая раз в час пишет выжимки.
 - `site/` — статичный дашборд без сборки (публикуется на Pages как есть).
 - `feeds.toml` — источники (RSS-ленты и аккаунты X) и настройки сбора.
-- Рабочее состояние (`state/pending.json` с текстами статей и `state/seen.json`) — в приватном репозитории `dumka/iizolenta-work`: тексты чужих статей не публикуются. Там же workflow `collect.yml`, который запускает `izolenta collect` из этого репозитория с полным доступом в интернет — после каждого push routine в `iizolenta-work` (она пушит каждый час: выжимки или `state/heartbeat`); cron — запасной вариант, расписания GitHub ненадёжны.
+- Рабочее состояние (`state/pending.json` с текстами статей и `state/seen.json`) — в приватном репозитории `dumka/iizolenta-work`: тексты чужих статей не публикуются. Там же workflow `collect.yml`, который запускает `izolenta collect` из этого репозитория с полным доступом в интернет — когда routine в начале каждого запуска пушит в `iizolenta-work` файл `state/trigger`; routine ждёт свежий `pending.json` (`routine/wait-for-collect.sh`) и сразу его обрабатывает. Cron — запасной вариант: расписания GitHub ненадёжны.
 - `docs/plans/` — эпик и задачи: требования, решения и их обоснование.
 
 ## Локально
@@ -58,7 +58,7 @@ uv run python -m http.server -d site      # дашборд на http://localhost
 
 ## Routine (обновление новостей)
 
-Выжимки и переводы раз в час пишет облачная Claude Code routine «ИИзоЛента: новости AI/IT»: https://claude.ai/code/routines/trig_01EJgo1DR8d2EZsSriRkoTua. Статьи, посты и обсуждения для неё собирает workflow `collect` в `dumka/iizolenta-work` — он запускается сразу после предыдущего запуска routine (её push в `iizolenta-work`).
+Выжимки и переводы раз в час пишет облачная Claude Code routine «ИИзоЛента: новости AI/IT»: https://claude.ai/code/routines/trig_01EJgo1DR8d2EZsSriRkoTua. Статьи, посты и обсуждения для неё собирает workflow `collect` в `dumka/iizolenta-work`: в начале запуска routine пушит `state/trigger`, сбор стартует, routine ждёт его результат (до 7 минут) и обрабатывает свежие материалы.
 
 | Параметр | Значение |
 |---|---|

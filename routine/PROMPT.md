@@ -19,15 +19,19 @@
    ```
    Если `WORK` пустой или в нём нет `.git` — заверши запуск без коммитов и сообщи об этом. Во всех командах ниже подставляй этот путь.
 
-2. **Есть ли работа.** Если файла `$WORK/state/pending.json` нет или в нём пусты `items`, `posts` и `discussions` — в `iizolenta` ничего не коммить, но обязательно отметься в `iizolenta-work`: каждый push туда запускает сбор новых статей к следующему часу, без него сбор может остановиться.
+2. **Свежий сбор.** Попроси GitHub Actions собрать новые материалы прямо сейчас (push файла `state/trigger` в `iizolenta-work` запускает сбор) и дождись результата — до 7 минут, таймаут команды 9 минут:
    ```
-   date -u '+%Y-%m-%dT%H:%M:%SZ' > "$WORK/state/heartbeat"
-   git -C "$WORK" add state/heartbeat
-   git -C "$WORK" commit -m "heartbeat: $(date -u '+%Y-%m-%d %H:%M')"
+   SINCE=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+   echo "$SINCE" > "$WORK/state/trigger"
+   git -C "$WORK" add state/trigger
+   git -C "$WORK" commit -m "trigger: $SINCE"
    git -C "$WORK" pull --rebase origin main
    git -C "$WORK" push origin HEAD:main
+   bash routine/wait-for-collect.sh "$WORK" "$SINCE" 420
    ```
-   После этого заверши запуск.
+   Код 1 у последней команды (сбор не успел) — не ошибка: продолжай с тем `pending.json`, что есть.
+
+   **Есть ли работа.** Если файла `$WORK/state/pending.json` нет или в нём пусты `items`, `posts` и `discussions` — заверши запуск, больше ничего не коммить.
 
 3. **Выжимки и переводы.** Прочитай `$WORK/state/pending.json` и запиши в `$WORK/state/summaries.json` (формат ниже) ровно одну запись для **каждого** элемента `items` (используй только поля `title`, `text`, `snippet`, `source`, `text_source`, `default_category` этого элемента) для **каждого** элемента `posts` (используй только `author_name`, `text`, `quote`) и для **каждого** элемента `discussions` (используй только `title`, `story_text`, `top_comments`).
 
@@ -51,7 +55,6 @@
    git -C "$WORK" pull --rebase origin main
    git -C "$WORK" push origin HEAD:main
    ```
-   Push в `iizolenta-work` заодно запускает сбор новых статей к следующему часу.
    Пушить только в `main`. Если `pull --rebase` в любом репозитории дал конфликт: `git rebase --abort` в нём, ничего не пушить в этот репозиторий и сообщить в итоге. Порядок важен: если не удалось запушить состояние, следующий запуск переобработает те же записи без дублей.
 
 8. **Итог.** Последним сообщением выведи: путь `WORK`; `generated_at` и список `errors` из `pending.json` (ошибки сбора, дословно); строку из `merge`; и, если были, список невалидных или пропущенных записей с причинами.
