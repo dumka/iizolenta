@@ -1,6 +1,6 @@
 # Task 3.3: «Обсуждают на HN» — сбор, схема, merge в `hn.json`, промпт
 
-Epic: `docs/plans/epic-3-actions-hn.md` · Статус: open (SRE review: approved) · Оценка: 4-5 часов · Зависит от: Task 3.1
+Epic: `docs/plans/epic-3-actions-hn.md` · Статус: closed (2026-10-09) · Оценка: 4-5 часов · Зависит от: Task 3.1
 
 ## Goal
 
@@ -41,3 +41,11 @@ Epic: `docs/plans/epic-3-actions-hn.md` · Статус: open (SRE review: appro
 - [ ] Ручной сбор в Actions: в `pending.json` 1-4 обсуждения с 3-12 комментариями каждое.
 - [ ] Пробный прогон (Claude в этой сессии) по обновлённому `PROMPT.md` на этих данных: `check` = 0, `hn.json` заполнен.
 - [ ] Формат `news.json` и `posts.json` не изменился.
+
+## Result (2026-10-09)
+
+- `uv run pytest`: 184 passed (новые: 12 в `test_hn.py`, 3 в `test_collect.py`, 3 группы в `test_schema.py`, 4 в `test_merge.py`, 1 в `test_check.py`, 2 в `test_cli.py`).
+- `merge.py`: посты и обсуждения обрабатываются одним кодом (`OPTIONAL_KINDS`), `_load_pending` возвращает словарь списков; CLI `--hn`.
+- Реальный сбор (локально): `hn: selected=4`, по 12 комментариев, ошибок нет, 28 с.
+- Пробный прогон по `PROMPT.md` (пересказы писал Claude в этой сессии): `check` = 0; `hn: merged=3 skipped=1` (тред про СДВГ — медицина, не IT); `hn_url` из числового id.
+- Найден и исправлен баг в тестах: CLI-тест запускал `merge` без `--posts`, относительный путь по умолчанию указывал на `site/data/posts.json` репозитория, и тест переписал его (попало в коммит `a6192ea`). Файл восстановлен к точке ответвления; все CLI-тесты работают во временном каталоге (`monkeypatch.chdir`); регрессионный тест `test_merge_with_default_paths_never_touches_repo_data`. Ветка не меняет файлы данных относительно `main`.
