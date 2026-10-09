@@ -1,6 +1,6 @@
 from izolenta.merge import check
 
-from tests.test_merge import POST_RU, Env, ok_summary, pending_item, pending_post
+from tests.test_merge import POST_RU, Env, ok_summary, pending_discussion, pending_item, pending_post
 
 
 def snapshot(env):
@@ -71,3 +71,16 @@ def test_check_reports_post_problems(tmp_path):
     assert "missing post x:2" in text
     assert "unknown post id x:77" in text
     assert "a1" not in text  # the article is fine
+
+
+def test_check_reports_discussion_problems(tmp_path):
+    env = Env(tmp_path)
+    env.setup(
+        [], [],
+        discussions=[pending_discussion(1), pending_discussion(2)],
+        discussion_summaries=[{"id": "hn:1", "status": "ok", "title": "English title only", "summary": "too short"}],
+    )
+    result = check(env.state)
+    text = "\n".join(result.problems)
+    assert "invalid discussion hn:1" in text
+    assert "missing discussion hn:2" in text

@@ -168,3 +168,51 @@ def validate_post(raw: Any) -> PostSummary | Skip:
     if errors:
         raise ValidationError(errors)
     return PostSummary(id=post_id, text=text)
+
+
+# Hacker News discussions: {"id": "hn:<story id>", "status": "ok", "title": "...", "summary": "..."} or a skip.
+
+DISCUSSION_SUMMARY_LEN = (80, 700)
+
+
+@dataclass(frozen=True)
+class DiscussionSummary:
+    id: str
+    title: str
+    summary: str
+
+
+def _is_discussion_id(value: Any) -> bool:
+    return isinstance(value, str) and value.startswith("hn:") and value[3:].isdigit()
+
+
+def validate_discussion(raw: Any) -> DiscussionSummary | Skip:
+    if not isinstance(raw, dict):
+        raise ValidationError(["entry: must be a JSON object"])
+    errors: list[str] = []
+    discussion_id = raw.get("id")
+    if not _is_discussion_id(discussion_id):
+        errors.append(f"id: must look like 'hn:<digits>', got {discussion_id!r}")
+
+    status = raw.get("status")
+    if status == "skip":
+        reason = raw.get("reason")
+        reason = normalize(reason) if isinstance(reason, str) else ""
+        if not reason or len(reason) > REASON_MAX:
+            errors.append(f"reason: must be a non-empty string up to {REASON_MAX} chars")
+        if errors:
+            raise ValidationError(errors)
+        return Skip(id=discussion_id, reason=reason)
+    if status != "ok":
+        raise ValidationError(errors + [f"status: must be 'ok' or 'skip', got {status!r}"])
+
+    title = _check_text("title", raw.get("title"), TITLE_LEN, errors)
+    raw_summary = raw.get("summary")
+    if isinstance(raw_summary, str) and PARAGRAPH_BREAK.search(raw_summary):
+        errors.append("summary: must be a single paragraph")
+        summary = ""
+    else:
+        summary = _check_text("summary", raw_summary, DISCUSSION_SUMMARY_LEN, errors)
+    if errors:
+        raise ValidationError(errors)
+    return DiscussionSummary(id=discussion_id, title=title, summary=summary)

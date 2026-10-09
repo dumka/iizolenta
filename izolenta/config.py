@@ -35,6 +35,12 @@ class Settings:
     user_agent: str
     max_posts_per_run: int = 10
     post_max_age_hours: int = 48
+    hn_discussions: bool = False
+    hn_min_points: int = 200
+    hn_min_comments: int = 80
+    hn_max_age_hours: int = 36
+    max_discussions_per_run: int = 4
+    hn_top_comments: int = 12
 
 
 @dataclass(frozen=True)

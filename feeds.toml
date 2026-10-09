@@ -11,6 +11,12 @@ seen_retention_days = 14
 fetch_workers = 12
 max_posts_per_run = 10
 post_max_age_hours = 48
+hn_discussions = true
+hn_min_points = 200
+hn_min_comments = 80
+hn_max_age_hours = 36
+max_discussions_per_run = 4
+hn_top_comments = 12
 user_agent = "Mozilla/5.0 (compatible; IzolentaBot/0.1; +https://github.com/dumka/iizolenta)"
 
 [[feeds]]

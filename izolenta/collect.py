@@ -15,6 +15,7 @@ from izolenta.extract import article_text
 from izolenta.feeds import FeedError, FeedItem, parse_feed
 from izolenta.http import Fetch, FetchError
 from izolenta.state import load_seen, prune_seen, save_json_atomic
+from izolenta.hn import collect_discussions
 from izolenta.xposts import XError, XPost, fetch_posts
 
 FINAL_STATUSES = {"done", "skipped", "failed"}
@@ -36,14 +37,16 @@ class CollectResult:
     accounts_failed: int = 0
     post_candidates: int = 0
     posts: list[dict[str, Any]] | None = None  # None when no X accounts are configured
+    discussions: list[dict[str, Any]] | None = None  # None when HN discussions are off
 
     def summary(self) -> str:
         from_article = sum(1 for i in self.items if i["text_source"] == "article")
+        hn = "" if self.discussions is None else f" | hn: selected={len(self.discussions)}"
         return (
             f"feeds ok={self.feeds_ok} failed={self.feeds_failed} | "
             f"candidates={self.candidates} | selected={len(self.items)} "
             f"(article={from_article}, snippet={len(self.items) - from_article})"
-        ) + self._posts_summary()
+        ) + self._posts_summary() + hn
 
     def _posts_summary(self) -> str:
         if self.posts is None:
@@ -157,12 +160,31 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
     if config.x_accounts:
         result.posts = _select_posts(result, fetched_posts, seen, now, settings)
 
+    if settings.hn_discussions:
+        result.discussions, hn_errors = collect_discussions(
+            fetch,
+            seen,
+            now,
+            min_points=settings.hn_min_points,
+            min_comments=settings.hn_min_comments,
+            max_age_hours=settings.hn_max_age_hours,
+            max_per_run=settings.max_discussions_per_run,
+            top_comments=settings.hn_top_comments,
+        )
+        result.errors.extend(hn_errors)
+        for discussion in result.discussions:
+            entry = seen.setdefault(
+                discussion["id"], {"first_seen": now.isoformat(), "status": "pending", "attempts": 0}
+            )
+            entry["status"] = "pending"
+
     save_json_atomic(
         state_dir / "pending.json",
         {
             "generated_at": iso_z(now),
             "items": result.items,
             "posts": result.posts or [],
+            "discussions": result.discussions or [],
             "errors": result.errors,
         },
     )

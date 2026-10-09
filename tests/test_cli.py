@@ -1,8 +1,16 @@
 from pathlib import Path
 
+import pytest
+
 from izolenta.__main__ import main
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+@pytest.fixture(autouse=True)
+def isolated_cwd(tmp_path, monkeypatch):
+    # CLI defaults are relative (site/data/...): never let them resolve into the repository
+    monkeypatch.chdir(tmp_path)
 
 
 def test_corrupted_seen_exits_2_and_keeps_file(tmp_path, capsys):
@@ -78,3 +86,28 @@ def test_merge_writes_posts_to_given_path_and_reports_invalid(tmp_path, capsys):
     assert posts_path.exists() and not env.posts.exists()
     assert "posts: merged=1" in out
     assert "invalid post x:2" in out
+
+
+def test_merge_writes_hn_to_given_path(tmp_path, capsys):
+    from tests.test_merge import DISCUSSION_RU, Env, pending_discussion
+
+    env = Env(tmp_path)
+    env.setup([], [], discussions=[pending_discussion(1)], discussion_summaries=[
+        {"id": "hn:1", "status": "ok", "title": "Математики спорят о доказательствах", "summary": DISCUSSION_RU},
+    ])
+    hn_path = tmp_path / "out" / "hn.json"
+    code = main(["merge", "--state-dir", str(env.state), "--news", str(env.news), "--hn", str(hn_path)])
+    assert code == 0
+    assert hn_path.exists() and not env.hn.exists()
+    assert "hn: merged=1" in capsys.readouterr().out
+
+
+def test_merge_with_default_paths_never_touches_repo_data(tmp_path):
+    from tests.test_merge import Env, pending_post
+
+    repo_data = ROOT / "site" / "data"
+    before = {p.name: p.read_bytes() for p in repo_data.glob("*.json")}
+    env = Env(tmp_path)
+    env.setup([], [], posts=[pending_post("1")], post_summaries=[])
+    assert main(["merge", "--state-dir", str(env.state)]) == 0
+    assert {p.name: p.read_bytes() for p in repo_data.glob("*.json")} == before

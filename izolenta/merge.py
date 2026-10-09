@@ -11,10 +11,12 @@ from typing import Any
 
 from izolenta.collect import iso_z
 from izolenta.schema import (
+    DiscussionSummary,
     PostSummary,
     Skip,
     Summary,
     ValidationError,
+    validate_discussion,
     validate_post,
     validate_summary,
 )
@@ -22,6 +24,7 @@ from izolenta.state import StateError, load_seen, read_json_object, save_json_at
 
 RETENTION_DAYS = 7
 POST_RETENTION_DAYS = 3
+DISCUSSION_RETENTION_DAYS = 3
 MAX_ATTEMPTS = 3
 
 
@@ -53,6 +56,20 @@ def _post_record(post: dict[str, Any], summary: PostSummary) -> dict[str, Any]:
     }
 
 
+def _discussion_record(discussion: dict[str, Any], summary: DiscussionSummary) -> dict[str, Any]:
+    # links and counters come from the collector; Claude writes only the title and the summary
+    return {
+        "id": discussion["id"],
+        "hn_url": discussion["hn_url"],
+        "url": discussion.get("url"),
+        "points": discussion["points"],
+        "comments": discussion["comments"],
+        "published_at": discussion["published_at"],
+        "title": summary.title,
+        "summary": summary.summary,
+    }
+
+
 @dataclass(frozen=True)
 class Kind:
     key: str  # list name in pending.json and summaries.json
@@ -70,6 +87,14 @@ POSTS = Kind(
     _post_record,
     lambda post: f"@{post.get('author_handle', '')}: {post.get('text', '')[:60]}",
 )
+DISCUSSIONS = Kind(
+    "discussions",
+    "discussion ",
+    validate_discussion,
+    _discussion_record,
+    lambda discussion: discussion.get("title", ""),
+)
+OPTIONAL_KINDS = (POSTS, DISCUSSIONS)
 
 
 @dataclass
@@ -95,6 +120,7 @@ class MergeResult(KindResult):
     nothing_to_merge: bool = False
     summaries_error: str | None = None
     posts: KindResult | None = None  # None when pending.json has no posts list
+    discussions: KindResult | None = None  # None when pending.json has no discussions list
 
     @property
     def news_total(self) -> int:
@@ -106,13 +132,15 @@ class MergeResult(KindResult):
         line = f"{self.counts()} | news total={self.total}"
         if self.posts is not None:
             line += f" | posts: {self.posts.counts()} | total={self.posts.total}"
+        if self.discussions is not None:
+            line += f" | hn: {self.discussions.counts()} | total={self.discussions.total}"
         return line
 
 
 def _load_summaries(path: Path) -> tuple[dict[str, list[Any]], str | None]:
     """Claude's output is untrusted: problems are reported, never fatal.
     A bare list means article summaries only."""
-    empty: dict[str, list[Any]] = {"items": [], "posts": []}
+    empty: dict[str, list[Any]] = {"items": [], "posts": [], "discussions": []}
     if not path.exists():
         return empty, f"{path.name} not found"
     try:
@@ -120,24 +148,29 @@ def _load_summaries(path: Path) -> tuple[dict[str, list[Any]], str | None]:
     except (OSError, json.JSONDecodeError) as exc:
         return empty, f"{path.name} is not valid JSON: {exc}"
     if isinstance(data, list):
-        return {"items": data, "posts": []}, None
+        return {**empty, "items": data}, None
     if not isinstance(data, dict):
         return empty, f'{path.name}: expected {{"items": [...], "posts": [...]}} or a list'
-    lists = {key: data.get(key) or [] for key in ("items", "posts")}
+    lists = {key: data.get(key) or [] for key in ("items", "posts", "discussions")}
     bad = [key for key, value in lists.items() if not isinstance(value, list)]
     if bad:
         return empty, f"{path.name}: {', '.join(bad)} must be a list"
     return lists, None
 
 
-def _load_pending(path: Path) -> tuple[list[dict[str, Any]], list[dict[str, Any]] | None]:
+def _load_pending(path: Path) -> dict[str, list[dict[str, Any]] | None]:
+    """Lists of pending.json by key; optional kinds are None when absent."""
     data = read_json_object(path)
-    items, posts = data.get("items"), data.get("posts")
-    if not isinstance(items, list):
-        raise StateError(f"{path}: 'items' must be a list")
-    if posts is not None and not isinstance(posts, list):
-        raise StateError(f"{path}: 'posts' must be a list")
-    return items, posts
+    lists: dict[str, list[dict[str, Any]] | None] = {}
+    for key in ("items", "posts", "discussions"):
+        value = data.get(key)
+        if value is None and key != "items":
+            lists[key] = None
+        elif not isinstance(value, list):
+            raise StateError(f"{path}: '{key}' must be a list")
+        else:
+            lists[key] = value
+    return lists
 
 
 def _load_store(path: Path) -> dict[str, dict[str, Any]]:
@@ -231,9 +264,14 @@ def merge(
     retention_days: int = RETENTION_DAYS,
     max_attempts: int = MAX_ATTEMPTS,
     posts_path: Path | None = None,
+    hn_path: Path | None = None,
 ) -> MergeResult:
     state_dir, news_path = Path(state_dir), Path(news_path)
-    posts_path = Path(posts_path) if posts_path else news_path.parent / "posts.json"
+    store_paths = {
+        POSTS.key: Path(posts_path) if posts_path else news_path.parent / "posts.json",
+        DISCUSSIONS.key: Path(hn_path) if hn_path else news_path.parent / "hn.json",
+    }
+    retention = {POSTS.key: POST_RETENTION_DAYS, DISCUSSIONS.key: DISCUSSION_RETENTION_DAYS}
     pending_path = state_dir / "pending.json"
     summaries_path = state_dir / "summaries.json"
     seen_path = state_dir / "seen.json"
@@ -244,25 +282,31 @@ def merge(
         return result
 
     # Read everything that must be intact before writing anything.
-    pending_items, pending_posts = _load_pending(pending_path)
+    pending = _load_pending(pending_path)
     seen = load_seen(seen_path)
     news = _load_store(news_path)
-    posts = _load_store(posts_path)
+    stores = {kind.key: _load_store(store_paths[kind.key]) for kind in OPTIONAL_KINDS}
 
     summaries, result.summaries_error = _load_summaries(summaries_path)
-    _apply(ARTICLES, pending_items, summaries["items"], news, seen, now, max_attempts, result)
-    if pending_posts is not None:
-        result.posts = KindResult()
-        _apply(POSTS, pending_posts, summaries["posts"], posts, seen, now, max_attempts, result.posts)
+    _apply(ARTICLES, pending["items"], summaries["items"], news, seen, now, max_attempts, result)
+    for kind in OPTIONAL_KINDS:
+        if pending[kind.key] is not None:
+            kind_result = KindResult()
+            setattr(result, kind.key, kind_result)
+            _apply(kind, pending[kind.key], summaries[kind.key], stores[kind.key], seen, now, max_attempts, kind_result)
 
     kept_news = _kept(news, now, retention_days)
     result.total = len(kept_news)
     save_json_atomic(news_path, {"generated_at": iso_z(now), "items": kept_news})
-    if result.posts is not None or posts_path.exists():
-        kept_posts = _kept(posts, now, POST_RETENTION_DAYS)
-        if result.posts is not None:
-            result.posts.total = len(kept_posts)
-        save_json_atomic(posts_path, {"generated_at": iso_z(now), "items": kept_posts})
+    for kind in OPTIONAL_KINDS:
+        kind_result = getattr(result, kind.key)
+        path = store_paths[kind.key]
+        if kind_result is None and not path.exists():
+            continue
+        kept = _kept(stores[kind.key], now, retention[kind.key])
+        if kind_result is not None:
+            kind_result.total = len(kept)
+        save_json_atomic(path, {"generated_at": iso_z(now), "items": kept})
     save_json_atomic(seen_path, seen)
     pending_path.unlink()
     summaries_path.unlink(missing_ok=True)
@@ -307,11 +351,12 @@ def check(state_dir: Path) -> CheckResult:
         result.nothing_to_check = True
         return result
 
-    pending_items, pending_posts = _load_pending(pending_path)
+    pending = _load_pending(pending_path)
     summaries, summaries_error = _load_summaries(state_dir / "summaries.json")
     if summaries_error:
         result.problems.append(f"cannot read summaries: {summaries_error}")
-    result.problems.extend(_check_kind(ARTICLES, pending_items, summaries["items"]))
-    if pending_posts:
-        result.problems.extend(_check_kind(POSTS, pending_posts, summaries["posts"]))
+    result.problems.extend(_check_kind(ARTICLES, pending["items"], summaries["items"]))
+    for kind in OPTIONAL_KINDS:
+        if pending[kind.key]:
+            result.problems.extend(_check_kind(kind, pending[kind.key], summaries[kind.key]))
     return result

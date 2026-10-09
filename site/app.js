@@ -7,12 +7,15 @@ import {
   paragraphs,
   parseRoute,
   pickTopStory,
+  pluralRu,
   postsStale,
   related,
 } from "./lib.js";
 
 const DATA_URL = "data/news.json";
 const POSTS_URL = "data/posts.json";
+const HN_URL = "data/hn.json";
+const HOME_DISCUSSIONS_LIMIT = 4;
 const REFRESH_MS = 15 * 60 * 1000;
 const LATEST_LIMIT = 30;
 const IMPORTANT_LIMIT = 8;
@@ -22,7 +25,7 @@ const SITE_TITLE = "ИИзоЛента — новости AI и IT";
 
 const app = document.getElementById("app");
 // news and posts load independently: a broken posts.json must not take the news down
-const state = { data: null, error: null, posts: null, postsError: null, blockedHost: null };
+const state = { data: null, error: null, posts: null, postsError: null, hn: null, hnError: null, blockedHost: null };
 
 // Build DOM nodes; strings become text nodes, so feed data never turns into markup.
 function el(tag, props = {}, ...children) {
@@ -149,6 +152,59 @@ function postsView() {
   ];
 }
 
+function discussionCard(d) {
+  const counters = `${d.points} ${pluralRu(d.points, ["очко", "очка", "очков"])} · ${d.comments} ${pluralRu(d.comments, ["комментарий", "комментария", "комментариев"])}`;
+  return el(
+    "article",
+    { class: "discussion" },
+    el(
+      "div",
+      { class: "post__head" },
+      el("span", { class: "post__time" }, formatTime(d.published_at)),
+      el("span", { class: "post__handle" }, counters),
+    ),
+    isSafeUrl(d.hn_url)
+      ? el("a", { class: "discussion__title", href: d.hn_url, target: "_blank", rel: "noopener noreferrer" }, d.title)
+      : el("span", { class: "discussion__title" }, d.title),
+    el("p", { class: "post__text discussion__summary" }, d.summary),
+    el(
+      "div",
+      { class: "discussion__links" },
+      isSafeUrl(d.hn_url)
+        ? el("a", { class: "post__link", href: d.hn_url, target: "_blank", rel: "noopener noreferrer" }, "Обсуждение на HN →")
+        : null,
+      isSafeUrl(d.url)
+        ? el("a", { class: "post__link discussion__article", href: d.url, target: "_blank", rel: "noopener noreferrer" }, "Статья →")
+        : null,
+    ),
+  );
+}
+
+function discussionsBlock() {
+  if (!state.hn || !state.hn.items.length) return null; // still loading, failed or empty: no block
+  return el(
+    "section",
+    { class: "posts-block hn-block" },
+    el("h2", { class: "section-title" }, el("a", { href: "#/hn" }, "Обсуждают на HN")),
+    state.hn.items.slice(0, HOME_DISCUSSIONS_LIMIT).map(discussionCard),
+    el("a", { class: "posts-block__more", href: "#/hn" }, "Все обсуждения →"),
+  );
+}
+
+function discussionsView() {
+  document.title = "Обсуждают на HN — ИИзоЛента";
+  const title = el("h1", { class: "page-title" }, "Обсуждают на HN");
+  if (state.hnError) {
+    return [
+      title,
+      stateView("Лента порвалась.", el("button", { class: "state__button", type: "button", onclick: () => load() }, "Подклеить")),
+    ];
+  }
+  if (!state.hn) return [title, stateView("Разматываем ленту...")];
+  if (!state.hn.items.length) return [title, stateView("Пока тихо: свежих обсуждений нет.")];
+  return [title, el("div", { class: "posts-page" }, state.hn.items.map(discussionCard))];
+}
+
 function feedView(items, title, { withPosts = false } = {}) {
   const top = pickTopStory(items);
   const important = items
@@ -171,6 +227,7 @@ function feedView(items, title, { withPosts = false } = {}) {
         "aside",
         { class: "latest" },
         withPosts ? postsBlock() : null,
+        withPosts ? discussionsBlock() : null,
         el("h2", { class: "section-title" }, "Последние новости"),
         items.slice(0, LATEST_LIMIT).map(miniCard),
       ),
@@ -224,7 +281,7 @@ function banner() {
 }
 
 function updateChrome(route) {
-  const active = route.view === "category" ? route.category : route.view === "x" ? "x" : "";
+  const active = route.view === "category" ? route.category : route.view === "x" || route.view === "hn" ? route.view : "";
   for (const link of document.querySelectorAll(".menu__link")) {
     link.classList.toggle("is-active", route.view !== "article" && link.dataset.category === active);
   }
@@ -245,6 +302,8 @@ function render() {
   let content;
   if (route.view === "x") {
     content = postsView();
+  } else if (route.view === "hn") {
+    content = discussionsView();
   } else if (state.error) {
     content = stateView(
       "Лента порвалась.",
@@ -274,7 +333,7 @@ async function loadJson(url) {
 }
 
 async function load() {
-  const [news, posts] = await Promise.allSettled([loadJson(DATA_URL), loadJson(POSTS_URL)]);
+  const [news, posts, hn] = await Promise.allSettled([loadJson(DATA_URL), loadJson(POSTS_URL), loadJson(HN_URL)]);
   // keep showing stale data if we already have some
   if (news.status === "fulfilled") {
     state.data = news.value;
@@ -289,6 +348,13 @@ async function load() {
   } else {
     console.warn("ИИзоЛента: не удалось загрузить посты", posts.reason);
     if (!state.posts) state.postsError = posts.reason;
+  }
+  if (hn.status === "fulfilled") {
+    state.hn = hn.value;
+    state.hnError = null;
+  } else {
+    console.warn("ИИзоЛента: не удалось загрузить обсуждения HN", hn.reason);
+    if (!state.hn) state.hnError = hn.reason;
   }
   render();
 }

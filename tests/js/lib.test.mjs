@@ -10,6 +10,7 @@ import {
   paragraphs,
   parseRoute,
   pickTopStory,
+  pluralRu,
   postsStale,
   related,
 } from "../../site/lib.js";
@@ -188,4 +189,22 @@ describe("posts", () => {
   test("paragraphs of empty text is empty", () => {
     assert.deepEqual(paragraphs(""), []);
   });
+});
+
+describe("hn", () => {
+  test("route #/hn", () => {
+    assert.deepEqual(parseRoute("#/hn"), { view: "hn" });
+  });
+
+  const comments = ["комментарий", "комментария", "комментариев"];
+  const cases = [
+    [1, "комментарий"], [2, "комментария"], [4, "комментария"], [5, "комментариев"],
+    [11, "комментариев"], [12, "комментариев"], [14, "комментариев"], [21, "комментарий"],
+    [22, "комментария"], [111, "комментариев"], [0, "комментариев"],
+  ];
+  for (const [n, form] of cases) {
+    test(`pluralRu ${n}`, () => {
+      assert.equal(pluralRu(n, comments), form);
+    });
+  }
 });

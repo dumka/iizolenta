@@ -143,3 +143,39 @@ def test_post_id_without_x_prefix_rejected(post_id):
 
 def test_post_skip_accepted():
     assert validate_post({"id": "x:9", "status": "skip", "reason": "личное"}) == Skip(id="x:9", reason="личное")
+
+
+# Hacker News discussions
+
+from izolenta.schema import DiscussionSummary, validate_discussion  # noqa: E402
+
+DISCUSSION_SUMMARY = (
+    "Участники спорят, можно ли доверять моделям в математических доказательствах. "
+    "Большинство сходится на том, что без формальной проверки результатам верить рано."
+)
+
+
+def test_valid_discussion_accepted():
+    result = validate_discussion({"id": "hn:123", "status": "ok", "title": "Математики спорят о доказательствах ИИ", "summary": DISCUSSION_SUMMARY})
+    assert result == DiscussionSummary(id="hn:123", title="Математики спорят о доказательствах ИИ", summary=DISCUSSION_SUMMARY)
+
+
+@pytest.mark.parametrize(
+    "overrides, field",
+    [
+        ({"summary": "Коротко."}, "summary"),
+        ({"summary": "People argue about whether models can be trusted with proofs at all here."}, "summary"),
+        ({"summary": DISCUSSION_SUMMARY + "\n\n" + DISCUSSION_SUMMARY}, "summary"),
+        ({"title": "English title only here"}, "title"),
+        ({"id": "x:123"}, "id"),
+    ],
+)
+def test_invalid_discussion_rejected(overrides, field):
+    raw = {"id": "hn:1", "status": "ok", "title": "Заголовок обсуждения на HN", "summary": DISCUSSION_SUMMARY, **overrides}
+    with pytest.raises(ValidationError) as info:
+        validate_discussion(raw)
+    assert any(field in reason for reason in info.value.reasons)
+
+
+def test_discussion_skip_accepted():
+    assert validate_discussion({"id": "hn:5", "status": "skip", "reason": "политика"}) == Skip(id="hn:5", reason="политика")
