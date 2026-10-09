@@ -8,24 +8,24 @@
 ## Как это устроено
 
 ```
-RSS-ленты --> izolenta collect --> state/pending.json
+RSS-ленты, X  --> GitHub Actions в приватном iizolenta-work (раз в час, :40)
+                  izolenta collect --> state/pending.json, state/seen.json
                                          |
                                          v
-                       Claude Code routine (раз в час): state/summaries.json
-                                         |
-                       izolenta check --> izolenta merge
+                  Claude Code routine (раз в час, :07): выжимки и переводы
+                  izolenta check --> izolenta merge
                                          |
                                          v
-                 site/data/news.json --> git push --> GitHub Pages
-                                                          ^
-        Zen / Vivaldi + LeechBlock NG -- sites.txt -- редирект
+          site/data/news.json, posts.json --> git push --> GitHub Pages
+                                                              ^
+          Zen / Vivaldi + LeechBlock NG -- sites.txt -- редирект
 ```
 
 - `izolenta/` — Python-конвейер: сбор лент, извлечение текста статей, проверка выжимок, слияние.
 - `routine/PROMPT.md` — инструкция для облачной Claude Code routine, которая раз в час пишет выжимки.
 - `site/` — статичный дашборд без сборки (публикуется на Pages как есть).
 - `feeds.toml` — источники (RSS-ленты и аккаунты X) и настройки сбора.
-- `state/seen.json` — какие статьи уже обработаны (коммитит routine).
+- Рабочее состояние (`state/pending.json` с текстами статей и `state/seen.json`) — в приватном репозитории `dumka/iizolenta-work`: тексты чужих статей не публикуются. Там же workflow `collect.yml`, который раз в час (в :40 UTC) запускает `izolenta collect` из этого репозитория с полным доступом в интернет.
 - `docs/plans/` — эпик и задачи: требования, решения и их обоснование.
 
 ## Локально
@@ -35,9 +35,9 @@ uv sync                                   # зависимости
 uv run pytest                             # тесты Python
 node --test "tests/js/*.test.mjs"         # тесты дашборда
 
-uv run python -m izolenta collect         # собрать новые статьи в state/pending.json
-uv run python -m izolenta check           # проверить state/summaries.json
-uv run python -m izolenta merge           # влить выжимки в site/data/news.json
+uv run python -m izolenta collect --state-dir /tmp/state   # собрать новые статьи в /tmp/state/pending.json
+uv run python -m izolenta check --state-dir /tmp/state     # проверить summaries.json
+uv run python -m izolenta merge --state-dir /tmp/state     # влить выжимки в site/data/news.json и posts.json
 
 uv run python -m http.server -d site      # дашборд на http://localhost:8000
 ```
@@ -46,7 +46,7 @@ uv run python -m http.server -d site      # дашборд на http://localhost
 
 ## Как расширять
 
-- **Новый источник:** добавить `[[feeds]]` в `feeds.toml` (`name`, `url`, `default_category` = `ai` | `dev` | `business`). Если routine работает в окружении с режимом сети Custom, добавить домен ленты и её статей в список разрешённых.
+- **Новый источник:** добавить `[[feeds]]` в `feeds.toml` (`name`, `url`, `default_category` = `ai` | `dev` | `business`). Сбор работает в GitHub Actions с полным доступом в интернет, так что настраивать ничего больше не нужно.
 - **Новый автор в «Пишут в X»:** добавить `[[x_accounts]]` с `handle = "..."` в `feeds.toml`. Посты берутся через FxTwitter API (`api.fxtwitter.com`) — неофициальный бесплатный сервис; если он перестанет работать, блок покажет «Посты из X временно не обновляются», запасной вариант — официальный X API (см. `docs/plans/epic-x-posts.md`).
 - **Новый сайт для перехвата:** добавить домен строкой в `site/sites.txt`. LeechBlock на устройствах перечитывает список при запуске браузера.
 
@@ -58,27 +58,26 @@ uv run python -m http.server -d site      # дашборд на http://localhost
 
 ## Routine (обновление новостей)
 
-Новости раз в час собирает облачная Claude Code routine «ИИзоЛента: новости AI/IT»: https://claude.ai/code/routines/trig_01EJgo1DR8d2EZsSriRkoTua
+Выжимки и переводы раз в час пишет облачная Claude Code routine «ИИзоЛента: новости AI/IT»: https://claude.ai/code/routines/trig_01EJgo1DR8d2EZsSriRkoTua. Статьи и посты для неё за полчаса до этого собирает workflow `collect` в `dumka/iizolenta-work`.
 
 | Параметр | Значение |
 |---|---|
 | Расписание | `7 * * * *` — каждый час в :07 UTC |
-| Репозиторий | `dumka/iizolenta`, ветка `main` |
+| Репозитории | `dumka/iizolenta` (код и сайт) и `dumka/iizolenta-work` (состояние), ветка `main` |
 | Модель | `claude-sonnet-5-5` |
 | Инструменты | Bash, Read, Write, Edit, Glob, Grep; MCP-коннекторов нет |
-| Промпт | «Прочитай целиком файл routine/PROMPT.md в корне репозитория и выполни инструкцию из него. Пушь только в ветку main.» |
+| Промпт | «Прочитай целиком файл routine/PROMPT.md в корне репозитория iizolenta и выполни инструкцию из него. Пушь только в ветку main.» |
 | Окружение | `iizolenta` |
 
 Окружение `iizolenta` (claude.ai → Code → Environments):
 
-- **Network access:** Custom, плюс галочка «Also include default list of common package managers» (PyPI для `uv`). Разрешённые домены: `techcrunch.com`, `*.techcrunch.com`, `theverge.com`, `*.theverge.com`, `technologyreview.com`, `*.technologyreview.com`, `arstechnica.com`, `*.arstechnica.com`, `wired.com`, `*.wired.com`, `simonwillison.net`, `github.blog`, `thenewstack.io`, `blog.google`, `huggingface.co`, `openai.com`, `api.fxtwitter.com`, `borischerny.com`, `www.oneusefulthing.org`, `charonhub.deeplearning.ai`, `the-decoder.com`, `www.artificialintelligence-news.com`, `www.marktechpost.com`, `www.theregister.com`, `www.reddit.com`.
+- **Network access:** Trusted (по умолчанию: GitHub и менеджеры пакетов). Агенту не нужен интернет — статьи и посты уже лежат в `state/pending.json`.
 - **Setup script:** `pip install --quiet uv`.
-
-Новый источник в `feeds.toml` требует добавить его домен в этот список, иначе лента будет падать с `403 host_not_allowed`.
 
 **Ручной запуск:** кнопка «Run now» на странице routine или `/schedule run` в Claude Code. **Логи:** список запусков на той же странице.
 
-**Что может сломать routine:**
+**Что может сломать конвейер:**
+- workflow `collect` в `iizolenta-work` не запускается или падает — смотреть `gh run list -R dumka/iizolenta-work`; на бесплатном тарифе у приватных репозиториев около 2000 минут Actions в месяц, сбор тратит примерно 720;
 - защита ветки `main` в настройках GitHub — routine перестанет пушить;
 - отключение GitHub от Claude — запуски пропускаются до 72 часов, затем routine выключается (переподключить: `/web-setup`);
 - исчерпание лимитов подписки — запуски отклоняются до сброса; расход видно на https://claude.ai/settings/usage, снизить его можно через `max_items_per_run` в `feeds.toml`.
