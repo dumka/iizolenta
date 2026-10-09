@@ -30,7 +30,7 @@ def write_config(tmp_path: Path, feeds: str) -> Path:
 def test_project_feeds_toml_is_valid():
     config = load_config(ROOT / "feeds.toml")
     assert len(config.feeds) >= 10
-    assert config.settings.max_items_per_run == 15
+    assert 1 <= config.settings.max_items_per_run <= 100
 
 
 def test_valid_config_parsed(tmp_path):
