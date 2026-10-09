@@ -42,11 +42,11 @@ def run_check(args: argparse.Namespace) -> int:
 
 
 def run_merge(args: argparse.Namespace) -> None:
-    result = merge(args.state_dir, args.news, datetime.now(UTC), posts_path=args.posts)
+    result = merge(args.state_dir, args.news, datetime.now(UTC), posts_path=args.posts, hn_path=args.hn)
     print(result.summary())
     if result.summaries_error:
         print(f"  summaries error: {result.summaries_error}")
-    for label, kind in (("", result), ("post ", result.posts)):
+    for label, kind in (("", result), ("post ", result.posts), ("discussion ", result.discussions)):
         if kind is None:
             continue
         for item_id, reasons in kind.invalid:
@@ -74,6 +74,7 @@ def main(argv: list[str] | None = None) -> int:
     merge_cmd.add_argument("--state-dir", type=Path, default=Path("state"))
     merge_cmd.add_argument("--news", type=Path, default=Path("site/data/news.json"))
     merge_cmd.add_argument("--posts", type=Path, default=Path("site/data/posts.json"))
+    merge_cmd.add_argument("--hn", type=Path, default=Path("site/data/hn.json"))
     merge_cmd.set_defaults(handler=run_merge)
 
     args = parser.parse_args(argv)

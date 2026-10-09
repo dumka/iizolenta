@@ -64,24 +64,30 @@ class Env:
         self.state.mkdir()
         self.news = tmp_path / "site" / "data" / "news.json"
         self.posts = tmp_path / "site" / "data" / "posts.json"
+        self.hn = tmp_path / "site" / "data" / "hn.json"
 
     def write(self, name, data, raw=False, encoding="utf-8"):
         path = self.state / name
         path.write_text(data if raw else json.dumps(data, ensure_ascii=False), encoding=encoding)
 
-    def setup(self, items, summaries, seen=None, news=None, posts=None, post_summaries=None, posts_store=None):
+    def setup(self, items, summaries, seen=None, news=None, posts=None, post_summaries=None, posts_store=None,
+              discussions=None, discussion_summaries=None, hn_store=None):
         pending = {"generated_at": iso(NOW), "items": items, "errors": []}
         if posts is not None:
             pending["posts"] = posts
+        if discussions is not None:
+            pending["discussions"] = discussions
         self.write("pending.json", pending)
         if summaries is not None:
             data = {"items": summaries}
             if post_summaries is not None:
                 data["posts"] = post_summaries
+            if discussion_summaries is not None:
+                data["discussions"] = discussion_summaries
             self.write("summaries.json", data)
         default_seen = {
             i["id"]: {"first_seen": NOW.isoformat(), "status": "pending", "attempts": 0}
-            for i in items + (posts or [])
+            for i in items + (posts or []) + (discussions or [])
         }
         self.write("seen.json", seen if seen is not None else default_seen)
         if news is not None:
@@ -90,6 +96,9 @@ class Env:
         if posts_store is not None:
             self.posts.parent.mkdir(parents=True, exist_ok=True)
             self.posts.write_text(json.dumps({"generated_at": "x", "items": posts_store}), encoding="utf-8")
+        if hn_store is not None:
+            self.hn.parent.mkdir(parents=True, exist_ok=True)
+            self.hn.write_text(json.dumps({"generated_at": "x", "items": hn_store}), encoding="utf-8")
 
     def run(self, **kwargs):
         return merge(self.state, self.news, NOW, **kwargs)
@@ -99,6 +108,9 @@ class Env:
 
     def post_items(self):
         return json.loads(self.posts.read_text(encoding="utf-8"))["items"]
+
+    def hn_items(self):
+        return json.loads(self.hn.read_text(encoding="utf-8"))["items"]
 
     def seen(self):
         return json.loads((self.state / "seen.json").read_text(encoding="utf-8"))
@@ -369,3 +381,70 @@ def test_no_posts_key_in_pending_keeps_old_summary(env):
     result = env.run()
     assert result.posts is None
     assert "posts:" not in result.summary()
+
+
+DISCUSSION_RU = (
+    "Участники спорят, можно ли доверять моделям в математических доказательствах. "
+    "Большинство сходится на том, что без формальной проверки результатам верить рано."
+)
+
+
+def pending_discussion(story_id, published=NOW - timedelta(hours=2)):
+    return {
+        "id": f"hn:{story_id}",
+        "hn_url": f"https://news.ycombinator.com/item?id={story_id}",
+        "url": "https://example.com/article",
+        "title": "Mathematicians call for boycott",
+        "points": 420,
+        "comments": 310,
+        "published_at": iso(published),
+        "story_text": "",
+        "top_comments": ["c1", "c2", "c3"],
+    }
+
+
+def test_discussion_merged_into_hn_json_with_pending_metadata(env):
+    forged = {"id": "hn:7", "status": "ok", "title": "Математики призывают к бойкоту", "summary": DISCUSSION_RU,
+              "hn_url": "https://evil.example", "points": 99999}
+    env.setup([], [], discussions=[pending_discussion(7)], discussion_summaries=[forged])
+    result = env.run()
+    assert env.hn_items() == [{
+        "id": "hn:7",
+        "hn_url": "https://news.ycombinator.com/item?id=7",
+        "url": "https://example.com/article",
+        "points": 420,
+        "comments": 310,
+        "published_at": iso(NOW - timedelta(hours=2)),
+        "title": "Математики призывают к бойкоту",
+        "summary": DISCUSSION_RU,
+    }]
+    assert env.seen()["hn:7"]["status"] == "done"
+    assert "hn: merged=1 skipped=0 invalid=0 missing=0 failed=0 | total=1" in result.summary()
+
+
+def test_discussions_older_than_3_days_pruned(env):
+    old = [
+        {"id": "hn:1", "hn_url": "https://news.ycombinator.com/item?id=1", "url": None, "points": 300, "comments": 100,
+         "published_at": iso(NOW - timedelta(days=3, minutes=1)), "title": "Старое", "summary": DISCUSSION_RU},
+        {"id": "hn:2", "hn_url": "https://news.ycombinator.com/item?id=2", "url": None, "points": 300, "comments": 100,
+         "published_at": iso(NOW - timedelta(days=2)), "title": "Свежее", "summary": DISCUSSION_RU},
+    ]
+    env.setup([], [], discussions=[], discussion_summaries=[], hn_store=old)
+    env.run()
+    assert [d["id"] for d in env.hn_items()] == ["hn:2"]
+
+
+def test_corrupted_hn_json_aborts_without_overwrite(env):
+    env.setup([], [], discussions=[pending_discussion(1)], discussion_summaries=[])
+    env.hn.parent.mkdir(parents=True, exist_ok=True)
+    env.hn.write_text("{oops", encoding="utf-8")
+    with pytest.raises(StateError):
+        env.run()
+    assert env.hn.read_text(encoding="utf-8") == "{oops"
+
+
+def test_missing_discussion_summary_counts_attempt(env):
+    env.setup([], [], discussions=[pending_discussion(3)], discussion_summaries=[])
+    result = env.run()
+    assert result.discussions.missing == 1
+    assert env.seen()["hn:3"]["attempts"] == 1
