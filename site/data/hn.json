@@ -1,6 +1,16 @@
 {
-  "generated_at": "2026-10-09T12:41:41Z",
+  "generated_at": "2026-10-09T13:26:06Z",
   "items": [
+    {
+      "id": "hn:50015515",
+      "hn_url": "https://news.ycombinator.com/item?id=50015515",
+      "url": "https://unsung.aresluna.org/deeper-dive-keyboard-differences-between-windows-and-macs/",
+      "points": 204,
+      "comments": 179,
+      "published_at": "2026-10-09T03:08:05Z",
+      "title": "Чем различается работа клавиатуры в Windows и на Mac",
+      "summary": "Участники делятся опытом перехода между платформами: одни бросили Mac из-за путаницы с Control и Command и вводом польских диакритических знаков, другие пишут, что привыкнуть к раскладкам вроде немецкой QWERTZ трудно. Спорят о названиях клавиш Enter и Return, а один из комментаторов объясняет поведение Delete наследием DOS с курсором-блоком. Звучат и пожелания к Asahi и GNOME сделать режим совместимости с вводом Mac."
+    },
     {
       "id": "hn:50011928",
       "hn_url": "https://news.ycombinator.com/item?id=50011928",

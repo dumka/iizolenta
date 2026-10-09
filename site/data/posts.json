@@ -1,6 +1,14 @@
 {
-  "generated_at": "2026-10-09T12:41:41Z",
+  "generated_at": "2026-10-09T13:26:06Z",
   "items": [
+    {
+      "id": "x:2108547065634844839",
+      "url": "https://x.com/simonw/status/2108547065634844839",
+      "author_handle": "simonw",
+      "author_name": "Simon Willison",
+      "published_at": "2026-10-09T13:16:10Z",
+      "text": "Я сделал новую функцию для блога целиком голосом в Codex Desktop, пока готовил ужин. Подробности и пример запроса — в записи на моём сайте."
+    },
     {
       "id": "x:2108414247558316508",
       "url": "https://x.com/emollick/status/2108414247558316508",
