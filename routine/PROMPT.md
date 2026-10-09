@@ -43,11 +43,11 @@
 
 5. **Слияние.** `uv run python -m izolenta merge --state-dir "$WORK/state"`. Запомни первую строку вывода (`merged=... | news total=... | posts: merged=... | total=... | hn: merged=... | total=...`).
 
-6. **Не трогай ничего, кроме данных.** `git status --porcelain` в `iizolenta` должен показывать изменения только в `site/data/news.json`, `site/data/posts.json` и `site/data/hn.json`, а `git -C "$WORK" status --porcelain` — только в `state/`. Лишние изменения откати (`git checkout -- <файл>` в соответствующем репозитории).
+6. **Не трогай ничего, кроме данных.** `git status --porcelain` в `iizolenta` должен показывать изменения только в `site/data/news.json`, `site/data/posts.json`, `site/data/hn.json` и `site/data/status.json`, а `git -C "$WORK" status --porcelain` — только в `state/`. Лишние изменения откати (`git checkout -- <файл>` в соответствующем репозитории).
 
 7. **Публикация — сначала сайт, потом состояние.** Рабочие копии могут быть в состоянии detached HEAD — это нормально. Числа `<merged>`, `<posts>` и `<hn>` — первое `merged=`, `merged=` после `posts:` и `merged=` после `hn:` из строки `merge`; время подставляет `date`.
    ```
-   git add site/data/news.json site/data/posts.json site/data/hn.json
+   git add site/data/news.json site/data/posts.json site/data/hn.json site/data/status.json
    git commit -m "news: +<merged> posts: +<posts> hn: +<hn> ($(date -u '+%Y-%m-%d %H:%M'))"
    git pull --rebase origin main
    git push origin HEAD:main

@@ -15,7 +15,7 @@ from izolenta.extract import article_text
 from izolenta.feeds import FeedError, FeedItem, parse_feed
 from izolenta.http import Fetch, FetchError
 from izolenta.state import load_seen, prune_seen, save_json_atomic
-from izolenta.hn import collect_discussions
+from izolenta.hn import ERROR_SOURCE, collect_discussions
 from izolenta.xposts import XError, XPost, fetch_posts
 
 FINAL_STATUSES = {"done", "skipped", "failed"}
@@ -38,6 +38,7 @@ class CollectResult:
     post_candidates: int = 0
     posts: list[dict[str, Any]] | None = None  # None when no X accounts are configured
     discussions: list[dict[str, Any]] | None = None  # None when HN discussions are off
+    sources: list[dict[str, Any]] = field(default_factory=list)  # per-source stats for the status page
 
     def summary(self) -> str:
         from_article = sum(1 for i in self.items if i["text_source"] == "article")
@@ -70,6 +71,18 @@ def _fetch_account(account: XAccount, fetch: Fetch, now: datetime) -> list[XPost
         return fetch_posts(account.handle, fetch, now)
 
 
+def _source_stats(name: str, kind: str, error: str | None, entries: int, fresh: list[Any], picked: set[str]) -> dict[str, Any]:
+    return {
+        "name": name,
+        "kind": kind,
+        "ok": error is None,
+        "error": error,
+        "entries": entries,
+        "candidates": len(fresh),
+        "selected": sum(1 for x in fresh if x.id in picked),
+    }
+
+
 def _round_robin(per_feed: list[list[Any]], limit: int) -> list[Any]:
     queues = [deque(items) for items in per_feed if items]
     picked: list[FeedItem] = []
@@ -96,21 +109,27 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
             pool.submit(_fetch_account, account, fetch, now) for account in config.x_accounts
         ]
         fetched: list[list[FeedItem]] = []
+        feed_errors: list[str | None] = []
         for feed, future in zip(config.feeds, futures):
             try:
                 fetched.append(future.result())
+                feed_errors.append(None)
                 result.feeds_ok += 1
             except (FetchError, FeedError) as exc:
                 result.errors.append({"feed": feed.name, "error": str(exc)})
+                feed_errors.append(str(exc))
                 result.feeds_failed += 1
                 fetched.append([])
         fetched_posts: list[list[XPost]] = []
+        account_errors: list[str | None] = []
         for account, future in zip(config.x_accounts, account_futures):
             try:
                 fetched_posts.append(future.result())
+                account_errors.append(None)
                 result.accounts_ok += 1
             except (FetchError, XError) as exc:
                 result.errors.append({"feed": f"@{account.handle}", "error": str(exc)})
+                account_errors.append(str(exc))
                 result.accounts_failed += 1
                 fetched_posts.append([])
 
@@ -132,6 +151,9 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
     result.candidates = sum(len(items) for items in per_feed)
 
     selected = _round_robin(per_feed, settings.max_items_per_run)
+    picked = {item.id for item in selected}
+    for feed, error, items, fresh in zip(config.feeds, feed_errors, fetched, per_feed):
+        result.sources.append(_source_stats(feed.name, "feed", error, len(items), fresh, picked))
     with ThreadPoolExecutor(max_workers=settings.fetch_workers) as pool:
         articles = list(
             pool.map(lambda item: article_text(item, fetch, settings.article_text_limit), selected)
@@ -158,10 +180,13 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
         entry["status"] = "pending"
 
     if config.x_accounts:
-        result.posts = _select_posts(result, fetched_posts, seen, now, settings)
+        result.posts, per_author = _select_posts(result, fetched_posts, seen, now, settings)
+        picked = {post["id"] for post in result.posts}
+        for account, error, posts, fresh in zip(config.x_accounts, account_errors, fetched_posts, per_author):
+            result.sources.append(_source_stats(f"@{account.handle}", "x", error, len(posts), fresh, picked))
 
     if settings.hn_discussions:
-        result.discussions, hn_errors = collect_discussions(
+        hn = collect_discussions(
             fetch,
             seen,
             now,
@@ -171,7 +196,19 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
             max_per_run=settings.max_discussions_per_run,
             top_comments=settings.hn_top_comments,
         )
-        result.errors.extend(hn_errors)
+        result.discussions = hn.selected
+        result.errors.extend(hn.errors)
+        result.sources.append(
+            {
+                "name": ERROR_SOURCE,
+                "kind": "hn",
+                "ok": not hn.errors,
+                "error": "; ".join(e["error"] for e in hn.errors) or None,
+                "entries": hn.entries,
+                "candidates": hn.candidates,
+                "selected": len(hn.selected),
+            }
+        )
         for discussion in result.discussions:
             entry = seen.setdefault(
                 discussion["id"], {"first_seen": now.isoformat(), "status": "pending", "attempts": 0}
@@ -186,6 +223,7 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
             "posts": result.posts or [],
             "discussions": result.discussions or [],
             "errors": result.errors,
+            "stats": {"sources": result.sources},
         },
     )
     save_json_atomic(seen_path, prune_seen(seen, now, settings.seen_retention_days))
@@ -198,7 +236,7 @@ def _select_posts(
     seen: dict[str, dict[str, Any]],
     now: datetime,
     settings: Any,
-) -> list[dict[str, Any]]:
+) -> tuple[list[dict[str, Any]], list[list[XPost]]]:
     oldest_allowed = now - timedelta(hours=settings.post_max_age_hours)
     taken: set[str] = set()
     per_author: list[list[XPost]] = []
@@ -234,4 +272,4 @@ def _select_posts(
             post.id, {"first_seen": now.isoformat(), "status": "pending", "attempts": 0}
         )
         entry["status"] = "pending"
-    return selected
+    return selected, per_author

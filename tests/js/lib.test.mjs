@@ -242,3 +242,63 @@ describe("hn", () => {
     });
   }
 });
+
+describe("status page", async () => {
+  const { countOutcomes, filterMaterials, summarizeSources } = await import("../../site/lib.js");
+
+  const run = (merged_at, sources) => ({ merged_at, collected_at: merged_at, sources, result: {} });
+  const src = (name, overrides = {}) => ({
+    name, kind: "feed", ok: true, error: null, entries: 10, candidates: 3, selected: 2, ...overrides,
+  });
+  const material = (id, source, outcome) => ({ id, source, outcome, kind: "article" });
+
+  test("route #/status", () => {
+    assert.deepEqual(parseRoute("#/status"), { view: "status" });
+  });
+
+  test("summarizeSources: last status from the newest run, totals over all runs and materials", () => {
+    const status = {
+      runs: [
+        run("2026-10-08T10:00:00Z", [src("A", { ok: false, error: "HTTP 403", selected: 0 }), src("B")]),
+        run("2026-10-08T11:00:00Z", [src("A", { selected: 3 }), src("B", { ok: false, error: "timeout", selected: 0 })]),
+      ],
+      materials: [
+        material("1", "A", "published"), material("2", "A", "skipped"), material("3", "A", "missing"),
+        material("4", "B", "failed"), material("5", "C", "published"),
+      ],
+    };
+    const rows = summarizeSources(status);
+    assert.deepEqual(rows.map((r) => r.name), ["B", "A", "C"]); // failing first, then by name
+    const [b, a, c] = rows;
+    assert.equal(b.ok, false);
+    assert.equal(b.error, "timeout");
+    assert.equal(a.ok, true);
+    assert.equal(a.error, null);
+    assert.equal(a.selected, 3); // last run
+    assert.equal(a.selectedTotal, 3); // 0 (feed failed) + 3 over 48h
+    assert.equal(b.selectedTotal, 2); // 2 + 0 (feed failed)
+    assert.deepEqual([a.published, a.skipped, a.problems], [1, 1, 1]);
+    assert.deepEqual([b.published, b.skipped, b.problems], [0, 0, 1]);
+    assert.equal(c.ok, null); // known only from materials: no run stats
+  });
+
+  test("summarizeSources tolerates missing runs and materials", () => {
+    assert.deepEqual(summarizeSources({}), []);
+  });
+
+  const materials = [
+    material("1", "A", "published"), material("2", "A", "skipped"), material("3", "A", "invalid"),
+    material("4", "A", "missing"), material("5", "A", "failed"),
+  ];
+
+  test("filterMaterials by outcome group", () => {
+    assert.deepEqual(filterMaterials(materials, "all").map((m) => m.id), ["1", "2", "3", "4", "5"]);
+    assert.deepEqual(filterMaterials(materials, "published").map((m) => m.id), ["1"]);
+    assert.deepEqual(filterMaterials(materials, "skipped").map((m) => m.id), ["2"]);
+    assert.deepEqual(filterMaterials(materials, "problems").map((m) => m.id), ["3", "4", "5"]);
+  });
+
+  test("countOutcomes", () => {
+    assert.deepEqual(countOutcomes(materials), { all: 5, published: 1, skipped: 1, problems: 3 });
+  });
+});

@@ -1,20 +1,26 @@
 import {
   CATEGORIES,
   blockedHost,
+  countOutcomes,
   filterByCategory,
+  filterMaterials,
   formatTime,
   isSafeUrl,
+  outcomeGroup,
   paragraphs,
   parseRoute,
   pickTopStory,
   pluralRu,
   postsStale,
   related,
+  summarizeSources,
 } from "./lib.js";
 
 const DATA_URL = "data/news.json";
 const POSTS_URL = "data/posts.json";
 const HN_URL = "data/hn.json";
+const STATUS_URL = "data/status.json";
+const STATUS_MATERIALS_LIMIT = 200;
 const HOME_DISCUSSIONS_LIMIT = 4;
 const REFRESH_MS = 15 * 60 * 1000;
 const LATEST_LIMIT = 30;
@@ -26,6 +32,8 @@ const SITE_TITLE = "ИИзоЛента — новости AI и IT";
 const app = document.getElementById("app");
 // news and posts load independently: a broken posts.json must not take the news down
 const state = { data: null, error: null, posts: null, postsError: null, hn: null, hnError: null, blockedHost: null };
+// the hidden #/status page loads its own data only when opened
+const statusPage = { data: null, error: null, loading: false, filter: "all", showAll: false };
 
 // Build DOM nodes; strings become text nodes, so feed data never turns into markup.
 function el(tag, props = {}, ...children) {
@@ -258,6 +266,204 @@ function articleView(items, id) {
   );
 }
 
+const OUTCOMES = {
+  published: "Опубликовано",
+  skipped: "Пропущено",
+  invalid: "Невалидно, будет повтор",
+  missing: "Нет выжимки, будет повтор",
+  failed: "Снято после 3 попыток",
+};
+const MATERIAL_KINDS = { article: "Статья", post: "Пост X", discussion: "HN" };
+const SOURCE_KINDS = { feed: "лента", x: "X", hn: "HN" };
+const STATUS_FILTERS = [
+  ["all", "Все"],
+  ["published", "Опубликовано"],
+  ["skipped", "Пропущено"],
+  ["problems", "Проблемы"],
+];
+
+function plural(n, forms) {
+  return `${n} ${pluralRu(n, forms)}`;
+}
+
+function externalLink(url, text, className) {
+  return isSafeUrl(url)
+    ? el("a", { class: className, href: url, target: "_blank", rel: "noopener noreferrer" }, text)
+    : el("span", { class: className }, text);
+}
+
+function table(head, rows) {
+  return el(
+    "div",
+    { class: "status-table-wrap" },
+    el(
+      "table",
+      { class: "status-table" },
+      el("thead", {}, el("tr", {}, head.map((cell) => el("th", {}, cell)))),
+      el("tbody", {}, rows.map((cells) => el("tr", {}, cells.map((cell) => el("td", {}, cell))))),
+    ),
+  );
+}
+
+function kindResult(result) {
+  if (!result) return "—";
+  const problems = result.invalid + result.missing + result.failed;
+  return `+${result.merged} · пропущено ${result.skipped}${problems ? ` · проблем ${problems}` : ""}`;
+}
+
+function runsTable(runs) {
+  return table(
+    ["Обработка", "Сбор", "Источники", "Новых → взято", "Статьи", "Посты", "HN"],
+    runs.map((run) => {
+      const sources = run.sources || [];
+      const ok = sources.filter((s) => s.ok).length;
+      const candidates = sources.reduce((sum, s) => sum + (s.candidates || 0), 0);
+      const selected = sources.reduce((sum, s) => sum + (s.selected || 0), 0);
+      return [
+        formatTime(run.merged_at),
+        formatTime(run.collected_at),
+        el("span", { class: ok < sources.length ? "status-bad" : null }, `${ok} из ${sources.length}`),
+        `${candidates} → ${selected}`,
+        kindResult(run.result?.items),
+        kindResult(run.result?.posts),
+        kindResult(run.result?.discussions),
+      ];
+    }),
+  );
+}
+
+function sourcesTable(rows) {
+  return table(
+    ["Источник", "Состояние", "Записей", "Новых", "Взято", "Взято за 48 ч", "Опубл.", "Пропущ.", "Проблем"],
+    rows.map((r) => [
+      el("span", {}, el("b", {}, r.name), " ", el("span", { class: "status-muted" }, SOURCE_KINDS[r.kind] || "")),
+      r.ok === false
+        ? el("span", { class: "status-bad" }, "Ошибка: ", el("span", { class: "status-error" }, r.error || ""))
+        : r.ok
+          ? el("span", { class: "status-good" }, "Работает")
+          : el("span", { class: "status-muted" }, "нет данных сбора"),
+      String(r.entries ?? "—"),
+      String(r.candidates ?? "—"),
+      String(r.selected ?? "—"),
+      String(r.selectedTotal),
+      String(r.published),
+      String(r.skipped),
+      r.problems ? el("span", { class: "status-bad" }, String(r.problems)) : "0",
+    ]),
+  );
+}
+
+function siteHref(material) {
+  if (material.outcome !== "published") return null;
+  if (material.kind === "article") return articleHref(material);
+  return material.kind === "post" ? "#/x" : "#/hn";
+}
+
+function materialCard(m) {
+  const href = siteHref(m);
+  const textSource = m.text_source === "article" ? "полный текст" : m.text_source === "snippet" ? "только анонс" : null;
+  return el(
+    "article",
+    { class: "material" },
+    el(
+      "div",
+      { class: "post__head" },
+      el("span", { class: "material__kind" }, MATERIAL_KINDS[m.kind] || m.kind || ""),
+      el("span", { class: "post__author" }, m.source || ""),
+      el("span", { class: "post__time" }, `опубл. ${formatTime(m.published_at)}`),
+      el("span", { class: "post__time" }, `собрано ${formatTime(m.collected_at)}`),
+      textSource ? el("span", { class: "post__time" }, textSource) : null,
+      m.attempts > 1 ? el("span", { class: "post__time" }, `попыток: ${m.attempts}`) : null,
+    ),
+    externalLink(m.url, m.title || m.id, "material__title"),
+    el(
+      "div",
+      { class: "material__outcome" },
+      el("span", { class: `chip chip--${outcomeGroup(m.outcome)}` }, OUTCOMES[m.outcome] || m.outcome || ""),
+      m.reason && m.outcome !== "missing" ? el("span", { class: "material__reason" }, m.reason) : null,
+      href ? el("a", { class: "post__link", href }, "На сайте →") : null,
+    ),
+  );
+}
+
+function rerenderStatus(change) {
+  Object.assign(statusPage, change);
+  render();
+}
+
+function materialsSection(materials) {
+  const counts = countOutcomes(materials);
+  const shown = filterMaterials(materials, statusPage.filter);
+  const visible = statusPage.showAll ? shown : shown.slice(0, STATUS_MATERIALS_LIMIT);
+  return el(
+    "section",
+    { class: "status-section" },
+    el("h2", { class: "section-title" }, "Материалы"),
+    el(
+      "div",
+      { class: "status-filters" },
+      STATUS_FILTERS.map(([key, label]) =>
+        el(
+          "button",
+          {
+            class: `status-filter${statusPage.filter === key ? " is-active" : ""}`,
+            type: "button",
+            onclick: () => rerenderStatus({ filter: key, showAll: false }),
+          },
+          `${label} · ${counts[key]}`,
+        ),
+      ),
+    ),
+    visible.length ? visible.map(materialCard) : el("p", { class: "status-muted" }, "Ничего нет."),
+    visible.length < shown.length
+      ? el(
+          "button",
+          { class: "state__button", type: "button", onclick: () => rerenderStatus({ showAll: true }) },
+          `Показать все (${shown.length})`,
+        )
+      : null,
+  );
+}
+
+function statusView() {
+  document.title = "Состояние конвейера — ИИзоЛента";
+  const title = el("h1", { class: "page-title" }, "Состояние конвейера");
+  if (statusPage.error) {
+    return [
+      title,
+      stateView("Не удалось загрузить состояние.", el("button", { class: "state__button", type: "button", onclick: () => loadStatus() }, "Повторить")),
+    ];
+  }
+  if (!statusPage.data) return [title, stateView("Разматываем ленту...")];
+  const runs = [...statusPage.data.runs].sort((a, b) => String(b.merged_at).localeCompare(String(a.merged_at)));
+  const materials = statusPage.data.materials;
+  if (!runs.length) return [title, stateView("Запусков за 48 часов пока нет.")];
+  const [last] = runs;
+  return [
+    title,
+    el(
+      "div",
+      { class: "status-page" },
+      el(
+        "p",
+        { class: "status-summary" },
+        `Последняя обработка: ${formatTime(last.merged_at)} (сбор ${formatTime(last.collected_at)}). `,
+        `За 48 часов: ${plural(runs.length, ["запуск", "запуска", "запусков"])}, `,
+        `${plural(materials.length, ["материал", "материала", "материалов"])}. `,
+        "Запуски без новых материалов здесь не видны.",
+      ),
+      el("section", { class: "status-section" }, el("h2", { class: "section-title" }, "Запуски"), runsTable(runs)),
+      el(
+        "section",
+        { class: "status-section" },
+        el("h2", { class: "section-title" }, "Источники"),
+        sourcesTable(summarizeSources(statusPage.data)),
+      ),
+      materialsSection(materials),
+    ),
+  ];
+}
+
 function stateView(message, ...extra) {
   return el("div", { class: "state" }, el("p", {}, message), extra);
 }
@@ -283,7 +489,8 @@ function banner() {
 function updateChrome(route) {
   const active = route.view === "category" ? route.category : route.view === "x" || route.view === "hn" ? route.view : "";
   for (const link of document.querySelectorAll(".menu__link")) {
-    link.classList.toggle("is-active", route.view !== "article" && link.dataset.category === active);
+    const highlighted = route.view !== "article" && route.view !== "status" && link.dataset.category === active;
+    link.classList.toggle("is-active", highlighted);
   }
   const updated = document.getElementById("updated");
   updated.textContent = state.data?.generated_at ? `Обновлено: ${formatTime(state.data.generated_at)}` : "";
@@ -304,6 +511,9 @@ function render() {
     content = postsView();
   } else if (route.view === "hn") {
     content = discussionsView();
+  } else if (route.view === "status") {
+    if (!statusPage.data && !statusPage.error && !statusPage.loading) loadStatus();
+    content = statusView();
   } else if (state.error) {
     content = stateView(
       "Лента порвалась.",
@@ -323,13 +533,29 @@ function render() {
   app.replaceChildren(...[banner(), content].flat().filter(Boolean));
 }
 
-async function loadJson(url) {
+async function loadJson(url, lists = ["items"]) {
   const cacheBust = Math.floor(Date.now() / 60000);
   const response = await fetch(`${url}?t=${cacheBust}`, { cache: "no-cache" });
   if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`);
   const data = await response.json();
-  if (!Array.isArray(data?.items)) throw new Error(`${url}: items is not a list`);
+  for (const key of lists) {
+    if (!Array.isArray(data?.[key])) throw new Error(`${url}: ${key} is not a list`);
+  }
   return data;
+}
+
+async function loadStatus() {
+  statusPage.loading = true;
+  try {
+    statusPage.data = await loadJson(STATUS_URL, ["runs", "materials"]);
+    statusPage.error = null;
+  } catch (error) {
+    console.warn("ИИзоЛента: не удалось загрузить состояние конвейера", error);
+    if (!statusPage.data) statusPage.error = error;
+  } finally {
+    statusPage.loading = false;
+  }
+  if (parseRoute(location.hash).view === "status") render();
 }
 
 async function load() {
@@ -371,7 +597,9 @@ window.addEventListener("hashchange", () => {
 });
 
 setInterval(() => {
-  if (document.visibilityState === "visible") load();
+  if (document.visibilityState !== "visible") return;
+  load();
+  if (parseRoute(location.hash).view === "status") loadStatus();
 }, REFRESH_MS);
 
 render();

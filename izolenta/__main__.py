@@ -43,7 +43,9 @@ def run_check(args: argparse.Namespace) -> int:
 
 
 def run_merge(args: argparse.Namespace) -> None:
-    result = merge(args.state_dir, args.news, datetime.now(UTC), posts_path=args.posts, hn_path=args.hn)
+    result = merge(
+        args.state_dir, args.news, datetime.now(UTC), posts_path=args.posts, hn_path=args.hn, status_path=args.status
+    )
     print(result.summary())
     if result.summaries_error:
         print(f"  summaries error: {result.summaries_error}")
@@ -93,6 +95,7 @@ def main(argv: list[str] | None = None) -> int:
     merge_cmd.add_argument("--news", type=Path, default=Path("site/data/news.json"))
     merge_cmd.add_argument("--posts", type=Path, default=Path("site/data/posts.json"))
     merge_cmd.add_argument("--hn", type=Path, default=Path("site/data/hn.json"))
+    merge_cmd.add_argument("--status", type=Path, default=Path("site/data/status.json"))
     merge_cmd.set_defaults(handler=run_merge)
 
     recent_cmd = commands.add_parser("recent", help="list news published in the last hours")

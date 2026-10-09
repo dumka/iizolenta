@@ -1,4 +1,5 @@
-"""Merge step: validate Claude's summaries and fold them into site/data/news.json and posts.json."""
+"""Merge step: validate Claude's summaries and fold them into site/data/news.json, posts.json, hn.json;
+record what happened to every collected material in status.json."""
 
 from __future__ import annotations
 
@@ -10,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from izolenta.collect import iso_z
+from izolenta.hn import ERROR_SOURCE as HN_SOURCE
 from izolenta.schema import (
     DiscussionSummary,
     PostSummary,
@@ -26,6 +28,8 @@ RETENTION_DAYS = 7
 POST_RETENTION_DAYS = 3
 DISCUSSION_RETENTION_DAYS = 3
 MAX_ATTEMPTS = 3
+STATUS_HOURS = 48
+PREVIEW_CHARS = 120
 
 
 def _news_record(item: dict[str, Any], summary: Summary) -> dict[str, Any]:
@@ -70,6 +74,22 @@ def _discussion_record(discussion: dict[str, Any], summary: DiscussionSummary) -
     }
 
 
+def _article_material(item: dict[str, Any]) -> dict[str, Any]:
+    return {"source": item.get("source"), "title": item.get("title"), "url": item.get("url"),
+            "text_source": item.get("text_source")}
+
+
+def _post_material(post: dict[str, Any]) -> dict[str, Any]:
+    preview = " ".join(str(post.get("text") or "").split())[:PREVIEW_CHARS]
+    return {"source": f"@{post.get('author_handle', '')}", "title": preview, "url": post.get("url"),
+            "text_source": None}
+
+
+def _discussion_material(discussion: dict[str, Any]) -> dict[str, Any]:
+    return {"source": HN_SOURCE, "title": discussion.get("title"), "url": discussion.get("hn_url"),
+            "text_source": None}
+
+
 @dataclass(frozen=True)
 class Kind:
     key: str  # list name in pending.json and summaries.json
@@ -77,15 +97,21 @@ class Kind:
     validate: Callable[[Any], Any]
     record: Callable[[dict[str, Any], Any], dict[str, Any]]
     describe: Callable[[dict[str, Any]], str]
+    name: str  # material kind on the status page
+    material: Callable[[dict[str, Any]], dict[str, Any]]  # source, original title and link for the status page
 
 
-ARTICLES = Kind("items", "", validate_summary, _news_record, lambda item: item.get("title", ""))
+ARTICLES = Kind(
+    "items", "", validate_summary, _news_record, lambda item: item.get("title", ""), "article", _article_material
+)
 POSTS = Kind(
     "posts",
     "post ",
     validate_post,
     _post_record,
     lambda post: f"@{post.get('author_handle', '')}: {post.get('text', '')[:60]}",
+    "post",
+    _post_material,
 )
 DISCUSSIONS = Kind(
     "discussions",
@@ -93,6 +119,8 @@ DISCUSSIONS = Kind(
     validate_discussion,
     _discussion_record,
     lambda discussion: discussion.get("title", ""),
+    "discussion",
+    _discussion_material,
 )
 OPTIONAL_KINDS = (POSTS, DISCUSSIONS)
 
@@ -107,6 +135,12 @@ class KindResult:
     unknown_ids: list[str] = field(default_factory=list)
     duplicate_ids: list[str] = field(default_factory=list)
     total: int = 0
+    # (id, outcome, reason, attempts); outcome: published | skipped | invalid | missing | failed
+    outcomes: list[tuple[str, str, str | None, int]] = field(default_factory=list)
+
+    def count_map(self) -> dict[str, int]:
+        return {"merged": self.merged, "skipped": self.skipped, "invalid": len(self.invalid),
+                "missing": self.missing, "failed": self.failed}
 
     def counts(self) -> str:
         return (
@@ -186,8 +220,11 @@ def _load_summary_file(path: Path) -> tuple[dict[str, list[Any]], str | None]:
 
 
 def _load_pending(path: Path) -> dict[str, list[dict[str, Any]] | None]:
+    return _pending_lists(read_json_object(path), path)
+
+
+def _pending_lists(data: dict[str, Any], path: Path) -> dict[str, list[dict[str, Any]] | None]:
     """Lists of pending.json by key; optional kinds are None when absent."""
-    data = read_json_object(path)
     lists: dict[str, list[dict[str, Any]] | None] = {}
     for key in ("items", "posts", "discussions"):
         value = data.get(key)
@@ -251,29 +288,35 @@ def _apply(
         state = seen.setdefault(
             entry["id"], {"first_seen": now.isoformat(), "status": "pending", "attempts": 0}
         )
-        state["attempts"] = state.get("attempts", 0) + 1
+        state["attempts"] = attempts = state.get("attempts", 0) + 1
         raw = index.by_id.get(entry["id"])
         if raw is None:
             result.missing += 1
+            problem, reason = "missing", "нет выжимки"
         else:
             try:
                 outcome = kind.validate(raw)
             except ValidationError as exc:
                 result.invalid.append((entry["id"], exc.reasons))
+                problem, reason = "invalid", "; ".join(exc.reasons)
             else:
                 if isinstance(outcome, Skip):
                     state["status"] = "skipped"
                     result.skipped += 1
+                    result.outcomes.append((entry["id"], "skipped", outcome.reason, attempts))
                 else:
                     store[entry["id"]] = kind.record(entry, outcome)
                     state["status"] = "done"
                     result.merged += 1
+                    result.outcomes.append((entry["id"], "published", None, attempts))
                 continue
-        if state["attempts"] >= max_attempts:
+        if attempts >= max_attempts:
             state["status"] = "failed"
             result.failed += 1
+            result.outcomes.append((entry["id"], "failed", reason, attempts))
         else:
             state["status"] = "pending"
+            result.outcomes.append((entry["id"], problem, reason, attempts))
 
 
 def _kept(store: dict[str, dict[str, Any]], now: datetime, days: int) -> list[dict[str, Any]]:
@@ -284,6 +327,75 @@ def _kept(store: dict[str, dict[str, Any]], now: datetime, days: int) -> list[di
     return kept
 
 
+def _is_recent(moment: Any, since: datetime) -> bool:
+    try:
+        return datetime.fromisoformat(moment) >= since
+    except (TypeError, ValueError):
+        return False
+
+
+def _load_status(path: Path) -> dict[str, list[dict[str, Any]]]:
+    """status.json only feeds the hidden status page: a broken file is started afresh, never fatal."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        data = {}
+    if not isinstance(data, dict):
+        data = {}
+    lists = {}
+    for key in ("runs", "materials"):
+        value = data.get(key)
+        lists[key] = [entry for entry in value if isinstance(entry, dict)] if isinstance(value, list) else []
+    return lists
+
+
+def _update_status(
+    path: Path,
+    pending_data: dict[str, Any],
+    pending: dict[str, list[dict[str, Any]] | None],
+    result: MergeResult,
+    now: datetime,
+) -> None:
+    status = _load_status(path)
+    since = now - timedelta(hours=STATUS_HOURS)
+    collected_at = pending_data.get("generated_at")
+    stats = pending_data.get("stats")
+    sources = stats.get("sources") if isinstance(stats, dict) else None
+    kinds = [(ARTICLES, result)] + [(kind, getattr(result, kind.key)) for kind in OPTIONAL_KINDS]
+    run = {
+        "collected_at": collected_at,
+        "merged_at": iso_z(now),
+        "sources": sources if isinstance(sources, list) else [],
+        "result": {kind.key: kind_result.count_map() if kind_result else None for kind, kind_result in kinds},
+    }
+
+    materials = {m["id"]: m for m in status["materials"] if isinstance(m.get("id"), str)}
+    for kind, kind_result in kinds:
+        if kind_result is None:
+            continue
+        entries = {entry["id"]: entry for entry in pending[kind.key] or []}
+        for item_id, outcome, reason, attempts in kind_result.outcomes:
+            entry = entries[item_id]
+            previous = materials.get(item_id, {})
+            materials[item_id] = {
+                "id": item_id,
+                "kind": kind.name,
+                **kind.material(entry),
+                "published_at": entry.get("published_at"),
+                "collected_at": previous.get("collected_at") or collected_at,
+                "processed_at": iso_z(now),
+                "outcome": outcome,
+                "reason": reason,
+                "attempts": attempts,
+            }
+
+    runs = [run] + [r for r in status["runs"] if _is_recent(r.get("merged_at"), since)]
+    kept = [m for m in materials.values() if _is_recent(m.get("processed_at"), since)]
+    kept.sort(key=lambda m: str(m.get("published_at") or ""), reverse=True)
+    kept.sort(key=lambda m: str(m.get("processed_at") or ""), reverse=True)
+    save_json_atomic(path, {"generated_at": iso_z(now), "runs": runs, "materials": kept})
+
+
 def merge(
     state_dir: Path,
     news_path: Path,
@@ -292,6 +404,7 @@ def merge(
     max_attempts: int = MAX_ATTEMPTS,
     posts_path: Path | None = None,
     hn_path: Path | None = None,
+    status_path: Path | None = None,
 ) -> MergeResult:
     state_dir, news_path = Path(state_dir), Path(news_path)
     store_paths = {
@@ -308,7 +421,8 @@ def merge(
         return result
 
     # Read everything that must be intact before writing anything.
-    pending = _load_pending(pending_path)
+    pending_data = read_json_object(pending_path)
+    pending = _pending_lists(pending_data, pending_path)
     seen = load_seen(seen_path)
     news = _load_store(news_path)
     stores = {kind.key: _load_store(store_paths[kind.key]) for kind in OPTIONAL_KINDS}
@@ -333,6 +447,8 @@ def merge(
         if kind_result is not None:
             kind_result.total = len(kept)
         save_json_atomic(path, {"generated_at": iso_z(now), "items": kept})
+    status = Path(status_path) if status_path else news_path.parent / "status.json"
+    _update_status(status, pending_data, pending, result, now)
     save_json_atomic(seen_path, seen)
     pending_path.unlink()
     for path in _summary_files(state_dir):

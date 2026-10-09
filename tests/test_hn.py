@@ -53,7 +53,7 @@ def story_with_comments(story_id, n_comments, prefix="Comment"):
 
 
 def run(pages, seen=None, max_per_run=4, top_comments=12):
-    return collect_discussions(
+    result = collect_discussions(
         Web(pages),
         seen or {},
         NOW,
@@ -63,6 +63,7 @@ def run(pages, seen=None, max_per_run=4, top_comments=12):
         max_per_run=max_per_run,
         top_comments=top_comments,
     )
+    return result.selected, result.errors
 
 
 def test_parse_front_page_reads_fields_and_builds_hn_url():

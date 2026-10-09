@@ -467,3 +467,113 @@ def test_broken_summaries_part_reported_others_used(env):
     assert [r["id"] for r in env.news_items()] == ["a1"]
     assert result.missing == 1
     assert "summaries.2.json" in (result.summaries_error or "")
+
+
+# --- status.json: what happened to every collected material (hidden #/status page) ---
+
+SOURCES = [{"name": "Example", "kind": "feed", "ok": True, "error": None, "entries": 9, "candidates": 4, "selected": 4}]
+
+
+def add_stats(env, sources=SOURCES):
+    pending = json.loads((env.state / "pending.json").read_text(encoding="utf-8"))
+    pending["stats"] = {"sources": sources}
+    env.write("pending.json", pending)
+
+
+def status(env):
+    return json.loads((env.news.parent / "status.json").read_text(encoding="utf-8"))
+
+
+def materials(env):
+    return {m["id"]: m for m in status(env)["materials"]}
+
+
+def test_status_records_run_and_outcome_of_every_article(env):
+    env.setup(
+        [pending_item("a1"), pending_item("a2"), pending_item("a3"), pending_item("a4")],
+        [ok_summary("a1"), {"id": "a2", "status": "skip", "reason": "реклама"}, ok_summary("a3", importance=7)],
+    )
+    add_stats(env)
+    env.run()
+    [run] = status(env)["runs"]
+    assert run["collected_at"] == iso(NOW) and run["merged_at"] == iso(NOW)
+    assert run["sources"] == SOURCES
+    assert run["result"]["items"] == {"merged": 1, "skipped": 1, "invalid": 1, "missing": 1, "failed": 0}
+    by_id = materials(env)
+    assert by_id["a1"] == {
+        "id": "a1", "kind": "article", "source": "Example", "title": "English title a1",
+        "url": "https://news.example/a1", "published_at": iso(NOW - timedelta(hours=1)),
+        "collected_at": iso(NOW), "processed_at": iso(NOW), "text_source": "article",
+        "outcome": "published", "reason": None, "attempts": 1,
+    }
+    assert (by_id["a2"]["outcome"], by_id["a2"]["reason"]) == ("skipped", "реклама")
+    assert by_id["a3"]["outcome"] == "invalid" and "importance" in by_id["a3"]["reason"]
+    assert by_id["a4"]["outcome"] == "missing"
+
+
+def test_status_gives_up_after_max_attempts(env):
+    seen = {"a1": {"first_seen": NOW.isoformat(), "status": "pending", "attempts": 2}}
+    env.setup([pending_item("a1")], [], seen=seen)
+    env.run()
+    m = materials(env)["a1"]
+    assert (m["outcome"], m["attempts"]) == ("failed", 3)
+    assert m["reason"]
+
+
+def test_status_reprocessed_material_updated_not_duplicated(env):
+    earlier = iso(NOW - timedelta(hours=1))
+    old = {"generated_at": earlier, "runs": [], "materials": [
+        {"id": "a1", "kind": "article", "source": "Example", "title": "English title a1",
+         "url": "https://news.example/a1", "published_at": earlier, "collected_at": earlier,
+         "processed_at": earlier, "text_source": "article", "outcome": "missing", "reason": "нет выжимки", "attempts": 1},
+    ]}
+    env.news.parent.mkdir(parents=True, exist_ok=True)
+    (env.news.parent / "status.json").write_text(json.dumps(old), encoding="utf-8")
+    seen = {"a1": {"first_seen": NOW.isoformat(), "status": "pending", "attempts": 1}}
+    env.setup([pending_item("a1")], [ok_summary("a1")], seen=seen)
+    env.run()
+    [m] = status(env)["materials"]
+    assert (m["outcome"], m["attempts"], m["collected_at"], m["processed_at"]) == ("published", 2, earlier, iso(NOW))
+
+
+def test_status_keeps_only_last_48_hours(env):
+    old_moment = iso(NOW - timedelta(hours=49))
+    recent_moment = iso(NOW - timedelta(hours=47))
+    old = {"generated_at": old_moment, "runs": [
+        {"collected_at": old_moment, "merged_at": old_moment, "sources": [], "result": {}},
+        {"collected_at": recent_moment, "merged_at": recent_moment, "sources": [], "result": {}},
+    ], "materials": [
+        {"id": "gone", "processed_at": old_moment, "outcome": "published"},
+        {"id": "kept", "processed_at": recent_moment, "outcome": "skipped"},
+    ]}
+    env.news.parent.mkdir(parents=True, exist_ok=True)
+    (env.news.parent / "status.json").write_text(json.dumps(old), encoding="utf-8")
+    env.setup([], [])
+    env.run()
+    data = status(env)
+    assert [r["merged_at"] for r in data["runs"]] == [iso(NOW), recent_moment]
+    assert [m["id"] for m in data["materials"]] == ["kept"]
+
+
+def test_status_lists_posts_and_discussions(env):
+    env.setup([], [], posts=[pending_post("1")], post_summaries=[{"id": "x:1", "status": "ok", "text": POST_RU}],
+              discussions=[pending_discussion(7)],
+              discussion_summaries=[{"id": "hn:7", "status": "skip", "reason": "не про ИТ"}])
+    env.run()
+    by_id = materials(env)
+    post = by_id["x:1"]
+    assert (post["kind"], post["source"], post["outcome"]) == ("post", "@karpathy", "published")
+    assert post["title"].startswith("Models know geography") and post["url"] == "https://x.com/karpathy/status/1"
+    hn = by_id["hn:7"]
+    assert (hn["kind"], hn["source"], hn["outcome"], hn["reason"]) == ("discussion", "HN discussions", "skipped", "не про ИТ")
+    assert hn["url"] == "https://news.ycombinator.com/item?id=7"
+    assert status(env)["runs"][0]["result"]["posts"]["merged"] == 1
+
+
+def test_corrupted_status_is_started_afresh(env):
+    env.news.parent.mkdir(parents=True, exist_ok=True)
+    (env.news.parent / "status.json").write_text("{broken", encoding="utf-8")
+    env.setup([pending_item("a1")], [ok_summary("a1")])
+    env.run()
+    assert [m["id"] for m in status(env)["materials"]] == ["a1"]
+    assert [r["id"] for r in env.news_items()] == ["a1"]

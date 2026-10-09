@@ -383,3 +383,40 @@ def test_hn_failure_recorded_and_articles_collected(tmp_path):
     assert len(pending["items"]) == 2
     assert pending["discussions"] == []
     assert any(e["feed"] == "HN discussions" for e in pending["errors"])
+
+
+def test_source_stats_count_entries_candidates_selected(tmp_path):
+    from izolenta.feeds import canonical_url, item_id
+
+    a_entries = entries("A", 5)
+    already_done = item_id(canonical_url(a_entries[0][0]))
+    web = FakeWeb({feed_url("A"): rss(a_entries), feed_url("B"): FetchError("https://b.example/feed: HTTP 403")})
+    _, pending, _ = run(tmp_path, make_config(["A", "B"], max_items=2), web, seen={already_done: seen_entry("done")})
+    by_name = {s["name"]: s for s in pending["stats"]["sources"]}
+    assert by_name["A"] == {"name": "A", "kind": "feed", "ok": True, "error": None,
+                            "entries": 5, "candidates": 4, "selected": 2}
+    assert by_name["B"]["ok"] is False and "403" in by_name["B"]["error"]
+    assert (by_name["B"]["entries"], by_name["B"]["selected"]) == (0, 0)
+
+
+def test_source_stats_cover_x_accounts_and_hn(tmp_path):
+    web = FakeWeb({
+        feed_url("F"): rss(entries("F", 1)),
+        x_url("alice"): fx("alice", [("1", "Alice says something long enough", NOW - timedelta(hours=1))]),
+        **hn_pages(),
+    })
+    _, pending, _ = run(tmp_path, make_config(["F"], accounts=("alice", "bob"), hn=True), web)
+    by_name = {s["name"]: s for s in pending["stats"]["sources"]}
+    assert by_name["@alice"]["kind"] == "x" and by_name["@alice"]["selected"] == 1
+    assert by_name["@bob"]["ok"] is False
+    assert by_name["HN discussions"] == {"name": "HN discussions", "kind": "hn", "ok": True, "error": None,
+                                         "entries": 1, "candidates": 1, "selected": 1}
+
+
+def test_source_stats_hn_failure(tmp_path):
+    from izolenta.hn import ALGOLIA_URL
+
+    web = FakeWeb({feed_url("F"): rss(entries("F", 1)), ALGOLIA_URL: FetchError("hn.algolia.com: HTTP 503")})
+    _, pending, _ = run(tmp_path, make_config(["F"], hn=True), web)
+    hn = next(s for s in pending["stats"]["sources"] if s["kind"] == "hn")
+    assert hn["ok"] is False and "503" in hn["error"]

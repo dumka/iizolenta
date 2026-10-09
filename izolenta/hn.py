@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -103,6 +103,14 @@ def _top_comments(fetch: Fetch, story_id: str, limit: int, pool: ThreadPoolExecu
     return comments
 
 
+@dataclass
+class Discussions:
+    selected: list[dict[str, Any]] = field(default_factory=list)
+    errors: list[dict[str, str]] = field(default_factory=list)
+    entries: int = 0  # stories on the front page
+    candidates: int = 0  # stories above the thresholds and not processed yet
+
+
 def collect_discussions(
     fetch: Fetch,
     seen: dict[str, dict[str, Any]],
@@ -113,12 +121,15 @@ def collect_discussions(
     max_age_hours: int,
     max_per_run: int,
     top_comments: int,
-) -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
-    errors: list[dict[str, str]] = []
+) -> Discussions:
+    result = Discussions()
+    errors, selected = result.errors, result.selected
     try:
         candidates = parse_front_page(fetch(ALGOLIA_URL), now)
     except (FetchError, HNError) as exc:
-        return [], [{"feed": ERROR_SOURCE, "error": str(exc)}]
+        errors.append({"feed": ERROR_SOURCE, "error": str(exc)})
+        return result
+    result.entries = len(candidates)
 
     oldest = now - timedelta(hours=max_age_hours)
     eligible = [
@@ -130,8 +141,8 @@ def collect_discussions(
         and seen.get(f"hn:{c.id}", {}).get("status") not in FINAL_STATUSES
     ]
     eligible.sort(key=lambda c: c.comments, reverse=True)
+    result.candidates = len(eligible)
 
-    selected: list[dict[str, Any]] = []
     with ThreadPoolExecutor(max_workers=8) as pool:
         for candidate in eligible[: max_per_run * 3]:
             if len(selected) >= max_per_run:
@@ -156,4 +167,4 @@ def collect_discussions(
                     "top_comments": comments,
                 }
             )
-    return selected, errors
+    return result

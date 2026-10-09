@@ -4,6 +4,7 @@
 
 - Дашборд: https://dumka.github.io/iizolenta/
 - Список перехватываемых сайтов: https://dumka.github.io/iizolenta/sites.txt
+- Состояние конвейера (скрытая страница, ссылок на неё нет): https://dumka.github.io/iizolenta/#/status — запуски, источники и что случилось с каждым материалом за 48 часов
 
 ## Как это устроено
 
@@ -16,7 +17,7 @@ RSS-ленты, X  --> GitHub Actions в приватном iizolenta-work (по
                   izolenta check --> izolenta merge
                                          |
                                          v
-          site/data/news.json, posts.json --> git push --> GitHub Pages
+          site/data/news.json, posts.json, hn.json, status.json --> git push --> GitHub Pages
                                                               ^
           Zen / Vivaldi + LeechBlock NG -- sites.txt -- редирект
 ```
@@ -37,7 +38,8 @@ node --test "tests/js/*.test.mjs"         # тесты дашборда
 
 uv run python -m izolenta collect --state-dir /tmp/state   # собрать новые статьи в /tmp/state/pending.json
 uv run python -m izolenta check --state-dir /tmp/state     # проверить summaries.json
-uv run python -m izolenta merge --state-dir /tmp/state     # влить выжимки в site/data/news.json и posts.json
+uv run python -m izolenta merge --state-dir /tmp/state     # влить выжимки в site/data/*.json и записать status.json
+uv run python -m izolenta recent --hours 48               # уже опубликованные новости (для проверки дублей)
 
 uv run python -m http.server -d site      # дашборд на http://localhost:8000
 ```

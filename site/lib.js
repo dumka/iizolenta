@@ -12,7 +12,7 @@ export function parseRoute(hash) {
     return { view: "blocked", url: value };
   }
   const parts = value.replace(/^\//, "").split("/");
-  if ((parts[0] === "x" || parts[0] === "hn") && parts.length === 1) {
+  if ((parts[0] === "x" || parts[0] === "hn" || parts[0] === "status") && parts.length === 1) {
     return { view: parts[0] };
   }
   if (parts[0] === "news" && parts[1]) {
@@ -126,4 +126,68 @@ export function pluralRu(n, [one, few, many]) {
   if (mod10 === 1 && mod100 !== 11) return one;
   if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
   return many;
+}
+
+// Status page (#/status): what the pipeline did with every source and material over the last 48 hours.
+
+const PROBLEM_OUTCOMES = new Set(["invalid", "missing", "failed"]);
+const KIND_BY_MATERIAL = { article: "feed", post: "x", discussion: "hn" };
+
+export function outcomeGroup(outcome) {
+  return PROBLEM_OUTCOMES.has(outcome) ? "problems" : outcome;
+}
+
+// One row per source: the status of its newest run plus totals over the whole status window.
+// Failing sources go first.
+export function summarizeSources(status) {
+  const rows = new Map();
+  const row = (name, kind) => {
+    if (!rows.has(name)) {
+      rows.set(name, {
+        name, kind, ok: null, error: null, entries: null, candidates: null, selected: null,
+        selectedTotal: 0, published: 0, skipped: 0, problems: 0,
+      });
+    }
+    return rows.get(name);
+  };
+  const runs = [...(status?.runs || [])].sort((a, b) => String(a.merged_at).localeCompare(String(b.merged_at)));
+  for (const run of runs) {
+    for (const source of run.sources || []) {
+      const r = row(source.name, source.kind);
+      // runs go oldest first, so the newest run has the last word
+      Object.assign(r, {
+        kind: source.kind,
+        ok: source.ok,
+        error: source.error ?? null,
+        entries: source.entries,
+        candidates: source.candidates,
+        selected: source.selected,
+      });
+      r.selectedTotal += source.selected || 0;
+    }
+  }
+  for (const material of status?.materials || []) {
+    const r = row(material.source, KIND_BY_MATERIAL[material.kind] || null);
+    const group = outcomeGroup(material.outcome);
+    if (group in r && group !== "selected") r[group] += 1;
+  }
+  return [...rows.values()].sort((a, b) => {
+    if ((a.ok === false) !== (b.ok === false)) return a.ok === false ? -1 : 1;
+    return a.name.localeCompare(b.name, "ru");
+  });
+}
+
+// filter: all | published | skipped | problems (invalid, missing, failed)
+export function filterMaterials(materials, filter) {
+  if (filter === "all") return materials;
+  return materials.filter((material) => outcomeGroup(material.outcome) === filter);
+}
+
+export function countOutcomes(materials) {
+  const counts = { all: materials.length, published: 0, skipped: 0, problems: 0 };
+  for (const material of materials) {
+    const group = outcomeGroup(material.outcome);
+    if (group in counts && group !== "all") counts[group] += 1;
+  }
+  return counts;
 }
