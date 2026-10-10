@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-10T06:10:18Z",
+  "generated_at": "2026-10-10T07:10:10Z",
   "items": [
+    {
+      "id": "habr:2be07fb2955201a9",
+      "url": "https://habr.com/ru/companies/studyai/articles/1092428/?utm_campaign=1092428&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "DimaIam (StudyAI)",
+      "published_at": "2026-10-10T06:01:15Z",
+      "title": "Делаем веб-дизайнерские референсы с помощью ИИ",
+      "summary": "Автор поставил эксперимент: сгенерировал интерфейсные ассеты для пяти тематик — игровой, финтех, ретро-стиля Web 1.0, экологической и для нейросервисов, — и сравнил Nano Banana Pro, Grok Image 2 и Flux 2 Pro на одних и тех же английских промптах. Flux 2 Pro не справился с ретро-кнопками в стиле 90-х: после нескольких попыток надписи на них получились нечитаемыми. Статья пригодится дизайнерам, которые подбирают генератор изображений под задачи интерфейсов."
+    },
     {
       "id": "habr:17c9a98095b59772",
       "url": "https://habr.com/ru/articles/1092588/?utm_campaign=1092588&utm_source=habrahabr&utm_medium=rss",
