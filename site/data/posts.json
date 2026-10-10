@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-10T18:09:54Z",
+  "generated_at": "2026-10-10T19:09:17Z",
   "items": [
     {
       "id": "x:2108975457748341138",
@@ -224,14 +224,6 @@
       "author_name": "Sam Altman",
       "published_at": "2026-10-07T20:01:57Z",
       "text": "О запуске GPT-6 и Intelligent UI в ChatGPT: ChatGPT теперь умеет генерировать для вас собственный интерфейс! Я давно этого ждал, и мне было бы тяжело вернуться к старой версии чата."
-    },
-    {
-      "id": "x:2107909939025052107",
-      "url": "https://x.com/bcherny/status/2107909939025052107",
-      "author_handle": "bcherny",
-      "author_name": "Boris Cherny",
-      "published_at": "2026-10-07T19:04:27Z",
-      "text": "О выходе Claude Haiku 5.5: Haiku 5.5 — хороший Haiku. Контекст в 100 тысяч токенов, и при этом он в 10 раз дешевле Haiku 4.5."
     }
   ]
 }
