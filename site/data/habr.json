@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-10T07:10:10Z",
+  "generated_at": "2026-10-10T08:09:22Z",
   "items": [
+    {
+      "id": "habr:b091e02bdde707fd",
+      "url": "https://habr.com/ru/companies/selectel/articles/1092382/?utm_campaign=1092382&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "skovalev (Selectel)",
+      "published_at": "2026-10-10T08:01:23Z",
+      "title": "Серверное железо 2027 года: какие новинки ждать от NVIDIA, AMD и Intel",
+      "summary": "Менеджер продукта Selectel разбирает, что принесёт серверной индустрии 2027 год: ускорители NVIDIA Rubin Ultra и AMD Instinct MI500, память HBM4e, процессоры AMD Venice-X и Verano и Intel Diamond Rapids. Отдельно разобраны PCIe 6.0 и CXL 3.0/3.1 с когерентным пулингом памяти. Стойка Rubin Ultra потребует около 600 кВт против примерно 40 кВт у Hopper, поэтому дата-центрам придётся переосмыслить питание и охлаждение. Полезно тем, кто планирует закупки инфраструктуры для ИИ."
+    },
     {
       "id": "habr:2be07fb2955201a9",
       "url": "https://habr.com/ru/companies/studyai/articles/1092428/?utm_campaign=1092428&utm_source=habrahabr&utm_medium=rss",
