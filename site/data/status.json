@@ -1,6 +1,420 @@
 {
-  "generated_at": "2026-10-10T08:09:22Z",
+  "generated_at": "2026-10-10T09:09:22Z",
   "runs": [
+    {
+      "collected_at": "2026-10-10T09:08:25Z",
+      "merged_at": "2026-10-10T09:09:22Z",
+      "sources": [
+        {
+          "name": "TechCrunch",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "TechCrunch Startups",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The Verge",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "MIT Technology Review",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Ars Technica",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Wired",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Simon Willison",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 30,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "GitHub Blog",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The New Stack",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 26,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Google AI Blog",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Hugging Face",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 876,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "OpenAI",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 1287,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Boris Cherny",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "One Useful Thing",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The Decoder",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The Register",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 50,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The Guardian",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The Next Web",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 3,
+          "selected": 3
+        },
+        {
+          "name": "Tech.eu",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Silicon Republic",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Хабр: ИИ",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 40,
+          "candidates": 2,
+          "selected": 2
+        },
+        {
+          "name": "Хабр: ML",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 40,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Хабр Новости",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 40,
+          "candidates": 2,
+          "selected": 2
+        },
+        {
+          "name": "CNews",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 200,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "3DNews",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 397,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Код Дурова",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 15,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Hacker News",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@karpathy",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 11,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@bcherny",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 4,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@sama",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 15,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@emollick",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 14,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@DrJimFan",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 12,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@fchollet",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 8,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@simonw",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 9,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@OfficialLoganK",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 13,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@swyx",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 3,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@AndrewYNg",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 18,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@gdb",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 15,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@demishassabis",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 4,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@JeffDean",
+          "kind": "x",
+          "ok": false,
+          "error": "https://api.fxtwitter.com/2/profile/JeffDean/statuses?count=20: HTTP 404 ({\"code\":404,\"results\":[],\"cursor\":{\"top\":null,\"bottom\":null}})",
+          "entries": 0,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@AmandaAskell",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 14,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "HN discussions",
+          "kind": "hn",
+          "ok": true,
+          "error": null,
+          "entries": 30,
+          "candidates": 0,
+          "selected": 0
+        }
+      ],
+      "result": {
+        "items": {
+          "merged": 1,
+          "skipped": 4,
+          "invalid": 0,
+          "missing": 0,
+          "failed": 0
+        },
+        "posts": {
+          "merged": 0,
+          "skipped": 0,
+          "invalid": 0,
+          "missing": 0,
+          "failed": 0
+        },
+        "discussions": {
+          "merged": 0,
+          "skipped": 0,
+          "invalid": 0,
+          "missing": 0,
+          "failed": 0
+        },
+        "habr": {
+          "merged": 2,
+          "skipped": 0,
+          "invalid": 0,
+          "missing": 0,
+          "failed": 0
+        }
+      }
+    },
     {
       "collected_at": "2026-10-10T08:08:32Z",
       "merged_at": "2026-10-10T08:09:22Z",
@@ -8276,6 +8690,104 @@
     }
   ],
   "materials": [
+    {
+      "id": "00dcc248571c2174",
+      "kind": "article",
+      "source": "Хабр Новости",
+      "title": "ИИ‑модель Anthropic отправила в полицию Филадельфии ложное сообщение об убийстве",
+      "url": "https://habr.com/ru/news/1092650/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1092650",
+      "text_source": "article",
+      "published_at": "2026-10-10T08:57:28Z",
+      "collected_at": "2026-10-10T09:08:25Z",
+      "processed_at": "2026-10-10T09:09:22Z",
+      "outcome": "skipped",
+      "reason": "дубль опубликованной 2a1c784f84b947c8",
+      "attempts": 1
+    },
+    {
+      "id": "habr:ead794170bcb72d0",
+      "kind": "habr",
+      "source": "Хабр: ИИ",
+      "title": "Длинные нарды глазами нейросети: как движок выбирает ход и где ошибаются люди",
+      "url": "https://habr.com/ru/articles/1092658/?utm_campaign=1092658&utm_source=habrahabr&utm_medium=rss",
+      "text_source": "article",
+      "published_at": "2026-10-10T08:54:28Z",
+      "collected_at": "2026-10-10T09:08:25Z",
+      "processed_at": "2026-10-10T09:09:22Z",
+      "outcome": "published",
+      "reason": null,
+      "attempts": 1
+    },
+    {
+      "id": "cb00a4e7402e92fb",
+      "kind": "article",
+      "source": "The Next Web",
+      "title": "Super Micro case ‘fixer’ pleads guilty to sending AI servers to China",
+      "url": "https://thenextweb.com/news/super-micro-case-fixer-pleads-guilty-to-sending-ai-servers-to-china",
+      "text_source": "article",
+      "published_at": "2026-10-10T08:51:41Z",
+      "collected_at": "2026-10-10T09:08:25Z",
+      "processed_at": "2026-10-10T09:09:22Z",
+      "outcome": "published",
+      "reason": null,
+      "attempts": 1
+    },
+    {
+      "id": "8da37c4ad818dfbf",
+      "kind": "article",
+      "source": "The Next Web",
+      "title": "Rwanda reportedly wins Africa’s first F1 Grand Prix since 1993",
+      "url": "https://thenextweb.com/news/rwanda-f1-grand-prix-2030-africa",
+      "text_source": "article",
+      "published_at": "2026-10-10T08:33:26Z",
+      "collected_at": "2026-10-10T09:08:25Z",
+      "processed_at": "2026-10-10T09:09:22Z",
+      "outcome": "skipped",
+      "reason": "спорт, не про IT",
+      "attempts": 1
+    },
+    {
+      "id": "habr:3417f0053d992531",
+      "kind": "habr",
+      "source": "Хабр: ИИ",
+      "title": "Детектор ИИ-текста своими руками: какие признаки нейрослопа ловит код и какие остаются живому редактору",
+      "url": "https://habr.com/ru/articles/1092636/?utm_campaign=1092636&utm_source=habrahabr&utm_medium=rss",
+      "text_source": "article",
+      "published_at": "2026-10-10T08:32:03Z",
+      "collected_at": "2026-10-10T09:08:25Z",
+      "processed_at": "2026-10-10T09:09:22Z",
+      "outcome": "published",
+      "reason": null,
+      "attempts": 1
+    },
+    {
+      "id": "42e809d198e3f2d4",
+      "kind": "article",
+      "source": "Хабр Новости",
+      "title": "Новый будильник от IKEA заряжает смартфон и показывает температуру",
+      "url": "https://habr.com/ru/news/1092648/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1092648",
+      "text_source": "article",
+      "published_at": "2026-10-10T08:27:25Z",
+      "collected_at": "2026-10-10T09:08:25Z",
+      "processed_at": "2026-10-10T09:09:22Z",
+      "outcome": "skipped",
+      "reason": "бытовой гаджет без IT-составляющей",
+      "attempts": 1
+    },
+    {
+      "id": "f5abaf3580cda82f",
+      "kind": "article",
+      "source": "The Next Web",
+      "title": "Anthropic says Claude sent a fake murder tip to police during testing",
+      "url": "https://thenextweb.com/news/anthropic-claude-fake-police-tip-unintended-actions",
+      "text_source": "article",
+      "published_at": "2026-10-10T08:26:58Z",
+      "collected_at": "2026-10-10T09:08:25Z",
+      "processed_at": "2026-10-10T09:09:22Z",
+      "outcome": "skipped",
+      "reason": "дубль опубликованной 2a1c784f84b947c8",
+      "attempts": 1
+    },
     {
       "id": "88c95dff11e593ea",
       "kind": "article",
