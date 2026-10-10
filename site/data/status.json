@@ -1,6 +1,420 @@
 {
-  "generated_at": "2026-10-10T14:10:17Z",
+  "generated_at": "2026-10-10T15:10:25Z",
   "runs": [
+    {
+      "collected_at": "2026-10-10T15:08:58Z",
+      "merged_at": "2026-10-10T15:10:25Z",
+      "sources": [
+        {
+          "name": "TechCrunch",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 1,
+          "selected": 1
+        },
+        {
+          "name": "TechCrunch Startups",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 1,
+          "selected": 1
+        },
+        {
+          "name": "The Verge",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 1,
+          "selected": 1
+        },
+        {
+          "name": "MIT Technology Review",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Ars Technica",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Wired",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Simon Willison",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 30,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "GitHub Blog",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The New Stack",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 26,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Google AI Blog",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Hugging Face",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 876,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "OpenAI",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 1287,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Boris Cherny",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "One Useful Thing",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The Decoder",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 1,
+          "selected": 1
+        },
+        {
+          "name": "The Register",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 50,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The Guardian",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The Next Web",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Tech.eu",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Silicon Republic",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Хабр: ИИ",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 40,
+          "candidates": 1,
+          "selected": 1
+        },
+        {
+          "name": "Хабр: ML",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 40,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Хабр Новости",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 40,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "CNews",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 200,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "3DNews",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 401,
+          "candidates": 4,
+          "selected": 4
+        },
+        {
+          "name": "Код Дурова",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 15,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Hacker News",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 13,
+          "candidates": 2,
+          "selected": 2
+        },
+        {
+          "name": "@karpathy",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 11,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@bcherny",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 4,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@sama",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 15,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@emollick",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 14,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@DrJimFan",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 12,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@fchollet",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 8,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@simonw",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 9,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@OfficialLoganK",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 13,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@swyx",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 4,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@AndrewYNg",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 18,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@gdb",
+          "kind": "x",
+          "ok": false,
+          "error": "https://api.fxtwitter.com/2/profile/gdb/statuses?count=20: HTTP 404 ({\"code\":404,\"results\":[],\"cursor\":{\"top\":null,\"bottom\":null}})",
+          "entries": 0,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@demishassabis",
+          "kind": "x",
+          "ok": false,
+          "error": "https://api.fxtwitter.com/2/profile/demishassabis/statuses?count=20: HTTP 404 ({\"code\":404,\"results\":[],\"cursor\":{\"top\":null,\"bottom\":null}})",
+          "entries": 0,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@JeffDean",
+          "kind": "x",
+          "ok": false,
+          "error": "https://api.fxtwitter.com/2/profile/JeffDean/statuses?count=20: HTTP 404 ({\"code\":404,\"results\":[],\"cursor\":{\"top\":null,\"bottom\":null}})",
+          "entries": 0,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@AmandaAskell",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 14,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "HN discussions",
+          "kind": "hn",
+          "ok": true,
+          "error": null,
+          "entries": 30,
+          "candidates": 1,
+          "selected": 1
+        }
+      ],
+      "result": {
+        "items": {
+          "merged": 3,
+          "skipped": 7,
+          "invalid": 0,
+          "missing": 0,
+          "failed": 0
+        },
+        "posts": {
+          "merged": 0,
+          "skipped": 0,
+          "invalid": 0,
+          "missing": 0,
+          "failed": 0
+        },
+        "discussions": {
+          "merged": 0,
+          "skipped": 1,
+          "invalid": 0,
+          "missing": 0,
+          "failed": 0
+        },
+        "habr": {
+          "merged": 1,
+          "skipped": 0,
+          "invalid": 0,
+          "missing": 0,
+          "failed": 0
+        }
+      }
+    },
     {
       "collected_at": "2026-10-10T14:08:40Z",
       "merged_at": "2026-10-10T14:10:17Z",
@@ -10760,6 +11174,174 @@
     }
   ],
   "materials": [
+    {
+      "id": "7ff5bfb828527993",
+      "kind": "article",
+      "source": "TechCrunch Startups",
+      "title": "3 days to TechCrunch Disrupt 2026: Meet the startups before they hit mainstream",
+      "url": "https://techcrunch.com/2026/10/10/3-days-to-disrupt-2026-meet-the-startups-before-they-hit-mainstream/",
+      "text_source": "article",
+      "published_at": "2026-10-10T15:00:00Z",
+      "collected_at": "2026-10-10T15:08:58Z",
+      "processed_at": "2026-10-10T15:10:25Z",
+      "outcome": "skipped",
+      "reason": "реклама конференции и билетов",
+      "attempts": 1
+    },
+    {
+      "id": "002d019c2c67be13",
+      "kind": "article",
+      "source": "3DNews",
+      "title": "Microsoft выпустила ИИ, который выбирает варианты и не разговаривает — в тестах он оказался в 35 раз быстрее GPT-6 Sol",
+      "url": "https://3dnews.ru/1149752/microsoft-vipustila-ii-kotoriy-vibiraet-varianti-i-ne-razgovarivaet-v-testah-on-okazalsya-v-35-raz-bistree-gpt6-sol",
+      "text_source": "article",
+      "published_at": "2026-10-10T15:00:00Z",
+      "collected_at": "2026-10-10T15:08:58Z",
+      "processed_at": "2026-10-10T15:10:25Z",
+      "outcome": "skipped",
+      "reason": "дубль опубликованной b38064f80336dfc1",
+      "attempts": 1
+    },
+    {
+      "id": "7ffb5f1c21c9dc3a",
+      "kind": "article",
+      "source": "The Decoder",
+      "title": "Microsoft's Decision-1 model enters the fast-growing AI decision model race",
+      "url": "https://the-decoder.com/microsofts-decision-1-model-enters-the-fast-growing-ai-decision-model-race/",
+      "text_source": "article",
+      "published_at": "2026-10-10T14:57:33Z",
+      "collected_at": "2026-10-10T15:08:58Z",
+      "processed_at": "2026-10-10T15:10:25Z",
+      "outcome": "skipped",
+      "reason": "дубль опубликованной b38064f80336dfc1",
+      "attempts": 1
+    },
+    {
+      "id": "e07ad26d1e7d044f",
+      "kind": "article",
+      "source": "The Verge",
+      "title": "Anthropic is cutting off its internal evaluations from the internet",
+      "url": "https://www.theverge.com/ai-artificial-intelligence/1009286/anthropic-is-cutting-off-its-internal-evaluations-from-the-internet",
+      "text_source": "article",
+      "published_at": "2026-10-10T14:41:16Z",
+      "collected_at": "2026-10-10T15:08:58Z",
+      "processed_at": "2026-10-10T15:10:25Z",
+      "outcome": "skipped",
+      "reason": "дубль опубликованной 6cd6f5cc677d305a",
+      "attempts": 1
+    },
+    {
+      "id": "f0599a049e7cea27",
+      "kind": "article",
+      "source": "3DNews",
+      "title": "С аппаратных криптокошельков Ledger укарали криптовалюту на $86 млн — и пока непонятно, как",
+      "url": "https://3dnews.ru/1149749/s-apparatnih-kriptokoshelkov-ledger-ukarali-kriptovalyutu-na-86-mln-i-poka-neponyatno-kak",
+      "text_source": "article",
+      "published_at": "2026-10-10T14:32:00Z",
+      "collected_at": "2026-10-10T15:08:58Z",
+      "processed_at": "2026-10-10T15:10:25Z",
+      "outcome": "published",
+      "reason": null,
+      "attempts": 1
+    },
+    {
+      "id": "129cb131d5d58817",
+      "kind": "article",
+      "source": "3DNews",
+      "title": "Anthropic признала, что не может контролировать своих ИИ-агентов — поэтому им отключили интернет",
+      "url": "https://3dnews.ru/1149750/anthropic-priznala-chto-ne-moget-kontrolirovat-svoih-iiagentov-poetomu-im-otklyuchili-internet",
+      "text_source": "article",
+      "published_at": "2026-10-10T14:21:00Z",
+      "collected_at": "2026-10-10T15:08:58Z",
+      "processed_at": "2026-10-10T15:10:25Z",
+      "outcome": "skipped",
+      "reason": "дубль опубликованной 6cd6f5cc677d305a",
+      "attempts": 1
+    },
+    {
+      "id": "habr:0d022916526db587",
+      "kind": "habr",
+      "source": "Хабр: ИИ",
+      "title": "1С Напарник. Стоит он того?",
+      "url": "https://habr.com/ru/articles/1092738/?utm_campaign=1092738&utm_source=habrahabr&utm_medium=rss",
+      "text_source": "article",
+      "published_at": "2026-10-10T14:12:28Z",
+      "collected_at": "2026-10-10T15:08:58Z",
+      "processed_at": "2026-10-10T15:10:25Z",
+      "outcome": "published",
+      "reason": null,
+      "attempts": 1
+    },
+    {
+      "id": "92e4233ce3ff40a3",
+      "kind": "article",
+      "source": "TechCrunch",
+      "title": "Here are the top AI agents that can live in your text messages",
+      "url": "https://techcrunch.com/2026/10/10/all-the-ai-agents-that-can-live-in-your-text-messages/",
+      "text_source": "article",
+      "published_at": "2026-10-10T14:00:00Z",
+      "collected_at": "2026-10-10T15:08:58Z",
+      "processed_at": "2026-10-10T15:10:25Z",
+      "outcome": "published",
+      "reason": null,
+      "attempts": 1
+    },
+    {
+      "id": "532da457651c6d0c",
+      "kind": "article",
+      "source": "Hacker News",
+      "title": "Lobbying Is Corruption",
+      "url": "https://carette.xyz/posts/lobbying_and_corruption/",
+      "text_source": "article",
+      "published_at": "2026-10-10T13:05:58Z",
+      "collected_at": "2026-10-10T15:08:58Z",
+      "processed_at": "2026-10-10T15:10:25Z",
+      "outcome": "skipped",
+      "reason": "политический блог о лоббизме, не про IT",
+      "attempts": 1
+    },
+    {
+      "id": "hn:50032556",
+      "kind": "discussion",
+      "source": "HN discussions",
+      "title": "Lobbying Is Corruption",
+      "url": "https://news.ycombinator.com/item?id=50032556",
+      "text_source": null,
+      "published_at": "2026-10-10T13:05:58Z",
+      "collected_at": "2026-10-10T15:08:58Z",
+      "processed_at": "2026-10-10T15:10:25Z",
+      "outcome": "skipped",
+      "reason": "политика без связи с IT",
+      "attempts": 1
+    },
+    {
+      "id": "69e109ce7b91b84f",
+      "kind": "article",
+      "source": "3DNews",
+      "title": "Президент Трамп объявил врагами всех, кто не готов использовать термин «сверхинтеллект»",
+      "url": "https://3dnews.ru/1149728/prezident-tramp-obyavil-vragami-vseh-kto-ne-gotov-ispolzovat-termin-sverhintellekt",
+      "text_source": "article",
+      "published_at": "2026-10-10T04:05:00Z",
+      "collected_at": "2026-10-10T15:08:58Z",
+      "processed_at": "2026-10-10T15:10:25Z",
+      "outcome": "published",
+      "reason": null,
+      "attempts": 1
+    },
+    {
+      "id": "4d5a1b14f2871c7d",
+      "kind": "article",
+      "source": "Hacker News",
+      "title": "What mathematicians should know about the Lean Theorem Prover: reliability & AI",
+      "url": "https://terrytao.wordpress.com/2026/10/09/what-mathematicians-should-know-about-the-lean-theorem-proverquestions-of-reliability-and-ai/",
+      "text_source": "snippet",
+      "published_at": "2026-10-09T17:42:12Z",
+      "collected_at": "2026-10-10T15:08:58Z",
+      "processed_at": "2026-10-10T15:10:25Z",
+      "outcome": "skipped",
+      "reason": "в snippet только ссылка и счётчики, фактов для выжимки нет",
+      "attempts": 1
+    },
     {
       "id": "a023f8a00022a722",
       "kind": "article",
