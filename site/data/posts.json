@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T14:11:27Z",
+  "generated_at": "2026-10-11T15:10:17Z",
   "items": [
     {
       "id": "x:2109096597011534242",
@@ -160,14 +160,6 @@
       "author_name": "Simon Willison",
       "published_at": "2026-10-08T15:23:37Z",
       "text": "О песочницах для агентов: у Microsoft вышла открытая кроссплатформенная библиотека MxC (Windows, macOS, Linux), она выглядит многообещающе и использует processcontainer, bubblewrap и seatbelt. Ещё один новый проект Microsoft — Quicksand: Python-библиотека с QEMU, запускающая, например, контейнер Alpine Linux; я проверил её на macOS, Windows и Linux. У AWS тоже появилась открытая песочница — что-то витает в воздухе."
-    },
-    {
-      "id": "x:2108209559345205430",
-      "url": "https://x.com/OfficialLoganK/status/2108209559345205430",
-      "author_handle": "OfficialLoganK",
-      "author_name": "Logan Kilpatrick",
-      "published_at": "2026-10-08T14:55:02Z",
-      "text": "В цифровом мире с помощью ИИ можно сделать почти что угодно, и скоро то же самое будет верно и для физического мира (тоже во многом благодаря ИИ)."
     }
   ]
 }
