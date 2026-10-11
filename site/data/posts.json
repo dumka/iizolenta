@@ -1,6 +1,14 @@
 {
-  "generated_at": "2026-10-11T01:09:45Z",
+  "generated_at": "2026-10-11T02:08:58Z",
   "items": [
+    {
+      "id": "x:2109096597011534242",
+      "url": "https://x.com/fchollet/status/2109096597011534242",
+      "author_handle": "fchollet",
+      "author_name": "François Chollet",
+      "published_at": "2026-10-11T01:39:48Z",
+      "text": "Мне очень нравится пробовать самые разные эксперименты по дообучению LLM на связке KerasHub, JAX и TPU. Возможно, часть из них выложу в открытый доступ."
+    },
     {
       "id": "x:2108975457748341138",
       "url": "https://x.com/emollick/status/2108975457748341138",
