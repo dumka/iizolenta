@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-12T00:09:39Z",
+  "generated_at": "2026-10-12T01:10:19Z",
   "items": [
+    {
+      "id": "habr:fab27528b09d36ba",
+      "url": "https://habr.com/ru/articles/1092774/?utm_campaign=1092774&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "rukhi7",
+      "published_at": "2026-10-12T01:05:03Z",
+      "title": "Рефакторинг функции на 280 строк в OpenBMC с помощью ИИ-агента",
+      "summary": "Автор взял функцию createSensors из сервиса HwmonTempSensor проекта OpenBMC dbus-sensors: она занимает около 280 строк с вложенностью до семи уровней. ИИ-агент насчитал в ней 12 задач и предложил семь шагов, среди которых вынос логики в класс SensorScanner и устранение дублирования при создании датчиков. Статья полезна тем, кто занимается встраиваемыми системами и думает, как поручать ИИ рефакторинг тяжёлого C++ кода."
+    },
     {
       "id": "habr:9e86aec63a8ec280",
       "url": "https://habr.com/ru/articles/1093024/?utm_campaign=1093024&utm_source=habrahabr&utm_medium=rss",
