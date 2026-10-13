@@ -11,6 +11,8 @@ seen_retention_days = 14
 fetch_workers = 12
 max_posts_per_run = 10
 max_habr_per_run = 10
+max_world_per_run = 25
+world_text_limit = 1200
 post_max_age_hours = 48
 hn_discussions = true
 hn_min_points = 200
@@ -162,6 +164,67 @@ default_category = "dev"
 name = "Hacker News"
 url = "https://hnrss.org/frontpage?points=150"
 default_category = "dev"
+
+# General news for the «Новости» page (kind = "world"): one paragraph per item, no category.
+# Topics and the skip list are in routine/PROMPT.md; the reasoning is in docs/plans/epic-6-world-news.md.
+# At most 12 feeds: max_world_per_run is split between them round-robin, so more feeds means lost events.
+
+[[feeds]]
+name = "Лента.ру: Россия"
+url = "https://lenta.ru/rss/news/russia"
+kind = "world"
+
+[[feeds]]
+name = "Лента.ру: Мир"
+url = "https://lenta.ru/rss/news/world"
+kind = "world"
+
+[[feeds]]
+name = "Лента.ру: Экономика"
+url = "https://lenta.ru/rss/news/economics"
+kind = "world"
+
+[[feeds]]
+name = "Лента.ру: Наука"
+url = "https://lenta.ru/rss/news/science"
+kind = "world"
+
+# RIA has no rubric feeds any more (every ria.ru/export/rss2/<rubric>/index.xml answers 404),
+# so this is the general feed: an exception, not a pattern.
+[[feeds]]
+name = "РИА Новости"
+url = "https://ria.ru/export/rss2/archive/index.xml"
+kind = "world"
+
+[[feeds]]
+name = "РБК"
+url = "https://rssexport.rbc.ru/rbcnews/news/30/full.rss"
+kind = "world"
+
+[[feeds]]
+name = "Коммерсантъ"
+url = "https://www.kommersant.ru/RSS/main.xml"
+kind = "world"
+
+[[feeds]]
+name = "N+1"
+url = "https://nplus1.ru/rss"
+kind = "world"
+
+[[feeds]]
+name = "62info"
+url = "https://62info.ru/news/rss/"
+kind = "world"
+
+[[feeds]]
+name = "YA62"
+url = "https://ya62.ru/rss/"
+kind = "world"
+
+[[feeds]]
+name = "Рязанские ведомости"
+url = "https://rv-ryazan.ru/feed/"
+kind = "world"
 
 # Posts from X via api.fxtwitter.com (block «Пишут в X»).
 
