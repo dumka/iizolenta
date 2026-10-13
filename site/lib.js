@@ -12,7 +12,7 @@ export function parseRoute(hash) {
     return { view: "blocked", url: value };
   }
   const parts = value.replace(/^\//, "").split("/");
-  if (["x", "hn", "habr", "status"].includes(parts[0]) && parts.length === 1) {
+  if (["x", "hn", "habr", "world", "status"].includes(parts[0]) && parts.length === 1) {
     return { view: parts[0] };
   }
   if (parts[0] === "news" && parts[1]) {
@@ -112,6 +112,12 @@ export function postsStale(items, now = new Date(), hours = STALE_POSTS_HOURS) {
   return !Number.isFinite(newest) || now.getTime() - newest > hours * 3600 * 1000;
 }
 
+// Feed names of the «Новости» section carry the rubric («Лента.ру: Экономика»);
+// the read link wants the outlet alone.
+export function outlet(source) {
+  return String(source ?? "").split(":")[0].trim();
+}
+
 export function paragraphs(text) {
   return (text || "")
     .split(/\n\s*\n/)
@@ -131,7 +137,7 @@ export function pluralRu(n, [one, few, many]) {
 // Status page (#/status): what the pipeline did with every source and material over the last 48 hours.
 
 const PROBLEM_OUTCOMES = new Set(["invalid", "missing", "failed"]);
-const KIND_BY_MATERIAL = { article: "feed", habr: "feed", post: "x", discussion: "hn" };
+const KIND_BY_MATERIAL = { article: "feed", habr: "feed", world: "feed", post: "x", discussion: "hn" };
 
 export function outcomeGroup(outcome) {
   return PROBLEM_OUTCOMES.has(outcome) ? "problems" : outcome;

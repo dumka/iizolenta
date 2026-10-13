@@ -50,6 +50,14 @@ describe("parseRoute", () => {
     });
   });
 
+  test("world news page", () => {
+    assert.deepEqual(parseRoute("#/world"), { view: "world" });
+  });
+
+  test("the article route still wins over the news prefix", () => {
+    assert.deepEqual(parseRoute("#/news/92be971aec513c1f"), { view: "article", id: "92be971aec513c1f" });
+  });
+
   test("blocked url from LeechBlock keeps query string intact", () => {
     assert.deepEqual(parseRoute("#https://lenta.ru/news/x/?a=1&b=2"), {
       view: "blocked",
@@ -243,6 +251,25 @@ describe("hn", () => {
   }
 });
 
+describe("outlet", async () => {
+  const { outlet } = await import("../../site/lib.js");
+
+  // Feed names carry the rubric; the «Читать на …» link should name the outlet alone.
+  for (const [source, expected] of [
+    ["Лента.ру: Экономика", "Лента.ру"],
+    ["Лента.ру: Мир", "Лента.ру"],
+    ["62info", "62info"],
+    ["N+1", "N+1"],
+    ["Коммерсантъ", "Коммерсантъ"],
+    ["", ""],
+    [undefined, ""],
+  ]) {
+    test(`outlet(${JSON.stringify(source)})`, () => {
+      assert.equal(outlet(source), expected);
+    });
+  }
+});
+
 describe("status page", async () => {
   const { countOutcomes, filterMaterials, summarizeSources } = await import("../../site/lib.js");
 
@@ -254,6 +281,21 @@ describe("status page", async () => {
 
   test("route #/status", () => {
     assert.deepEqual(parseRoute("#/status"), { view: "status" });
+  });
+
+  // A feed dropped from feeds.toml still has materials in the 48-hour window but no run row,
+  // so its kind can only come from the material: without it the status table shows a blank kind.
+  test("world materials of a feed no longer collected still get the feed kind", () => {
+    const status = {
+      runs: [run("2026-10-08T12:00:00Z", [src("Коммерсантъ")])],
+      materials: [
+        { id: "world:1", source: "Лента.ру: Мир", outcome: "published", kind: "world" },
+        { id: "world:2", source: "Лента.ру: Мир", outcome: "skipped", kind: "world" },
+      ],
+    };
+    const row = summarizeSources(status).find((r) => r.name === "Лента.ру: Мир");
+    assert.equal(row.kind, "feed");
+    assert.deepEqual([row.published, row.skipped, row.problems], [1, 1, 0]);
   });
 
   test("summarizeSources: last status from the newest run, totals over all runs and materials", () => {
