@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-13T21:11:26Z",
+  "generated_at": "2026-10-13T22:11:31Z",
   "items": [
+    {
+      "id": "habr:6e31437642180bec",
+      "url": "https://habr.com/ru/articles/1094076/?utm_campaign=1094076&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "AquaDll",
+      "published_at": "2026-10-13T21:29:50Z",
+      "title": "Как транспорт KV-кэша влияет на производительность разнесённого инференса MiniMax-M3",
+      "summary": "Автор на двух узлах с восемью B200 сравнил RDMA/InfiniBand с GPUDirect и TCP/Ethernet при разделении prefill и decode в sglang, проанализировав 268 прогонов. InfiniBand сократил медианный TTFT в 5,4-11,5 раза и поднял пропускную способность в 2,8-3,8 раза, тогда как TCP завершился отказом в 41% прогонов. Причина кроется не в нехватке полосы, а в способе переноса: host staging против zero-copy. Вывод важен тем, кто проектирует кластеры для инференса больших моделей."
+    },
     {
       "id": "habr:a6ed75f9b152a372",
       "url": "https://habr.com/ru/articles/1094070/?utm_campaign=1094070&utm_source=habrahabr&utm_medium=rss",
