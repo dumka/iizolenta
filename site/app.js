@@ -7,7 +7,6 @@ import {
   formatTime,
   isSafeUrl,
   outcomeGroup,
-  outlet,
   paragraphs,
   parseRoute,
   pickTopStory,
@@ -279,7 +278,9 @@ function worldCard(n) {
     externalLink(n.url, n.title, "discussion__title"),
     el("p", { class: "post__text discussion__summary" }, n.summary),
     isSafeUrl(n.url)
-      ? el("a", { class: "post__link", href: n.url, target: "_blank", rel: "noopener noreferrer" }, `Читать на ${outlet(n.source)} →`)
+      // not «Читать на <источник>»: feed names need the prepositional case («на Коммерсанте»,
+      // «в Рязанских ведомостях»), and the card head already names the source
+      ? el("a", { class: "post__link", href: n.url, target: "_blank", rel: "noopener noreferrer" }, "Читать оригинал →")
       : null,
   );
 }

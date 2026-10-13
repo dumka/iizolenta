@@ -13,6 +13,7 @@ max_posts_per_run = 10
 max_habr_per_run = 10
 max_world_per_run = 25
 world_text_limit = 1200
+world_max_age_hours = 36
 post_max_age_hours = 48
 hn_discussions = true
 hn_min_points = 200

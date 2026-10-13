@@ -251,25 +251,6 @@ describe("hn", () => {
   }
 });
 
-describe("outlet", async () => {
-  const { outlet } = await import("../../site/lib.js");
-
-  // Feed names carry the rubric; the «Читать на …» link should name the outlet alone.
-  for (const [source, expected] of [
-    ["Лента.ру: Экономика", "Лента.ру"],
-    ["Лента.ру: Мир", "Лента.ру"],
-    ["62info", "62info"],
-    ["N+1", "N+1"],
-    ["Коммерсантъ", "Коммерсантъ"],
-    ["", ""],
-    [undefined, ""],
-  ]) {
-    test(`outlet(${JSON.stringify(source)})`, () => {
-      assert.equal(outlet(source), expected);
-    });
-  }
-});
-
 describe("status page", async () => {
   const { countOutcomes, filterMaterials, summarizeSources } = await import("../../site/lib.js");
 

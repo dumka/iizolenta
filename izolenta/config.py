@@ -48,6 +48,9 @@ class Settings:
     max_habr_per_run: int = 10
     max_world_per_run: int = 25
     world_text_limit: int = 1200
+    # must stay below WORLD_RETENTION_DAYS * 24: merge drops a world note older than that,
+    # so collecting one that close to the edge pays for a summary nobody ever sees
+    world_max_age_hours: int = 36
 
 
 @dataclass(frozen=True)

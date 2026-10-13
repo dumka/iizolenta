@@ -21,7 +21,8 @@ ARTICLE = (Path(__file__).parent / "fixtures" / "article.html").read_bytes()
 
 
 def make_config(feeds, max_items=15, max_age_hours=48, accounts=(), max_posts=10, hn=False,
-                habr_feeds=(), max_habr=10, world_feeds=(), max_world=10, world_text_limit=1200):
+                habr_feeds=(), max_habr=10, world_feeds=(), max_world=10, world_text_limit=1200,
+                world_max_age=36):
     return Config(
         settings=Settings(
             max_items_per_run=max_items,
@@ -43,6 +44,7 @@ def make_config(feeds, max_items=15, max_age_hours=48, accounts=(), max_posts=10
             max_habr_per_run=max_habr,
             max_world_per_run=max_world,
             world_text_limit=world_text_limit,
+            world_max_age_hours=world_max_age,
         ),
         feeds=tuple(Feed(name, f"https://{name.lower()}.example/feed", "ai") for name in feeds)
         + tuple(Feed(name, f"https://{name.lower()}.example/feed", "ai", "habr") for name in habr_feeds)
@@ -531,6 +533,24 @@ def test_processed_world_items_not_selected_again(tmp_path):
     web = FakeWeb({feed_url("Mir"): rss(world_entries)})
     _, pending, _ = run(tmp_path, make_config([], world_feeds=["Mir"]), web, seen={done: seen_entry("skipped")})
     assert [w["title"] for w in pending["world"]] == ["Mir post 1"]
+
+
+def test_world_candidates_older_than_their_own_window_are_not_selected(tmp_path):
+    """merge хранит общие новости 2 суток: собирать более старые — значит платить за заметку,
+    которую слияние тут же выбросит."""
+    world_entries = [
+        ("https://mir.example/old", "Старая общая новость", NOW - timedelta(hours=40)),
+        ("https://mir.example/new", "Свежая общая новость", NOW - timedelta(hours=1)),
+    ]
+    news_entries = [
+        ("https://news.example/old", "Старая новость про AI", NOW - timedelta(hours=40)),
+        ("https://news.example/new", "Свежая новость про AI", NOW - timedelta(hours=1)),
+    ]
+    web = FakeWeb({feed_url("Mir"): rss(world_entries), feed_url("News"): rss(news_entries)})
+    _, pending, _ = run(tmp_path, make_config(["News"], world_feeds=["Mir"], world_max_age=36), web)
+    assert [w["title"] for w in pending["world"]] == ["Свежая общая новость"]
+    # окно ленты AI/IT (48 часов) не затронуто
+    assert {i["title"] for i in pending["items"]} == {"Старая новость про AI", "Свежая новость про AI"}
 
 
 def test_failing_world_feed_does_not_stop_the_others(tmp_path):

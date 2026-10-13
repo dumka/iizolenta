@@ -155,9 +155,14 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
                 fetched_posts.append([])
 
     oldest_allowed = now - timedelta(hours=settings.max_age_hours)
+    # General news is kept for WORLD_RETENTION_DAYS, so its collection window is deliberately
+    # shorter: an item collected at the retention edge ages out between collect and merge, and
+    # the routine pays for a summary that merge then drops.
+    world_oldest_allowed = now - timedelta(hours=settings.world_max_age_hours)
     taken_ids: set[str] = set()
     per_feed: list[list[FeedItem]] = []
     for feed, items in zip(config.feeds, fetched):
+        cutoff = world_oldest_allowed if feed.kind == "world" else oldest_allowed
         fresh: list[FeedItem] = []
         for item in sorted(items, key=lambda i: i.published_at, reverse=True):
             if item.id in taken_ids:
@@ -165,7 +170,7 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
             taken_ids.add(item.id)
             if seen.get(_state_id(feed, item), {}).get("status") in FINAL_STATUSES:
                 continue
-            if item.published_at < oldest_allowed:
+            if item.published_at < cutoff:
                 continue
             fresh.append(item)
         per_feed.append(fresh)

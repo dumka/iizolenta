@@ -198,6 +198,15 @@ def test_world_settings_have_defaults(tmp_path):
     assert (settings.max_world_per_run, settings.world_text_limit) == (25, 1200)
 
 
+def test_world_collection_window_leaves_room_for_retention():
+    """merge хранит общие новости WORLD_RETENTION_DAYS. Если собирать вплоть до того же возраста,
+    заметка успеет состариться между сбором и слиянием: её оплатят, пометят опубликованной и выбросят."""
+    from izolenta.merge import WORLD_RETENTION_DAYS
+
+    settings = load_config(ROOT / "feeds.toml").settings
+    assert settings.world_max_age_hours < WORLD_RETENTION_DAYS * 24
+
+
 def test_project_world_feeds_configured():
     feeds = [feed for feed in load_config(ROOT / "feeds.toml").feeds if feed.kind == "world"]
     assert 1 <= len(feeds) <= 12, 'эпик 6 запрещает больше 12 лент kind = "world"'

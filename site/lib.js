@@ -112,12 +112,6 @@ export function postsStale(items, now = new Date(), hours = STALE_POSTS_HOURS) {
   return !Number.isFinite(newest) || now.getTime() - newest > hours * 3600 * 1000;
 }
 
-// Feed names of the «Новости» section carry the rubric («Лента.ру: Экономика»);
-// the read link wants the outlet alone.
-export function outlet(source) {
-  return String(source ?? "").split(":")[0].trim();
-}
-
 export function paragraphs(text) {
   return (text || "")
     .split(/\n\s*\n/)

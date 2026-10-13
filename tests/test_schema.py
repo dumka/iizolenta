@@ -225,7 +225,7 @@ def test_habr_skip_accepted():
     )
 
 
-from izolenta.schema import WorldSummary, validate_world  # noqa: E402
+from izolenta.schema import REASON_MAX, WorldSummary, validate_world  # noqa: E402
 
 WORLD_ID_OK = "world:0123456789abcdef"
 WORLD_SUMMARY = (
@@ -268,6 +268,12 @@ def test_world_skip_accepted():
     assert validate_world({"id": WORLD_ID_OK, "status": "skip", "reason": "заявление без решения"}) == Skip(
         id=WORLD_ID_OK, reason="заявление без решения"
     )
+
+
+@pytest.mark.parametrize("reason", ["", "   ", "а" * (REASON_MAX + 1)])
+def test_world_skip_without_a_usable_reason_rejected(reason):
+    with pytest.raises(ValidationError, match="reason"):
+        validate_world({"id": WORLD_ID_OK, "status": "skip", "reason": reason})
 
 
 def test_world_skip_for_low_importance_allowed():
