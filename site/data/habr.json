@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-13T05:10:40Z",
+  "generated_at": "2026-10-13T06:20:06Z",
   "items": [
+    {
+      "id": "habr:cbf3ad6ac74d2ec8",
+      "url": "https://habr.com/ru/articles/1093616/?utm_campaign=1093616&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "Alexey_Begin",
+      "published_at": "2026-10-13T05:46:30Z",
+      "title": "Как ИИ-агент за 6 минут получил сертификат Anthropic по ИИ и почему сертификаты теряют цену",
+      "summary": "Автор поручил Codex с подпиской ChatGPT Plus пройти онлайн-курс Anthropic, и агент сдал тест на 10 из 10 примерно за шесть минут, пока он занимался другими делами. Тем же способом можно получать сертификаты OpenAI, Google и Microsoft, автор собрал более 360 бесплатных курсов. Вывод: сертификаты теряют ценность, а работодателям лучше проверять умения на практических задачах."
+    },
     {
       "id": "habr:7d000463a94900d0",
       "url": "https://habr.com/ru/companies/alfa/articles/1093264/?utm_campaign=1093264&utm_source=habrahabr&utm_medium=rss",
