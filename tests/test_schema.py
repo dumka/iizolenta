@@ -223,3 +223,76 @@ def test_habr_skip_accepted():
     assert validate_habr({"id": "habr:0123456789abcdef", "status": "skip", "reason": "корпоративный пиар"}) == Skip(
         id="habr:0123456789abcdef", reason="корпоративный пиар"
     )
+
+
+from izolenta.schema import WorldSummary, validate_world  # noqa: E402
+
+WORLD_ID_OK = "world:0123456789abcdef"
+WORLD_SUMMARY = (
+    "Совет директоров Банка России снизил ключевую ставку на один процентный пункт, до 14 процентов. "
+    "Регулятор объяснил решение замедлением инфляции до 6,2 процента в годовом выражении."
+)
+
+
+def test_valid_world_accepted():
+    raw = {"id": WORLD_ID_OK, "status": "ok", "title": "ЦБ снизил ключевую ставку до 14 процентов",
+           "summary": WORLD_SUMMARY}
+    assert validate_world(raw) == WorldSummary(
+        id=WORLD_ID_OK, title="ЦБ снизил ключевую ставку до 14 процентов", summary=WORLD_SUMMARY
+    )
+
+
+@pytest.mark.parametrize(
+    "overrides, field",
+    [
+        ({"summary": "Коротко о событии."}, "summary"),
+        ({"summary": "А" * 401}, "summary"),
+        ({"summary": WORLD_SUMMARY + "\n\n" + WORLD_SUMMARY}, "summary"),
+        ({"summary": "A" * 120}, "summary"),
+        ({"summary": "Событие <b>важное</b>, подробности и цифры приведены в источнике, читайте оригинал."}, "summary"),
+        ({"title": "Short"}, "title"),
+        ({"id": "0123456789abcdef"}, "id"),
+        ({"id": "habr:0123456789abcdef"}, "id"),
+        ({"id": "world:XYZ"}, "id"),
+    ],
+)
+def test_invalid_world_rejected(overrides, field):
+    raw = {"id": WORLD_ID_OK, "status": "ok", "title": "Заголовок общей новости",
+           "summary": WORLD_SUMMARY, **overrides}
+    with pytest.raises(ValidationError) as info:
+        validate_world(raw)
+    assert any(field in reason for reason in info.value.reasons)
+
+
+def test_world_skip_accepted():
+    assert validate_world({"id": WORLD_ID_OK, "status": "skip", "reason": "заявление без решения"}) == Skip(
+        id=WORLD_ID_OK, reason="заявление без решения"
+    )
+
+
+def test_world_skip_for_low_importance_allowed():
+    """Epic 6, R5: here significance IS the filter, unlike the AI/IT feed."""
+    assert validate_world({"id": WORLD_ID_OK, "status": "skip", "reason": "малозначимое событие"}) == Skip(
+        id=WORLD_ID_OK, reason="малозначимое событие"
+    )
+
+
+def world_summary_of(length):
+    """Ровно length знаков после normalize: пробел в тексте один."""
+    head = "Событие. "
+    return head + "а" * (length - len(head))
+
+
+@pytest.mark.parametrize("length", [80, 400])
+def test_world_summary_boundaries_accepted(length):
+    summary = world_summary_of(length)
+    raw = {"id": WORLD_ID_OK, "status": "ok", "title": "Заголовок общей новости", "summary": summary}
+    assert validate_world(raw).summary == summary
+
+
+@pytest.mark.parametrize("length", [79, 401])
+def test_world_summary_outside_boundaries_rejected(length):
+    raw = {"id": WORLD_ID_OK, "status": "ok", "title": "Заголовок общей новости",
+           "summary": world_summary_of(length)}
+    with pytest.raises(ValidationError, match="summary"):
+        validate_world(raw)
