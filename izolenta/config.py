@@ -9,8 +9,9 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 CATEGORIES = ("ai", "dev", "business")
-# news: summaries in the main feed; habr: author articles retold in the «Пишут на Хабре» block
-FEED_KINDS = ("news", "habr")
+# news: summaries in the main feed; habr: author articles retold in the «Пишут на Хабре» block;
+# world: general news compressed into one paragraph for the «Новости» page
+FEED_KINDS = ("news", "habr", "world")
 HANDLE = re.compile(r"[A-Za-z0-9_]{1,15}")
 
 
@@ -22,7 +23,7 @@ class ConfigError(Exception):
 class Feed:
     name: str
     url: str
-    default_category: str
+    default_category: str | None = None  # only kind = "news" needs a rubric
     kind: str = "news"
 
 
@@ -45,6 +46,11 @@ class Settings:
     max_discussions_per_run: int = 4
     hn_top_comments: int = 12
     max_habr_per_run: int = 10
+    max_world_per_run: int = 25
+    world_text_limit: int = 1200
+    # must stay below WORLD_RETENTION_DAYS * 24: merge drops a world note older than that,
+    # so collecting one that close to the edge pays for a summary nobody ever sees
+    world_max_age_hours: int = 36
 
 
 @dataclass(frozen=True)
@@ -90,11 +96,13 @@ def load_config(path: Path) -> Config:
             raise ConfigError(f"invalid feed entry {entry!r}: {exc}") from exc
         if feed.name in seen_names:
             raise ConfigError(f"duplicate feed name: {feed.name}")
-        if feed.default_category not in CATEGORIES:
+        if feed.default_category is not None and feed.default_category not in CATEGORIES:
             raise ConfigError(
                 f"feed {feed.name}: category must be one of {CATEGORIES}, "
                 f"got {feed.default_category!r}"
             )
+        if feed.kind == "news" and feed.default_category is None:
+            raise ConfigError(f'feed {feed.name}: kind = "news" requires default_category')
         if feed.kind not in FEED_KINDS:
             raise ConfigError(f"feed {feed.name}: kind must be one of {FEED_KINDS}, got {feed.kind!r}")
         if not is_http_url(feed.url):

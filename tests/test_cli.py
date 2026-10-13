@@ -102,6 +102,21 @@ def test_merge_writes_hn_to_given_path(tmp_path, capsys):
     assert "hn: merged=1" in capsys.readouterr().out
 
 
+def test_merge_writes_world_to_given_path(tmp_path, capsys):
+    from tests.test_merge import WORLD_RU, Env, pending_world
+
+    env = Env(tmp_path)
+    env.setup([], [], world=[pending_world(1)], world_summaries=[
+        {"id": "world:0000000000000001", "status": "ok",
+         "title": "ЦБ снизил ключевую ставку до 14 процентов", "summary": WORLD_RU},
+    ])
+    world_path = tmp_path / "out" / "world.json"
+    code = main(["merge", "--state-dir", str(env.state), "--news", str(env.news), "--world", str(world_path)])
+    assert code == 0
+    assert world_path.exists() and not env.world.exists()
+    assert "world: merged=1" in capsys.readouterr().out
+
+
 def test_merge_with_default_paths_never_touches_repo_data(tmp_path):
     from tests.test_merge import Env, pending_post
 

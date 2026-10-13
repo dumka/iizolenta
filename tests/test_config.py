@@ -163,3 +163,53 @@ def test_project_habr_hubs_go_to_habr_block_and_habr_news_stays_news():
     kinds = {feed.name: feed.kind for feed in load_config(ROOT / "feeds.toml").feeds}
     assert kinds["Хабр: ИИ"] == kinds["Хабр: ML"] == "habr"
     assert kinds["Хабр Новости"] == "news"
+
+
+WORLD_FEED = """
+[[feeds]]
+name = "Лента.ру: Мир"
+url = "https://lenta.ru/rss/news/world"
+kind = "world"
+"""
+
+
+def test_feed_kind_world_parsed_without_category(tmp_path):
+    [feed] = load_config(write_config(tmp_path, WORLD_FEED)).feeds
+    assert (feed.kind, feed.default_category) == ("world", None)
+
+
+def test_news_feed_without_category_rejected(tmp_path):
+    feed = """
+[[feeds]]
+name = "A"
+url = "https://a.example/feed"
+"""
+    with pytest.raises(ConfigError, match="requires default_category"):
+        load_config(write_config(tmp_path, feed))
+
+
+def test_invalid_category_on_world_feed_rejected(tmp_path):
+    with pytest.raises(ConfigError, match="category"):
+        load_config(write_config(tmp_path, WORLD_FEED + 'default_category = "hardware"\n'))
+
+
+def test_world_settings_have_defaults(tmp_path):
+    settings = load_config(write_config(tmp_path, FEED)).settings
+    assert (settings.max_world_per_run, settings.world_text_limit) == (25, 1200)
+
+
+def test_world_collection_window_leaves_room_for_retention():
+    """merge хранит общие новости WORLD_RETENTION_DAYS. Если собирать вплоть до того же возраста,
+    заметка успеет состариться между сбором и слиянием: её оплатят, пометят опубликованной и выбросят."""
+    from izolenta.merge import WORLD_RETENTION_DAYS
+
+    settings = load_config(ROOT / "feeds.toml").settings
+    assert settings.world_max_age_hours < WORLD_RETENTION_DAYS * 24
+
+
+def test_project_world_feeds_configured():
+    feeds = [feed for feed in load_config(ROOT / "feeds.toml").feeds if feed.kind == "world"]
+    assert 1 <= len(feeds) <= 12, 'эпик 6 запрещает больше 12 лент kind = "world"'
+    assert all(feed.default_category is None for feed in feeds)
+    hosts = " ".join(feed.url for feed in feeds)
+    assert "62info" in hosts and "lenta.ru" in hosts

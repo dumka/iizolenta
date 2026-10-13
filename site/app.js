@@ -20,6 +20,7 @@ const DATA_URL = "data/news.json";
 const POSTS_URL = "data/posts.json";
 const HN_URL = "data/hn.json";
 const HABR_URL = "data/habr.json";
+const WORLD_URL = "data/world.json";
 const HOME_HABR_LIMIT = 4;
 const STATUS_URL = "data/status.json";
 const STATUS_MATERIALS_LIMIT = 200;
@@ -35,6 +36,7 @@ const app = document.getElementById("app");
 // news and posts load independently: a broken posts.json must not take the news down
 const state = {
   data: null, error: null, posts: null, postsError: null, hn: null, hnError: null, habr: null, habrError: null,
+  world: null, worldError: null,
   blockedHost: null,
 };
 // the hidden #/status page loads its own data only when opened
@@ -262,6 +264,41 @@ function habrView() {
   return [title, el("div", { class: "posts-page" }, state.habr.items.map(habrCard))];
 }
 
+// General news: the same card as Habr without an author — news agencies do not need one.
+function worldCard(n) {
+  return el(
+    "article",
+    { class: "discussion" },
+    el(
+      "div",
+      { class: "post__head" },
+      el("span", { class: "post__time" }, formatTime(n.published_at)),
+      el("span", { class: "post__handle" }, n.source),
+    ),
+    externalLink(n.url, n.title, "discussion__title"),
+    el("p", { class: "post__text discussion__summary" }, n.summary),
+    isSafeUrl(n.url)
+      // not «Читать на <источник>»: feed names need the prepositional case («на Коммерсанте»,
+      // «в Рязанских ведомостях»), and the card head already names the source
+      ? el("a", { class: "post__link", href: n.url, target: "_blank", rel: "noopener noreferrer" }, "Читать оригинал →")
+      : null,
+  );
+}
+
+function worldView() {
+  document.title = "Новости — ИИзоЛента";
+  const title = el("h1", { class: "page-title" }, "Новости");
+  if (state.worldError) {
+    return [
+      title,
+      stateView("Лента порвалась.", el("button", { class: "state__button", type: "button", onclick: () => load() }, "Подклеить")),
+    ];
+  }
+  if (!state.world) return [title, stateView("Разматываем ленту...")];
+  if (!state.world.items.length) return [title, stateView("Пока тихо: свежих новостей нет.")];
+  return [title, el("div", { class: "posts-page" }, state.world.items.map(worldCard))];
+}
+
 function feedView(items, title, { withPosts = false } = {}) {
   const top = pickTopStory(items);
   const important = items
@@ -323,7 +360,7 @@ const OUTCOMES = {
   missing: "Нет выжимки, будет повтор",
   failed: "Снято после 3 попыток",
 };
-const MATERIAL_KINDS = { article: "Статья", habr: "Хабр", post: "Пост X", discussion: "HN" };
+const MATERIAL_KINDS = { article: "Статья", habr: "Хабр", world: "Новости", post: "Пост X", discussion: "HN" };
 const SOURCE_KINDS = { feed: "лента", x: "X", hn: "HN" };
 const STATUS_FILTERS = [
   ["all", "Все"],
@@ -363,7 +400,7 @@ function kindResult(result) {
 
 function runsTable(runs) {
   return table(
-    ["Обработка", "Сбор", "Источники", "Новых → взято", "Статьи", "Посты", "HN"],
+    ["Обработка", "Сбор", "Источники", "Новых → взято", "Статьи", "Посты", "HN", "Хабр", "Новости"],
     runs.map((run) => {
       const sources = run.sources || [];
       const ok = sources.filter((s) => s.ok).length;
@@ -377,6 +414,8 @@ function runsTable(runs) {
         kindResult(run.result?.items),
         kindResult(run.result?.posts),
         kindResult(run.result?.discussions),
+        kindResult(run.result?.habr),
+        kindResult(run.result?.world),
       ];
     }),
   );
@@ -406,7 +445,7 @@ function sourcesTable(rows) {
 function siteHref(material) {
   if (material.outcome !== "published") return null;
   if (material.kind === "article") return articleHref(material);
-  return { post: "#/x", discussion: "#/hn", habr: "#/habr" }[material.kind] || null;
+  return { post: "#/x", discussion: "#/hn", habr: "#/habr", world: "#/world" }[material.kind] || null;
 }
 
 function materialCard(m) {
@@ -541,7 +580,7 @@ function banner() {
 }
 
 function updateChrome(route) {
-  const active = route.view === "category" ? route.category : ["x", "hn", "habr"].includes(route.view) ? route.view : "";
+  const active = route.view === "category" ? route.category : ["x", "hn", "habr", "world"].includes(route.view) ? route.view : "";
   for (const link of document.querySelectorAll(".menu__link")) {
     const highlighted = route.view !== "article" && route.view !== "status" && link.dataset.category === active;
     link.classList.toggle("is-active", highlighted);
@@ -567,6 +606,8 @@ function render() {
     content = discussionsView();
   } else if (route.view === "habr") {
     content = habrView();
+  } else if (route.view === "world") {
+    content = worldView();
   } else if (route.view === "status") {
     if (!statusPage.data && !statusPage.error && !statusPage.loading) loadStatus();
     content = statusView();
@@ -615,11 +656,12 @@ async function loadStatus() {
 }
 
 async function load() {
-  const [news, posts, hn, habr] = await Promise.allSettled([
+  const [news, posts, hn, habr, world] = await Promise.allSettled([
     loadJson(DATA_URL),
     loadJson(POSTS_URL),
     loadJson(HN_URL),
     loadJson(HABR_URL),
+    loadJson(WORLD_URL),
   ]);
   // keep showing stale data if we already have some
   if (news.status === "fulfilled") {
@@ -649,6 +691,13 @@ async function load() {
   } else {
     console.warn("ИИзоЛента: не удалось загрузить статьи с Хабра", habr.reason);
     if (!state.habr) state.habrError = habr.reason;
+  }
+  if (world.status === "fulfilled") {
+    state.world = world.value;
+    state.worldError = null;
+  } else {
+    console.warn("ИИзоЛента: не удалось загрузить раздел «Новости»", world.reason);
+    if (!state.world) state.worldError = world.reason;
   }
   render();
 }

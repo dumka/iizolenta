@@ -51,11 +51,13 @@ def run_merge(args: argparse.Namespace) -> None:
         hn_path=args.hn,
         status_path=args.status,
         habr_path=args.habr,
+        world_path=args.world,
     )
     print(result.summary())
     if result.summaries_error:
         print(f"  summaries error: {result.summaries_error}")
-    kinds = (("", result), ("post ", result.posts), ("discussion ", result.discussions), ("habr ", result.habr))
+    kinds = (("", result), ("post ", result.posts), ("discussion ", result.discussions),
+             ("habr ", result.habr), ("world ", result.world))
     for label, kind in kinds:
         if kind is None:
             continue
@@ -104,6 +106,7 @@ def main(argv: list[str] | None = None) -> int:
     merge_cmd.add_argument("--hn", type=Path, default=Path("site/data/hn.json"))
     merge_cmd.add_argument("--status", type=Path, default=Path("site/data/status.json"))
     merge_cmd.add_argument("--habr", type=Path, default=Path("site/data/habr.json"))
+    merge_cmd.add_argument("--world", type=Path, default=Path("site/data/world.json"))
     merge_cmd.set_defaults(handler=run_merge)
 
     recent_cmd = commands.add_parser("recent", help="list news published in the last hours")

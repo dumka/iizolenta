@@ -30,7 +30,7 @@ class FeedItem:
     snippet: str
     published_at: datetime
     image: str | None
-    default_category: str
+    default_category: str | None
     author: str | None = None
 
 

@@ -19,10 +19,12 @@ from izolenta.schema import (
     Skip,
     Summary,
     ValidationError,
+    WorldSummary,
     validate_discussion,
     validate_habr,
     validate_post,
     validate_summary,
+    validate_world,
 )
 from izolenta.state import StateError, load_seen, read_json_object, save_json_atomic
 
@@ -30,6 +32,7 @@ RETENTION_DAYS = 7
 POST_RETENTION_DAYS = 3
 DISCUSSION_RETENTION_DAYS = 3
 HABR_RETENTION_DAYS = 7
+WORLD_RETENTION_DAYS = 2  # general news ages faster than AI/IT news; the dedup window is the same 48 hours
 MAX_ATTEMPTS = 3
 STATUS_HOURS = 48
 PREVIEW_CHARS = 120
@@ -85,6 +88,18 @@ def _habr_record(article: dict[str, Any], summary: HabrSummary) -> dict[str, Any
         "source": article["source"],
         "author": article.get("author"),
         "published_at": article["published_at"],
+        "title": summary.title,
+        "summary": summary.summary,
+    }
+
+
+def _world_record(item: dict[str, Any], summary: WorldSummary) -> dict[str, Any]:
+    # link, source and date come from the collector; Claude writes only the title and the paragraph
+    return {
+        "id": item["id"],
+        "url": item["url"],
+        "source": item["source"],
+        "published_at": item["published_at"],
         "title": summary.title,
         "summary": summary.summary,
     }
@@ -147,7 +162,16 @@ HABR = Kind(
     "habr",
     _article_material,
 )
-OPTIONAL_KINDS = (POSTS, DISCUSSIONS, HABR)
+WORLD = Kind(
+    "world",
+    "world ",
+    validate_world,
+    _world_record,
+    lambda item: item.get("title", ""),
+    "world",
+    _article_material,
+)
+OPTIONAL_KINDS = (POSTS, DISCUSSIONS, HABR, WORLD)
 
 
 @dataclass
@@ -181,6 +205,7 @@ class MergeResult(KindResult):
     posts: KindResult | None = None  # None when pending.json has no posts list
     discussions: KindResult | None = None  # None when pending.json has no discussions list
     habr: KindResult | None = None  # None when pending.json has no habr list
+    world: KindResult | None = None  # None when pending.json has no world list
 
     @property
     def news_total(self) -> int:
@@ -196,10 +221,12 @@ class MergeResult(KindResult):
             line += f" | hn: {self.discussions.counts()} | total={self.discussions.total}"
         if self.habr is not None:
             line += f" | habr: {self.habr.counts()} | total={self.habr.total}"
+        if self.world is not None:
+            line += f" | world: {self.world.counts()} | total={self.world.total}"
         return line
 
 
-SUMMARY_KEYS = ("items", "posts", "discussions", "habr")
+SUMMARY_KEYS = ("items", "posts", "discussions", "habr", "world")
 
 
 def _summary_files(state_dir: Path) -> list[Path]:
@@ -434,17 +461,20 @@ def merge(
     hn_path: Path | None = None,
     status_path: Path | None = None,
     habr_path: Path | None = None,
+    world_path: Path | None = None,
 ) -> MergeResult:
     state_dir, news_path = Path(state_dir), Path(news_path)
     store_paths = {
         POSTS.key: Path(posts_path) if posts_path else news_path.parent / "posts.json",
         DISCUSSIONS.key: Path(hn_path) if hn_path else news_path.parent / "hn.json",
         HABR.key: Path(habr_path) if habr_path else news_path.parent / "habr.json",
+        WORLD.key: Path(world_path) if world_path else news_path.parent / "world.json",
     }
     retention = {
         POSTS.key: POST_RETENTION_DAYS,
         DISCUSSIONS.key: DISCUSSION_RETENTION_DAYS,
         HABR.key: HABR_RETENTION_DAYS,
+        WORLD.key: WORLD_RETENTION_DAYS,
     }
     pending_path = state_dir / "pending.json"
     seen_path = state_dir / "seen.json"

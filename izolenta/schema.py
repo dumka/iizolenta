@@ -214,6 +214,28 @@ def validate_habr(raw: Any) -> HabrSummary | Skip:
     return _validate_retelling(raw, is_habr_id, "'habr:<16 hex>'", HABR_SUMMARY_LEN, HabrSummary)
 
 
+# General news: {"id": "world:<16 hex>", "status": "ok", "title": "...", "summary": "..."} or a skip.
+# A tighter summary than Habr or HN on purpose: the «Новости» page shows one compressed paragraph.
+# Unlike validate_summary, a skip here may cite low significance: for general news significance is the filter.
+
+WORLD_SUMMARY_LEN = (80, 400)
+WORLD_ID = re.compile(r"world:[0-9a-f]{16}")
+
+
+@dataclass(frozen=True)
+class WorldSummary:
+    id: str
+    title: str
+    summary: str
+
+
+def validate_world(raw: Any) -> WorldSummary | Skip:
+    def is_world_id(value: Any) -> bool:
+        return isinstance(value, str) and WORLD_ID.fullmatch(value) is not None
+
+    return _validate_retelling(raw, is_world_id, "'world:<16 hex>'", WORLD_SUMMARY_LEN, WorldSummary)
+
+
 def _validate_retelling(raw: Any, is_valid_id, id_hint: str, summary_len: tuple[int, int], result_type):
     """A title plus a one-paragraph retelling (HN discussions, Habr articles) or a skip."""
     if not isinstance(raw, dict):

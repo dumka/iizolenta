@@ -66,13 +66,15 @@ class Env:
         self.posts = tmp_path / "site" / "data" / "posts.json"
         self.hn = tmp_path / "site" / "data" / "hn.json"
         self.habr = tmp_path / "site" / "data" / "habr.json"
+        self.world = tmp_path / "site" / "data" / "world.json"
 
     def write(self, name, data, raw=False, encoding="utf-8"):
         path = self.state / name
         path.write_text(data if raw else json.dumps(data, ensure_ascii=False), encoding=encoding)
 
     def setup(self, items, summaries, seen=None, news=None, posts=None, post_summaries=None, posts_store=None,
-              discussions=None, discussion_summaries=None, hn_store=None, habr=None, habr_summaries=None):
+              discussions=None, discussion_summaries=None, hn_store=None, habr=None, habr_summaries=None,
+              world=None, world_summaries=None):
         pending = {"generated_at": iso(NOW), "items": items, "errors": []}
         if posts is not None:
             pending["posts"] = posts
@@ -80,6 +82,8 @@ class Env:
             pending["discussions"] = discussions
         if habr is not None:
             pending["habr"] = habr
+        if world is not None:
+            pending["world"] = world
         self.write("pending.json", pending)
         if summaries is not None:
             data = {"items": summaries}
@@ -89,10 +93,12 @@ class Env:
                 data["discussions"] = discussion_summaries
             if habr_summaries is not None:
                 data["habr"] = habr_summaries
+            if world_summaries is not None:
+                data["world"] = world_summaries
             self.write("summaries.json", data)
         default_seen = {
             i["id"]: {"first_seen": NOW.isoformat(), "status": "pending", "attempts": 0}
-            for i in items + (posts or []) + (discussions or []) + (habr or [])
+            for i in items + (posts or []) + (discussions or []) + (habr or []) + (world or [])
         }
         self.write("seen.json", seen if seen is not None else default_seen)
         if news is not None:
@@ -642,3 +648,76 @@ def test_check_reports_missing_habr_summary(env):
     env.setup([], [], habr=[pending_habr(1)], habr_summaries=[])
     result = check(env.state)
     assert any("habr" in p and "habr:0000000000000001" in p for p in result.problems)
+
+
+# --- General news: compressed into world.json for the «Новости» page ---
+
+WORLD_RU = (
+    "Совет директоров Банка России снизил ключевую ставку на один процентный пункт, до 14 процентов. "
+    "Регулятор объяснил решение замедлением инфляции."
+)
+
+
+def pending_world(n, published=NOW - timedelta(hours=3)):
+    return {
+        "id": f"world:{n:016x}",
+        "url": f"https://lenta.ru/news/2026/10/08/{n}/",
+        "source": "Лента.ру: Экономика",
+        "title": "ЦБ снизил ставку",
+        "snippet": "snippet",
+        "text": "text",
+        "text_source": "article",
+        "published_at": iso(published),
+    }
+
+
+def test_world_item_merged_with_collector_metadata(env):
+    forged = {"id": "world:0000000000000001", "status": "ok",
+              "title": "ЦБ снизил ключевую ставку до 14 процентов", "summary": WORLD_RU,
+              "url": "https://evil.example", "source": "evil", "published_at": iso(NOW)}
+    env.setup([], [], world=[pending_world(1), pending_world(2)],
+              world_summaries=[forged, {"id": "world:0000000000000002", "status": "skip",
+                                        "reason": "заявление без решения"}])
+    result = env.run()
+    assert (result.world.merged, result.world.skipped) == (1, 1)
+    [record] = json.loads(env.world.read_text(encoding="utf-8"))["items"]
+    assert record == {
+        "id": "world:0000000000000001",
+        "url": "https://lenta.ru/news/2026/10/08/1/",
+        "source": "Лента.ру: Экономика",
+        "published_at": iso(NOW - timedelta(hours=3)),
+        "title": "ЦБ снизил ключевую ставку до 14 процентов",
+        "summary": WORLD_RU,
+    }
+    assert "world: merged=1 skipped=1" in result.summary()
+
+
+def test_world_items_kept_for_two_days(env):
+    old = {"id": "world:00000000000000aa", "url": "https://lenta.ru/news/old/", "source": "Лента.ру: Мир",
+           "published_at": iso(NOW - timedelta(days=3)), "title": "Старая общая новость", "summary": WORLD_RU}
+    recent = {**old, "id": "world:00000000000000bb", "published_at": iso(NOW - timedelta(days=1))}
+    env.world.parent.mkdir(parents=True, exist_ok=True)
+    env.world.write_text(json.dumps({"generated_at": "x", "items": [old, recent]}, ensure_ascii=False),
+                         encoding="utf-8")
+    env.setup([], [], world=[])
+    env.run()
+    kept = json.loads(env.world.read_text(encoding="utf-8"))["items"]
+    assert [r["id"] for r in kept] == ["world:00000000000000bb"]
+
+
+def test_world_outcomes_recorded_on_status_page(env):
+    env.setup([], [], world=[pending_world(1)],
+              world_summaries=[{"id": "world:0000000000000001", "status": "skip",
+                                "reason": "частное происшествие"}])
+    env.run()
+    entry = materials(env)["world:0000000000000001"]
+    assert (entry["kind"], entry["outcome"], entry["reason"]) == ("world", "skipped", "частное происшествие")
+    assert entry["source"] == "Лента.ру: Экономика"
+
+
+def test_check_reports_missing_world_summary(env):
+    from izolenta.merge import check
+
+    env.setup([], [], world=[pending_world(1)], world_summaries=[])
+    result = check(env.state)
+    assert any("world" in problem and "world:0000000000000001" in problem for problem in result.problems)

@@ -20,7 +20,9 @@ def no_retry_delay(monkeypatch):
 ARTICLE = (Path(__file__).parent / "fixtures" / "article.html").read_bytes()
 
 
-def make_config(feeds, max_items=15, max_age_hours=48, accounts=(), max_posts=10, hn=False, habr_feeds=(), max_habr=10):
+def make_config(feeds, max_items=15, max_age_hours=48, accounts=(), max_posts=10, hn=False,
+                habr_feeds=(), max_habr=10, world_feeds=(), max_world=10, world_text_limit=1200,
+                world_max_age=36):
     return Config(
         settings=Settings(
             max_items_per_run=max_items,
@@ -40,9 +42,13 @@ def make_config(feeds, max_items=15, max_age_hours=48, accounts=(), max_posts=10
             max_discussions_per_run=2,
             hn_top_comments=5,
             max_habr_per_run=max_habr,
+            max_world_per_run=max_world,
+            world_text_limit=world_text_limit,
+            world_max_age_hours=world_max_age,
         ),
         feeds=tuple(Feed(name, f"https://{name.lower()}.example/feed", "ai") for name in feeds)
-        + tuple(Feed(name, f"https://{name.lower()}.example/feed", "ai", "habr") for name in habr_feeds),
+        + tuple(Feed(name, f"https://{name.lower()}.example/feed", "ai", "habr") for name in habr_feeds)
+        + tuple(Feed(name, f"https://{name.lower()}.example/feed", None, "world") for name in world_feeds),
         x_accounts=tuple(XAccount(h) for h in accounts),
     )
 
@@ -452,3 +458,104 @@ def test_without_habr_feeds_habr_list_is_empty(tmp_path):
     result, pending, _ = run(tmp_path, make_config(["F"]), FakeWeb({feed_url("F"): rss(entries("F", 1))}))
     assert pending["habr"] == []
     assert "habr:" not in result.summary()
+
+
+def test_world_feed_items_go_to_world_list_with_own_limit(tmp_path):
+    web = FakeWeb({feed_url("News"): rss(entries("News", 2)), feed_url("Mir"): rss(entries("Mir", 3))})
+    result, pending, seen = run(tmp_path, make_config(["News"], world_feeds=["Mir"], max_world=2), web)
+    assert [i["source"] for i in pending["items"]] == ["News", "News"]
+    world = pending["world"]
+    assert [w["title"] for w in world] == ["Mir post 0", "Mir post 1"]
+    assert all(w["id"].startswith("world:") and len(w["id"]) == 22 for w in world)
+    assert set(world[0]) == {"id", "url", "source", "title", "snippet", "text", "text_source", "published_at"}
+    assert all(seen[w["id"]]["status"] == "pending" for w in world)
+    stats = next(s for s in pending["stats"]["sources"] if s["name"] == "Mir")
+    assert (stats["candidates"], stats["selected"]) == (3, 2)
+    assert "world: candidates=3 selected=2" in result.summary()
+
+
+def test_world_list_absent_without_world_feeds(tmp_path):
+    web = FakeWeb({feed_url("News"): rss(entries("News", 1))})
+    result, pending, _ = run(tmp_path, make_config(["News"]), web)
+    assert result.world is None
+    assert pending["world"] == []
+    assert "world:" not in result.summary()
+
+
+def test_same_url_in_two_world_feeds_taken_once(tmp_path):
+    """Лента.ру «Россия» и «Мир» регулярно дублируют друг друга."""
+    shared = [("https://shared.example/one", "Одно событие", NOW)]
+    web = FakeWeb({feed_url("Mir"): rss(shared), feed_url("Ria"): rss(shared)})
+    _, pending, _ = run(tmp_path, make_config([], world_feeds=["Mir", "Ria"]), web)
+    assert [w["url"] for w in pending["world"]] == ["https://shared.example/one"]
+
+
+def test_world_items_get_their_own_text_limit(tmp_path, monkeypatch):
+    from izolenta.extract import ArticleContent
+
+    limits = {}
+
+    def fake_article_text(item, fetch, limit):
+        limits[item.url] = limit
+        return ArticleContent(text="Текст заметки.", text_source="article", image=None)
+
+    monkeypatch.setattr("izolenta.collect.article_text", fake_article_text)
+    web = FakeWeb({feed_url("News"): rss(entries("News", 1)), feed_url("Mir"): rss(entries("Mir", 1))})
+    config = make_config(["News"], world_feeds=["Mir"], world_text_limit=1200)
+    run(tmp_path, config, web)
+    assert limits["https://news.example/post-0"] == 8000
+    assert limits["https://mir.example/post-0"] == 1200
+
+
+def test_cdata_title_and_snippet_are_unwrapped(tmp_path):
+    """РБК, Коммерсантъ и N+1 отдают заголовок и анонс в CDATA."""
+    feed = (
+        '<?xml version="1.0"?><rss version="2.0"><channel><title>T</title>'
+        "<item><title><![CDATA[В России утвердили ГОСТ на овощные полуфабрикаты]]></title>"
+        "<link>https://rbc.example/1</link>"
+        "<pubDate>Thu, 08 Oct 2026 10:00:00 +0000</pubDate>"
+        "<description><![CDATA[Документ вступает в силу с 1 января.]]></description></item>"
+        "</channel></rss>"
+    ).encode()
+    web = FakeWeb({feed_url("Rbc"): feed})
+    _, pending, _ = run(tmp_path, make_config([], world_feeds=["Rbc"]), web)
+    [item] = pending["world"]
+    assert item["title"] == "В России утвердили ГОСТ на овощные полуфабрикаты"
+    assert "вступает в силу" in item["snippet"]
+    assert "CDATA" not in item["title"] + item["snippet"]
+
+
+def test_processed_world_items_not_selected_again(tmp_path):
+    from izolenta.feeds import canonical_url, item_id
+
+    world_entries = entries("Mir", 2)
+    done = "world:" + item_id(canonical_url(world_entries[0][0]))
+    web = FakeWeb({feed_url("Mir"): rss(world_entries)})
+    _, pending, _ = run(tmp_path, make_config([], world_feeds=["Mir"]), web, seen={done: seen_entry("skipped")})
+    assert [w["title"] for w in pending["world"]] == ["Mir post 1"]
+
+
+def test_world_candidates_older_than_their_own_window_are_not_selected(tmp_path):
+    """merge хранит общие новости 2 суток: собирать более старые — значит платить за заметку,
+    которую слияние тут же выбросит."""
+    world_entries = [
+        ("https://mir.example/old", "Старая общая новость", NOW - timedelta(hours=40)),
+        ("https://mir.example/new", "Свежая общая новость", NOW - timedelta(hours=1)),
+    ]
+    news_entries = [
+        ("https://news.example/old", "Старая новость про AI", NOW - timedelta(hours=40)),
+        ("https://news.example/new", "Свежая новость про AI", NOW - timedelta(hours=1)),
+    ]
+    web = FakeWeb({feed_url("Mir"): rss(world_entries), feed_url("News"): rss(news_entries)})
+    _, pending, _ = run(tmp_path, make_config(["News"], world_feeds=["Mir"], world_max_age=36), web)
+    assert [w["title"] for w in pending["world"]] == ["Свежая общая новость"]
+    # окно ленты AI/IT (48 часов) не затронуто
+    assert {i["title"] for i in pending["items"]} == {"Старая новость про AI", "Свежая новость про AI"}
+
+
+def test_failing_world_feed_does_not_stop_the_others(tmp_path):
+    web = FakeWeb({feed_url("Mir"): rss(entries("Mir", 1))})  # лента Ria отвечает 404
+    result, pending, _ = run(tmp_path, make_config([], world_feeds=["Mir", "Ria"]), web)
+    assert [w["title"] for w in pending["world"]] == ["Mir post 0"]
+    assert (result.feeds_ok, result.feeds_failed) == (1, 1)
+    assert any(e["feed"] == "Ria" for e in pending["errors"])
