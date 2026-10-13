@@ -21,6 +21,8 @@ from izolenta.xposts import XError, XPost, fetch_posts
 FINAL_STATUSES = {"done", "skipped", "failed"}
 ACCOUNT_RETRY_DELAY = 2  # seconds before retrying a failed X account
 HABR_PREFIX = "habr:"  # Habr articles live in their own id space: the same URL is a different job
+WORLD_PREFIX = "world:"  # general news lives in its own id space too
+PREFIX_BY_KIND = {"habr": HABR_PREFIX, "world": WORLD_PREFIX}
 
 
 def iso_z(moment: datetime) -> str:
@@ -42,6 +44,8 @@ class CollectResult:
     sources: list[dict[str, Any]] = field(default_factory=list)  # per-source stats for the status page
     habr_candidates: int = 0
     habr: list[dict[str, Any]] | None = None  # None when no feed has kind = "habr"
+    world_candidates: int = 0
+    world: list[dict[str, Any]] | None = None  # None when no feed has kind = "world"
 
     def summary(self) -> str:
         from_article = sum(1 for i in self.items if i["text_source"] == "article")
@@ -50,12 +54,17 @@ class CollectResult:
             f"feeds ok={self.feeds_ok} failed={self.feeds_failed} | "
             f"candidates={self.candidates} | selected={len(self.items)} "
             f"(article={from_article}, snippet={len(self.items) - from_article})"
-        ) + self._posts_summary() + hn + self._habr_summary()
+        ) + self._posts_summary() + hn + self._habr_summary() + self._world_summary()
 
     def _habr_summary(self) -> str:
         if self.habr is None:
             return ""
         return f" | habr: candidates={self.habr_candidates} selected={len(self.habr)}"
+
+    def _world_summary(self) -> str:
+        if self.world is None:
+            return ""
+        return f" | world: candidates={self.world_candidates} selected={len(self.world)}"
 
     def _posts_summary(self) -> str:
         if self.posts is None:
@@ -92,7 +101,7 @@ def _source_stats(name: str, kind: str, error: str | None, entries: int, fresh: 
 
 
 def _state_id(feed: Feed, item: FeedItem) -> str:
-    return HABR_PREFIX + item.id if feed.kind == "habr" else item.id
+    return PREFIX_BY_KIND.get(feed.kind, "") + item.id
 
 
 def _round_robin(per_feed: list[list[Any]], limit: int) -> list[Any]:
@@ -162,16 +171,22 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
         per_feed.append(fresh)
     news_lists = [fresh for feed, fresh in zip(config.feeds, per_feed) if feed.kind == "news"]
     habr_lists = [fresh for feed, fresh in zip(config.feeds, per_feed) if feed.kind == "habr"]
+    world_lists = [fresh for feed, fresh in zip(config.feeds, per_feed) if feed.kind == "world"]
     result.candidates = sum(len(items) for items in news_lists)
 
     selected = _round_robin(news_lists, settings.max_items_per_run)
     habr_selected = _round_robin(habr_lists, settings.max_habr_per_run)
-    picked = {item.id for item in selected + habr_selected}
+    world_selected = _round_robin(world_lists, settings.max_world_per_run)
+    picked = {item.id for item in selected + habr_selected + world_selected}
     for feed, error, items, fresh in zip(config.feeds, feed_errors, fetched, per_feed):
         result.sources.append(_source_stats(feed.name, "feed", error, len(items), fresh, picked))
     with ThreadPoolExecutor(max_workers=settings.fetch_workers) as pool:
         articles = list(
             pool.map(lambda item: article_text(item, fetch, settings.article_text_limit), selected + habr_selected)
+        )
+        # general news gets a tighter limit: one paragraph does not need 5000 characters every hour
+        world_articles = list(
+            pool.map(lambda item: article_text(item, fetch, settings.world_text_limit), world_selected)
         )
     habr_articles = articles[len(selected):]
 
@@ -194,6 +209,27 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
             )
             entry = seen.setdefault(
                 HABR_PREFIX + item.id, {"first_seen": now.isoformat(), "status": "pending", "attempts": 0}
+            )
+            entry["status"] = "pending"
+
+    if any(feed.kind == "world" for feed in config.feeds):
+        result.world_candidates = sum(len(items) for items in world_lists)
+        result.world = []
+        for item, article in zip(world_selected, world_articles):
+            result.world.append(
+                {
+                    "id": WORLD_PREFIX + item.id,
+                    "url": item.url,
+                    "source": item.source,
+                    "title": item.title,
+                    "snippet": item.snippet,
+                    "text": article.text,
+                    "text_source": article.text_source,
+                    "published_at": iso_z(item.published_at),
+                }
+            )
+            entry = seen.setdefault(
+                WORLD_PREFIX + item.id, {"first_seen": now.isoformat(), "status": "pending", "attempts": 0}
             )
             entry["status"] = "pending"
 
@@ -261,6 +297,7 @@ def collect(config: Config, state_dir: Path, fetch: Fetch, now: datetime) -> Col
             "posts": result.posts or [],
             "discussions": result.discussions or [],
             "habr": result.habr or [],
+            "world": result.world or [],
             "errors": result.errors,
             "stats": {"sources": result.sources},
         },
