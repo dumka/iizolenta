@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-14T04:10:28Z",
+  "generated_at": "2026-10-14T05:12:37Z",
   "items": [
+    {
+      "id": "habr:18aa088e3b7bf861",
+      "url": "https://habr.com/ru/articles/1094052/?utm_campaign=1094052&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "SkalolazOther",
+      "published_at": "2026-10-14T05:01:44Z",
+      "title": "Какую MoE-модель выбрать для локального кодинга на GTX 1080 Ti: перплексия против скорости",
+      "summary": "Автор продолжил серию тестов на GTX 1080 Ti с 11 ГБ памяти и сравнил три модели по перплексии на WikiText-2 и корпусе Go-кода, а также по скорости в llama-bench. Qwen3.8-35B-A3B Q4_K_M показала лучшую перплексию на обоих корпусах и 21,4 токена в секунду, что в 5,3 раза быстрее плотной 27B-модели. Дистиллированный вариант IQ3_XXS чуть уступает по качеству, но выдаёт 31,66 токена в секунду, что подойдёт для длинных агентных сессий."
+    },
     {
       "id": "habr:b2209de63ced998e",
       "url": "https://habr.com/ru/articles/1094094/?utm_campaign=1094094&utm_source=habrahabr&utm_medium=rss",
