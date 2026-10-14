@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-14T01:10:25Z",
+  "generated_at": "2026-10-14T02:10:26Z",
   "items": [
+    {
+      "id": "habr:b2209de63ced998e",
+      "url": "https://habr.com/ru/articles/1094094/?utm_campaign=1094094&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "olerast",
+      "published_at": "2026-10-14T01:37:04Z",
+      "title": "Менеджер задач Dela со сквозным шифрованием, который Claude Code написал за 19 часов",
+      "summary": "Автор создал self-hosted менеджер задач Dela с открытым кодом под AGPL-3.0: задачи шифруются на устройстве, а сервер хранит только шифротекст. Ключи выводятся из пароля через Argon2id, а синхронизация идёт по отдельным полям с метками гибридных часов, поэтому правки с телефона и компьютера без сети не конфликтуют. Разбор пригодится тем, кто проектирует офлайн-синхронизацию и шифрование на стороне клиента."
+    },
     {
       "id": "habr:e13deeca2194c9e7",
       "url": "https://habr.com/ru/articles/1094080/?utm_campaign=1094080&utm_source=habrahabr&utm_medium=rss",

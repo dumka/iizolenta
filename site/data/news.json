@@ -1,6 +1,23 @@
 {
-  "generated_at": "2026-10-14T01:10:25Z",
+  "generated_at": "2026-10-14T02:10:26Z",
   "items": [
+    {
+      "id": "4df8db1cf05f1a6f",
+      "url": "https://habr.com/ru/news/1093520/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1093520",
+      "source": "Хабр Новости",
+      "published_at": "2026-10-14T02:04:17Z",
+      "category": "dev",
+      "importance": 1,
+      "title": "Вышел почтовый клиент Mozilla Thunderbird 158.0 для Windows, macOS и Linux",
+      "lead": "Разработчики Mozilla выпустили Thunderbird 158.0: ускорен быстрый фильтр, исправлены 26 ошибок и уязвимости.",
+      "body": [
+        "Релиз Mozilla Thunderbird 158.0 состоялся 13 октября 2026 года. Бесплатный кроссплатформенный клиент для электронной почты и новостных лент доступен для Windows, macOS и Linux в канале Release Channel.",
+        "Среди изменений — повышенная скорость отклика быстрого фильтра. Политика ExtensionSettings теперь устанавливает дополнения из update_url, если не задан install_url. Кроме того, исправлены 26 ошибок, обнаруженных после выпуска предыдущей стабильной сборки, а также выпущены патчи безопасности против ранее найденных уязвимостей.",
+        "Версия 158 не относится к ESR-выпускам. Для пользователей, которым нужна долгосрочная поддержка, на сайте проекта остаётся Thunderbird 153.4 ESR, а для Windows 7 и 8.1 — 115.18.0. Ветка 153 ESR вышла в июле 2026 года, обновления для неё будут выпускаться в течение года.",
+        "Ранее команда Thunderbird сообщила о начале разработки нативного приложения для iPhone и iPad: официального клиента для iOS у проекта много лет не было. В планах сообщества — тестирование этого решения."
+      ],
+      "image": "https://habr.com/share/publication/1093520/181f34a9e0c3e5df294a7ead302b565f/"
+    },
     {
       "id": "2ce212c19db2f99b",
       "url": "https://techcrunch.com/2026/10/13/science-corporation-implants-its-vision-restoring-chip-in-its-first-stargardt-disease-patient/",
