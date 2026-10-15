@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-15T04:10:18Z",
+  "generated_at": "2026-10-15T05:13:42Z",
   "items": [
+    {
+      "id": "habr:6b46135e795337e6",
+      "url": "https://habr.com/ru/articles/1094534/?utm_campaign=1094534&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "SkalolazOther",
+      "published_at": "2026-10-15T05:00:20Z",
+      "title": "Как я подружил llama-server с Claude Code: доработка Go-лаунчера для локальных LLM",
+      "summary": "Автор доработал свой Go-лаунчер llama-runner так, чтобы он запускал llama-server, ждал его готовности через опрос /health и стартовал Claude Code с нужными переменными окружения. По пути он решил три проблемы: подстановку имени модели через флаг -alias, порчу интерфейса Claude Code логами сервера и ошибку Jinja-шаблона Qwen, требующего системное сообщение первым. Пригодится тем, кто запускает локальные модели с агентной оболочкой."
+    },
     {
       "id": "habr:fef715cf96a0ec03",
       "url": "https://habr.com/ru/articles/1094562/?utm_campaign=1094562&utm_source=habrahabr&utm_medium=rss",
