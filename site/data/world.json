@@ -1,6 +1,14 @@
 {
-  "generated_at": "2026-10-16T00:11:40Z",
+  "generated_at": "2026-10-16T01:10:21Z",
   "items": [
+    {
+      "id": "world:2e96b1df356f07e9",
+      "url": "https://www.rbc.ru/technology_and_media/11/10/2026/6acb71e268f6a82fc5bf9027",
+      "source": "РБК",
+      "published_at": "2026-10-16T00:14:15Z",
+      "title": "Систему мирового времени решили изменить из-за вращения Земли",
+      "summary": "Новые правила согласования мирового времени с вращением Земли начнут действовать в 2027 году. По данным The Guardian, первая корректировка сразу на час может понадобиться лишь через тысячи лет. Реформа призвана защитить компьютерные системы от сбоев."
+    },
     {
       "id": "world:aafac908e8f418f8",
       "url": "https://lenta.ru/news/2026/10/16/ryad-kompaniy-v-rossii-obyazali-soglasovyvat-deystviya-po-inostrannym-trebovaniyam/",
