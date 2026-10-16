@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-16T17:13:38Z",
+  "generated_at": "2026-10-16T18:13:09Z",
   "items": [
+    {
+      "id": "habr:bfd4cd96afa0be3f",
+      "url": "https://habr.com/ru/articles/1095474/?utm_campaign=1095474&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "Nikuson",
+      "published_at": "2026-10-16T17:59:35Z",
+      "title": "Генерация картинок по тексту на микроконтроллере ESP32-S3 с помощью диффузионного трансформера",
+      "summary": "Автор запустил на ESP32-S3 с 512 КБ памяти латентную диффузию на трансформере: по русскому описанию вроде «улыбающаяся девушка со светлыми волосами» чип за 5,4 секунды рисует лицо 64 на 64 пикселя. Для этого он обучил собственный датасет подписей на CelebA, сжал декодер до 179 тысяч параметров, применил int8-квантование, ассемблер под векторные инструкции и rectified flow за 8 шагов. Полезно тем, кто интересуется ИИ на слабом железе."
+    },
     {
       "id": "habr:fa50b1f8299bcaeb",
       "url": "https://habr.com/ru/companies/yoomoney/articles/1095462/?utm_campaign=1095462&utm_source=habrahabr&utm_medium=rss",
