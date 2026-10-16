@@ -1,6 +1,30 @@
 {
-  "generated_at": "2026-10-16T18:13:09Z",
+  "generated_at": "2026-10-16T19:10:59Z",
   "items": [
+    {
+      "id": "x:2111171225418408236",
+      "url": "https://x.com/emollick/status/2111171225418408236",
+      "author_handle": "emollick",
+      "author_name": "Ethan Mollick",
+      "published_at": "2026-10-16T19:03:38Z",
+      "text": "Статью о том, как команда агентов Gemini 4 прошла Minecraft, стоит посмотреть. Это доступный пример (отчасти потому, что текст написан ИИ) спонтанной координации агентов для достижения сложной цели, и их подход отличается от человеческого."
+    },
+    {
+      "id": "x:2111158659971699136",
+      "url": "https://x.com/bcherny/status/2111158659971699136",
+      "author_handle": "bcherny",
+      "author_name": "Boris Cherny",
+      "published_at": "2026-10-16T18:13:42Z",
+      "text": "Не недооценивайте Claude Slides. Теперь я делаю слайды именно так — больше не нужно гуглить «iphone frame svg», как в старые времена.\n\nПопробуйте: claude.ai/artifacts"
+    },
+    {
+      "id": "x:2111158313463525518",
+      "url": "https://x.com/bcherny/status/2111158313463525518",
+      "author_handle": "bcherny",
+      "author_name": "Boris Cherny",
+      "published_at": "2026-10-16T18:12:20Z",
+      "text": "О выходе Code Review для Claude Team и Enterprise: я не могу представить, как быть продуктивным без Claude Code Review. Он запускается на всех моих PR и ловит почти каждый баг до слияния. Это часть секретного рецепта, благодаря которому мы с командой двигаемся так быстро и при этом поднимаем планку качества."
+    },
     {
       "id": "x:2111130577789493706",
       "url": "https://x.com/sama/status/2111130577789493706",

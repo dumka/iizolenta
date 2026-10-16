@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-16T18:13:09Z",
+  "generated_at": "2026-10-16T19:10:59Z",
   "items": [
+    {
+      "id": "habr:f11c31798072e065",
+      "url": "https://habr.com/ru/articles/1095484/?utm_campaign=1095484&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "Manwe_SandS",
+      "published_at": "2026-10-16T18:19:04Z",
+      "title": "Калибровка параметров шахматного движка с помощью Claude и самописного дашборда",
+      "summary": "Автор настраивал свой шахматный движок, гоняя ночами матчи по 10-60 партий против программ-конкурентов под управлением скриптов, которые написал Claude. Анализ данных в ИИ-чате оказался малополезным, зато статистику в csv помог превратить в дашборд на php и JavaScript, спроектированный за двухдневную сессию в Claude Design по наброску из Figma. Полезно тем, кто настраивает движки и строит инструменты для анализа экспериментов."
+    },
     {
       "id": "habr:bfd4cd96afa0be3f",
       "url": "https://habr.com/ru/articles/1095474/?utm_campaign=1095474&utm_source=habrahabr&utm_medium=rss",
