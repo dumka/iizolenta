@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-18T20:09:53Z",
+  "generated_at": "2026-10-18T21:10:34Z",
   "items": [
+    {
+      "id": "habr:dcb82e14f7a87df0",
+      "url": "https://habr.com/ru/articles/1095974/?utm_campaign=1095974&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "ivaneremenko",
+      "published_at": "2026-10-18T20:18:16Z",
+      "title": "Как превратить Cursor в долговременную память проекта: LLM Wiki, QMD и Cursor CLI",
+      "summary": "Автор внедрил в Cursor концепцию LLM Wiki Андрея Карпати: неизменяемый слой первоисточников, связанная Markdown-вики с выводами агента и локальный гибридный поиск QMD. Он описывает путь через отвергнутые варианты, включая внешний agent harness, локальную модель и отдельный MCP-контур, и приходит к более простой схеме из project skills и детерминированных скриптов вокруг Cursor CLI. Полезно тем, кто ведёт длинные проекты с агентом и хочет не объяснять ему контекст заново в каждой сессии."
+    },
     {
       "id": "habr:a01ca5ce6656dba6",
       "url": "https://habr.com/ru/articles/1095958/?utm_campaign=1095958&utm_source=habrahabr&utm_medium=rss",
