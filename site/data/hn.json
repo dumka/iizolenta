@@ -1,6 +1,16 @@
 {
-  "generated_at": "2026-10-18T18:10:24Z",
+  "generated_at": "2026-10-18T19:10:46Z",
   "items": [
+    {
+      "id": "hn:50141909",
+      "hn_url": "https://news.ycombinator.com/item?id=50141909",
+      "url": "https://developer.apple.com/forums/verify-human/verify.html?next=/forums/thread/850550",
+      "points": 208,
+      "comments": 196,
+      "published_at": "2026-10-18T15:26:06Z",
+      "title": "macOS 15.8.2 ломает OpenGL",
+      "summary": "Участники обсуждают сообщение с форума разработчиков Apple о поломке OpenGL в бета-сборке macOS 15.8.2. Один из комментаторов напоминает, что релиз ещё не вышел, а инженер Apple в теме уже признал ошибку и завёл на неё номер. Другие вспоминают, что OpenGL объявлен устаревшим с 2018 года, и жалуются на общее падение качества программ Apple; кто-то замечает, что на macOS 26.6 проблема не воспроизводится. Рекомендуют переходить на Vulkan поверх Metal: LunarG недавно получила для него соответствие Vulkan 1.4."
+    },
     {
       "id": "hn:50138531",
       "hn_url": "https://news.ycombinator.com/item?id=50138531",
