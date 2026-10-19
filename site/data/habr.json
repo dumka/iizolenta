@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-18T23:10:16Z",
+  "generated_at": "2026-10-19T00:10:47Z",
   "items": [
+    {
+      "id": "habr:7bca56fabfa3b295",
+      "url": "https://habr.com/ru/articles/1095994/?utm_campaign=1095994&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "achekalin",
+      "published_at": "2026-10-19T00:01:14Z",
+      "title": "Apple Intelligence за два года выросла с 4 до 14 гигабайт на накопителе",
+      "summary": "Автор вспоминает, как Apple обещала умную Siri и приватный локальный ИИ, а на деле пользователи получили ограниченные функции вроде сводок уведомлений и перенос персональной Siri на 2026 год. Объём локальных моделей тем временем рос: около 4 ГБ в первой версии, 7 ГБ через два месяца, а для iOS 27 и macOS 27 в сентябре 2026 года компания указывает 8 или 14 ГБ в зависимости от устройства."
+    },
     {
       "id": "habr:c08c3f1b0c88c651",
       "url": "https://habr.com/ru/articles/1091900/?utm_campaign=1091900&utm_source=habrahabr&utm_medium=rss",
