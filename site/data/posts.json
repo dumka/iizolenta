@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-19T17:11:50Z",
+  "generated_at": "2026-10-19T18:12:24Z",
   "items": [
     {
       "id": "x:2112165213202157907",
@@ -96,14 +96,6 @@
       "author_name": "Boris Cherny",
       "published_at": "2026-10-16T18:13:42Z",
       "text": "Не недооценивайте Claude Slides. Теперь я делаю слайды именно так — больше не нужно гуглить «iphone frame svg», как в старые времена.\n\nПопробуйте: claude.ai/artifacts"
-    },
-    {
-      "id": "x:2111158313463525518",
-      "url": "https://x.com/bcherny/status/2111158313463525518",
-      "author_handle": "bcherny",
-      "author_name": "Boris Cherny",
-      "published_at": "2026-10-16T18:12:20Z",
-      "text": "О выходе Code Review для Claude Team и Enterprise: я не могу представить, как быть продуктивным без Claude Code Review. Он запускается на всех моих PR и ловит почти каждый баг до слияния. Это часть секретного рецепта, благодаря которому мы с командой двигаемся так быстро и при этом поднимаем планку качества."
     }
   ]
 }
