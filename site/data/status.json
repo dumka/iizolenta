@@ -1,6 +1,526 @@
 {
-  "generated_at": "2026-10-20T03:09:59Z",
+  "generated_at": "2026-10-20T04:10:27Z",
   "runs": [
+    {
+      "collected_at": "2026-10-20T04:09:17Z",
+      "merged_at": "2026-10-20T04:10:27Z",
+      "sources": [
+        {
+          "name": "TechCrunch",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "TechCrunch Startups",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 19,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The Verge",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "MIT Technology Review",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Ars Technica",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Wired",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Simon Willison",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 30,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "GitHub Blog",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The New Stack",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 26,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Google AI Blog",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Hugging Face",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 882,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "OpenAI",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 1300,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Boris Cherny",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "One Useful Thing",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The Decoder",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The Register",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 50,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "The Guardian",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 1,
+          "selected": 1
+        },
+        {
+          "name": "The Next Web",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Tech.eu",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Silicon Republic",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Хабр: ИИ",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 40,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Хабр: ML",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 40,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Хабр Новости",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 40,
+          "candidates": 1,
+          "selected": 1
+        },
+        {
+          "name": "CNews",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 200,
+          "candidates": 2,
+          "selected": 2
+        },
+        {
+          "name": "3DNews",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 383,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Код Дурова",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 15,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "Hacker News",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 11,
+          "candidates": 1,
+          "selected": 1
+        },
+        {
+          "name": "Лента.ру: Россия",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 200,
+          "candidates": 1,
+          "selected": 1
+        },
+        {
+          "name": "Лента.ру: Мир",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 200,
+          "candidates": 14,
+          "selected": 8
+        },
+        {
+          "name": "Лента.ру: Экономика",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 200,
+          "candidates": 1,
+          "selected": 1
+        },
+        {
+          "name": "Лента.ру: Наука",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 200,
+          "candidates": 1,
+          "selected": 1
+        },
+        {
+          "name": "РИА Новости",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 99,
+          "candidates": 67,
+          "selected": 8
+        },
+        {
+          "name": "РБК",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 30,
+          "candidates": 2,
+          "selected": 2
+        },
+        {
+          "name": "Коммерсантъ",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 47,
+          "candidates": 2,
+          "selected": 2
+        },
+        {
+          "name": "N+1",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "62info",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 20,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "YA62",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 100,
+          "candidates": 2,
+          "selected": 2
+        },
+        {
+          "name": "Рязанские ведомости",
+          "kind": "feed",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@karpathy",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@bcherny",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 4,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@sama",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 15,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@emollick",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 13,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@DrJimFan",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 12,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@fchollet",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 8,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@simonw",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 10,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@OfficialLoganK",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 14,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@swyx",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 6,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@AndrewYNg",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 18,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@gdb",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 15,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@demishassabis",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 1,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@JeffDean",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 9,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "@AmandaAskell",
+          "kind": "x",
+          "ok": true,
+          "error": null,
+          "entries": 14,
+          "candidates": 0,
+          "selected": 0
+        },
+        {
+          "name": "HN discussions",
+          "kind": "hn",
+          "ok": true,
+          "error": null,
+          "entries": 29,
+          "candidates": 1,
+          "selected": 1
+        }
+      ],
+      "result": {
+        "items": {
+          "merged": 3,
+          "skipped": 2,
+          "invalid": 0,
+          "missing": 0,
+          "failed": 0
+        },
+        "posts": {
+          "merged": 0,
+          "skipped": 0,
+          "invalid": 0,
+          "missing": 0,
+          "failed": 0
+        },
+        "discussions": {
+          "merged": 1,
+          "skipped": 0,
+          "invalid": 0,
+          "missing": 0,
+          "failed": 0
+        },
+        "habr": {
+          "merged": 0,
+          "skipped": 0,
+          "invalid": 0,
+          "missing": 0,
+          "failed": 0
+        },
+        "world": {
+          "merged": 2,
+          "skipped": 23,
+          "invalid": 0,
+          "missing": 0,
+          "failed": 0
+        }
+      }
+    },
     {
       "collected_at": "2026-10-20T03:08:34Z",
       "merged_at": "2026-10-20T03:09:59Z",
@@ -24440,529 +24960,443 @@
           "failed": 0
         }
       }
-    },
-    {
-      "collected_at": "2026-10-18T04:08:50Z",
-      "merged_at": "2026-10-18T04:09:59Z",
-      "sources": [
-        {
-          "name": "TechCrunch",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 20,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "TechCrunch Startups",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 20,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "The Verge",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 10,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "MIT Technology Review",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 10,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Ars Technica",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 20,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Wired",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 10,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Simon Willison",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 30,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "GitHub Blog",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 10,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "The New Stack",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 26,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Google AI Blog",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 20,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Hugging Face",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 880,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "OpenAI",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 1299,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Boris Cherny",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 10,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "One Useful Thing",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 20,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "The Decoder",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 10,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "The Register",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 50,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "The Guardian",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 20,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "The Next Web",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 10,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Tech.eu",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 20,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Silicon Republic",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 20,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Хабр: ИИ",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 40,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Хабр: ML",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 40,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Хабр Новости",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 40,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "CNews",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 200,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "3DNews",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 386,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Код Дурова",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 15,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Hacker News",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 13,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Лента.ру: Россия",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 200,
-          "candidates": 6,
-          "selected": 6
-        },
-        {
-          "name": "Лента.ру: Мир",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 200,
-          "candidates": 2,
-          "selected": 2
-        },
-        {
-          "name": "Лента.ру: Экономика",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 200,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "Лента.ру: Наука",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 200,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "РИА Новости",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 99,
-          "candidates": 21,
-          "selected": 13
-        },
-        {
-          "name": "РБК",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 30,
-          "candidates": 3,
-          "selected": 3
-        },
-        {
-          "name": "Коммерсантъ",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 15,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "N+1",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 10,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "62info",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 20,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "YA62",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 100,
-          "candidates": 1,
-          "selected": 1
-        },
-        {
-          "name": "Рязанские ведомости",
-          "kind": "feed",
-          "ok": true,
-          "error": null,
-          "entries": 10,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "@karpathy",
-          "kind": "x",
-          "ok": false,
-          "error": "https://api.fxtwitter.com/2/profile/karpathy/statuses?count=20: HTTP 404 ({\"code\":404,\"results\":[],\"cursor\":{\"top\":null,\"bottom\":null}})",
-          "entries": 0,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "@bcherny",
-          "kind": "x",
-          "ok": true,
-          "error": null,
-          "entries": 4,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "@sama",
-          "kind": "x",
-          "ok": true,
-          "error": null,
-          "entries": 15,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "@emollick",
-          "kind": "x",
-          "ok": true,
-          "error": null,
-          "entries": 13,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "@DrJimFan",
-          "kind": "x",
-          "ok": true,
-          "error": null,
-          "entries": 12,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "@fchollet",
-          "kind": "x",
-          "ok": true,
-          "error": null,
-          "entries": 11,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "@simonw",
-          "kind": "x",
-          "ok": true,
-          "error": null,
-          "entries": 10,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "@OfficialLoganK",
-          "kind": "x",
-          "ok": false,
-          "error": "https://api.fxtwitter.com/2/profile/OfficialLoganK/statuses?count=20: HTTP 404 ({\"code\":404,\"results\":[],\"cursor\":{\"top\":null,\"bottom\":null}})",
-          "entries": 0,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "@swyx",
-          "kind": "x",
-          "ok": true,
-          "error": null,
-          "entries": 6,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "@AndrewYNg",
-          "kind": "x",
-          "ok": true,
-          "error": null,
-          "entries": 18,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "@gdb",
-          "kind": "x",
-          "ok": true,
-          "error": null,
-          "entries": 15,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "@demishassabis",
-          "kind": "x",
-          "ok": true,
-          "error": null,
-          "entries": 2,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "@JeffDean",
-          "kind": "x",
-          "ok": true,
-          "error": null,
-          "entries": 9,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "@AmandaAskell",
-          "kind": "x",
-          "ok": true,
-          "error": null,
-          "entries": 15,
-          "candidates": 0,
-          "selected": 0
-        },
-        {
-          "name": "HN discussions",
-          "kind": "hn",
-          "ok": true,
-          "error": null,
-          "entries": 30,
-          "candidates": 0,
-          "selected": 0
-        }
-      ],
-      "result": {
-        "items": {
-          "merged": 0,
-          "skipped": 0,
-          "invalid": 0,
-          "missing": 0,
-          "failed": 0
-        },
-        "posts": {
-          "merged": 0,
-          "skipped": 0,
-          "invalid": 0,
-          "missing": 0,
-          "failed": 0
-        },
-        "discussions": {
-          "merged": 0,
-          "skipped": 0,
-          "invalid": 0,
-          "missing": 0,
-          "failed": 0
-        },
-        "habr": {
-          "merged": 0,
-          "skipped": 0,
-          "invalid": 0,
-          "missing": 0,
-          "failed": 0
-        },
-        "world": {
-          "merged": 1,
-          "skipped": 24,
-          "invalid": 0,
-          "missing": 0,
-          "failed": 0
-        }
-      }
     }
   ],
   "materials": [
+    {
+      "id": "world:d8e581a5b8233770",
+      "kind": "world",
+      "source": "РИА Новости",
+      "title": "Молдавия задержала еще двух пограничников Киева при преследовании украинца",
+      "url": "https://ria.ru/20261020/moldaviya-2125524094.html",
+      "text_source": "article",
+      "published_at": "2026-10-20T04:06:56Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "частный пограничный инцидент",
+      "attempts": 1
+    },
+    {
+      "id": "world:358f054e06854fc3",
+      "kind": "world",
+      "source": "РБК",
+      "title": "Axios узнал о планах Уиткоффа посетить Москву после переговоров в Осло",
+      "url": "https://www.rbc.ru/politics/20/10/2026/6ad6e75dd2f9e6d2fede03ed",
+      "text_source": "snippet",
+      "published_at": "2026-10-20T04:06:31Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "планы визита по данным СМИ, события нет",
+      "attempts": 1
+    },
+    {
+      "id": "world:6c82c56f9197a5f6",
+      "kind": "world",
+      "source": "РИА Новости",
+      "title": "Два российских бойца три месяца вели разведку в тылу ВСУ",
+      "url": "https://ria.ru/20261020/spetsoperatsiya-2125523837.html",
+      "text_source": "article",
+      "published_at": "2026-10-20T04:03:25Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "военная сводка",
+      "attempts": 1
+    },
+    {
+      "id": "world:e476f3096e55c2a3",
+      "kind": "world",
+      "source": "YA62",
+      "title": "Оценку за поведение изменят: что ждет учителей и школьников",
+      "url": "https://ya62.ru/text/education/2026/10/20/76711614/",
+      "text_source": "article",
+      "published_at": "2026-10-20T04:02:54Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "заявление сенатора о доработке эксперимента, решения нет",
+      "attempts": 1
+    },
+    {
+      "id": "world:71d282643c1849f9",
+      "kind": "world",
+      "source": "РИА Новости",
+      "title": "Связисты восстанавливают оптоволоконные линии в ЛНР после атак БПЛА ВСУ",
+      "url": "https://ria.ru/20261020/spetsoperatsiya-2125523695.html",
+      "text_source": "article",
+      "published_at": "2026-10-20T04:02:16Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "военная сводка",
+      "attempts": 1
+    },
+    {
+      "id": "world:7c1b3acf55e1dc5f",
+      "kind": "world",
+      "source": "Лента.ру: Россия",
+      "title": "Экономист предупредил россиян о ведущих к переплате налогов ошибки",
+      "url": "https://lenta.ru/news/2026/10/20/ekonomist-predupredil-rossiyan-o-veduschih-k-pereplate-nalogov-oshibki/",
+      "text_source": "article",
+      "published_at": "2026-10-20T04:01:04Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "совет экономиста без события",
+      "attempts": 1
+    },
+    {
+      "id": "world:feeccc089c1c1b6f",
+      "kind": "world",
+      "source": "Лента.ру: Мир",
+      "title": "Вероятность появления первого крайне правого правительства в Германии оценили",
+      "url": "https://lenta.ru/news/2026/10/19/germany3/",
+      "text_source": "article",
+      "published_at": "2026-10-20T04:00:27Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "мнение политолога в интервью, события нет",
+      "attempts": 1
+    },
+    {
+      "id": "1de46a382cea5aae",
+      "kind": "article",
+      "source": "The Guardian",
+      "title": "‘These risks are real’: the threat of AI bioweapons – podcast",
+      "url": "https://www.theguardian.com/science/audio/2026/oct/20/these-risks-are-real-the-threat-of-ai-bioweapons-podcast",
+      "text_source": "article",
+      "published_at": "2026-10-20T04:00:15Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "выпуск подкаста без фактов: только анонс разговора",
+      "attempts": 1
+    },
+    {
+      "id": "world:5bed1add5d112502",
+      "kind": "world",
+      "source": "Коммерсантъ",
+      "title": "Метром не вышли // Ввод ИЖС в России снизился на 21%",
+      "url": "https://www.kommersant.ru/doc/9042244",
+      "text_source": "article",
+      "published_at": "2026-10-20T04:00:00Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "published",
+      "reason": null,
+      "attempts": 1
+    },
+    {
+      "id": "world:aa2a996cf054c381",
+      "kind": "world",
+      "source": "YA62",
+      "title": "Цена импортозамещения. Раскрыта стоимость обновленного люкс-седана Aurus Senat — держитесь крепче",
+      "url": "https://ya62.ru/text/auto/2026/10/20/76708191/",
+      "text_source": "article",
+      "published_at": "2026-10-20T04:00:00Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "презентация автомобиля, частное коммерческое событие",
+      "attempts": 1
+    },
+    {
+      "id": "world:2c4ef7097b77a634",
+      "kind": "world",
+      "source": "РИА Новости",
+      "title": "Axios утверждает, что Уиткофф встретится с Зеленским в Осло во вторник",
+      "url": "https://ria.ru/20261020/vstrecha-2125523553.html",
+      "text_source": "article",
+      "published_at": "2026-10-20T03:58:38Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "анонс встречи по анонимному источнику, события нет",
+      "attempts": 1
+    },
+    {
+      "id": "343acdfd498c3e35",
+      "kind": "article",
+      "source": "CNews",
+      "title": "«ПланФикс» запустил ИИ-конфигуратор для внедрения системы за три минуты",
+      "url": "https://www.cnews.ru/news/line/2026-10-20_planfiks_zapustil_ii-konfigurator",
+      "text_source": "article",
+      "published_at": "2026-10-20T03:58:00Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "published",
+      "reason": null,
+      "attempts": 1
+    },
+    {
+      "id": "world:ee2164630b3e0336",
+      "kind": "world",
+      "source": "РИА Новости",
+      "title": "СК: убийцы криптобизнесмена Новака устроили вечеринку на его вилле",
+      "url": "https://ria.ru/20261020/sledy-2125523316.html",
+      "text_source": "article",
+      "published_at": "2026-10-20T03:50:01Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "криминал, частное дело",
+      "attempts": 1
+    },
+    {
+      "id": "world:6fab61dc87379d50",
+      "kind": "world",
+      "source": "РИА Новости",
+      "title": "СМИ: Уиткофф после встречи с делегациями Киева и ЕС в Осло поедет в Москву",
+      "url": "https://ria.ru/20261020/uitkoff-2125523222.html",
+      "text_source": "article",
+      "published_at": "2026-10-20T03:48:02Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "планы визита по анонимному источнику, события нет",
+      "attempts": 1
+    },
+    {
+      "id": "world:298f11ec780c10ce",
+      "kind": "world",
+      "source": "Лента.ру: Мир",
+      "title": "Стало известно об угрозах Трампу из-за его политики в отношении России",
+      "url": "https://lenta.ru/news/2026/10/20/stalo-izvestno-ob-ugrozah-trampu-iz-za-ego-politiki-v-otnoshenii-rossii/",
+      "text_source": "article",
+      "published_at": "2026-10-20T03:47:00Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "угрозы депутатов без принятого решения",
+      "attempts": 1
+    },
+    {
+      "id": "3ade2623e70b4144",
+      "kind": "article",
+      "source": "CNews",
+      "title": "Молодые ученые Сеченовского университета создали ИИ-помощника для женщин, проходящих ЭКО",
+      "url": "https://www.cnews.ru/news/line/2026-10-20_molodye_uchenye_sechenovskogo",
+      "text_source": "article",
+      "published_at": "2026-10-20T03:44:00Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "published",
+      "reason": null,
+      "attempts": 1
+    },
+    {
+      "id": "world:a39998478acc338a",
+      "kind": "world",
+      "source": "РИА Новости",
+      "title": "Аракчи заявил о тесном сотрудничестве Ирана и России",
+      "url": "https://ria.ru/20261020/arakchi-2125523049.html",
+      "text_source": "article",
+      "published_at": "2026-10-20T03:42:08Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "заявление без решения",
+      "attempts": 1
+    },
+    {
+      "id": "world:27b66d80c62b7c58",
+      "kind": "world",
+      "source": "РИА Новости",
+      "title": "В США раскрыли, какого события в ноябре испугались в Киеве",
+      "url": "https://ria.ru/20261020/ukraina-2125522905.html",
+      "text_source": "article",
+      "published_at": "2026-10-20T03:40:36Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "предположения СМИ, события нет",
+      "attempts": 1
+    },
+    {
+      "id": "world:df9e247d9889915a",
+      "kind": "world",
+      "source": "Лента.ру: Мир",
+      "title": "Подросток порезал российскую туристку в центре одного из популярнейших городов мира",
+      "url": "https://lenta.ru/news/2026/10/20/podrostok-porezal-rossiyskuyu-turistku-v-tsentre-odnogo-iz-populyarneyshih-gorodov-mira/",
+      "text_source": "article",
+      "published_at": "2026-10-20T03:37:00Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "частное происшествие",
+      "attempts": 1
+    },
+    {
+      "id": "world:6d4f1a9b3d7d8adb",
+      "kind": "world",
+      "source": "РБК",
+      "title": "Трамп заявил, что Париж скоро станет мусульманским городом",
+      "url": "https://www.rbc.ru/rbcfreenews/6ad6326a01be9e15b3020d2b",
+      "text_source": "snippet",
+      "published_at": "2026-10-20T03:31:50Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "заявление без решения",
+      "attempts": 1
+    },
+    {
+      "id": "world:706df360bec52e27",
+      "kind": "world",
+      "source": "Лента.ру: Наука",
+      "title": "В Windows 11 нашли секрет",
+      "url": "https://lenta.ru/news/2026/10/20/windows-secret/",
+      "text_source": "article",
+      "published_at": "2026-10-20T03:31:18Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "курьёз о старом коде в Windows, шире частного случая не влияет",
+      "attempts": 1
+    },
+    {
+      "id": "world:47189f8f5a507ba5",
+      "kind": "world",
+      "source": "Лента.ру: Экономика",
+      "title": "Россиянам напомнили о возможности вернуть деньги за дефекты жилья",
+      "url": "https://lenta.ru/news/2026/10/20/rossiyanam-napomnili-o-vozmozhnosti-vernut-dengi-za-defekty-zhilya/",
+      "text_source": "article",
+      "published_at": "2026-10-20T03:31:04Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "совет эксперта без события",
+      "attempts": 1
+    },
+    {
+      "id": "world:39b518be9ffd408e",
+      "kind": "world",
+      "source": "Коммерсантъ",
+      "title": "На пять с плюсом // МТС предложила абонентам платный доступ к 5G",
+      "url": "https://www.kommersant.ru/doc/9042367",
+      "text_source": "article",
+      "published_at": "2026-10-20T03:30:00Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "published",
+      "reason": null,
+      "attempts": 1
+    },
+    {
+      "id": "51007869df686295",
+      "kind": "article",
+      "source": "Хабр Новости",
+      "title": "Релиз инструмента для работы с MKV-файлами MKVToolNix 103.0",
+      "url": "https://habr.com/ru/news/1096378/?utm_source=habrahabr&utm_medium=rss&utm_campaign=1096378",
+      "text_source": "article",
+      "published_at": "2026-10-20T03:14:15Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "published",
+      "reason": null,
+      "attempts": 1
+    },
+    {
+      "id": "world:e4738180747dbea3",
+      "kind": "world",
+      "source": "Лента.ру: Мир",
+      "title": "В России прокомментировали мирные инициативы Китая по Украине",
+      "url": "https://lenta.ru/news/2026/10/20/v-rossii-prokommentirovali-mirnye-initsiativy-kitaya-po-ukraine/",
+      "text_source": "article",
+      "published_at": "2026-10-20T03:13:00Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "заявление без решения",
+      "attempts": 1
+    },
+    {
+      "id": "hn:50158100",
+      "kind": "discussion",
+      "source": "HN discussions",
+      "title": "Putting Linux on my RTX Spark laptop because I don't have a Microsoft account",
+      "url": "https://news.ycombinator.com/item?id=50158100",
+      "text_source": null,
+      "published_at": "2026-10-19T21:08:18Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "published",
+      "reason": null,
+      "attempts": 1
+    },
+    {
+      "id": "3ebd93b6cddcf272",
+      "kind": "article",
+      "source": "Hacker News",
+      "title": "Ukraine claims first drone evacuation of wounded soldier",
+      "url": "https://www.nbcnews.com/world/ukraine/ukraine-first-drone-evacuation-wounded-soldier-frontlines-hexacopter-rcna604310",
+      "text_source": "article",
+      "published_at": "2026-10-19T15:31:34Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "военная новость, не про ИИ и IT-бизнес",
+      "attempts": 1
+    },
+    {
+      "id": "world:907c59177c2add23",
+      "kind": "world",
+      "source": "Лента.ру: Мир",
+      "title": "Иран выдвинул обвинения в адрес Украины",
+      "url": "https://lenta.ru/news/2026/10/19/iran-vydvinul-obvineniya-v-adres-ukrainy/",
+      "text_source": "article",
+      "published_at": "2026-10-19T13:25:00Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "заявление без решения",
+      "attempts": 1
+    },
+    {
+      "id": "world:076c0003c526dbe5",
+      "kind": "world",
+      "source": "Лента.ру: Мир",
+      "title": "Французские митингующие запланировали новую дату протестов в стране",
+      "url": "https://lenta.ru/news/2026/10/19/frantsuzskie-mitinguyuschie-zaplanirovali-novuyu-datu-protestov-v-strane/",
+      "text_source": "article",
+      "published_at": "2026-10-19T11:27:00Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "анонс акций протеста",
+      "attempts": 1
+    },
+    {
+      "id": "world:f4a545974019519b",
+      "kind": "world",
+      "source": "Лента.ру: Мир",
+      "title": "Трамп объявил о «захвате Франции»",
+      "url": "https://lenta.ru/news/2026/10/19/tramp-ob-yavil-o-zahvate-frantsii/",
+      "text_source": "article",
+      "published_at": "2026-10-19T11:27:00Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "заявление без решения",
+      "attempts": 1
+    },
+    {
+      "id": "world:bac61155fd23c623",
+      "kind": "world",
+      "source": "Лента.ру: Мир",
+      "title": "Во Франции высмеяли заявления о причастности России к беспорядкам в Европе",
+      "url": "https://lenta.ru/news/2026/10/19/vo-frantsii-vysmeyali-zayavleniya-o-prichastnosti-rossii-k-besporyadkam-v-evrope/",
+      "text_source": "article",
+      "published_at": "2026-10-19T11:09:00Z",
+      "collected_at": "2026-10-20T04:09:17Z",
+      "processed_at": "2026-10-20T04:10:27Z",
+      "outcome": "skipped",
+      "reason": "реакция на обвинения, заявление без решения",
+      "attempts": 1
+    },
     {
       "id": "world:bba6e52e03a104c1",
       "kind": "world",
@@ -48187,356 +48621,6 @@
       "processed_at": "2026-10-18T05:10:29Z",
       "outcome": "published",
       "reason": null,
-      "attempts": 1
-    },
-    {
-      "id": "world:b035461e6ee45974",
-      "kind": "world",
-      "source": "РИА Новости",
-      "title": "Центр бокса Умара Кремлева признан потерпевшим по делу о мошенничестве",
-      "url": "https://ria.ru/20261018/delo-2125196724.html",
-      "text_source": "article",
-      "published_at": "2026-10-18T04:05:19Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "суд и криминал без общественного значения",
-      "attempts": 1
-    },
-    {
-      "id": "world:168d452f6082ca91",
-      "kind": "world",
-      "source": "РИА Новости",
-      "title": "СМИ: пожару на военной базе в Канаде предшествовал взрыв",
-      "url": "https://ria.ru/20261018/kanada-2125196588.html",
-      "text_source": "article",
-      "published_at": "2026-10-18T04:03:49Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "published",
-      "reason": null,
-      "attempts": 1
-    },
-    {
-      "id": "world:778995ec3c401a61",
-      "kind": "world",
-      "source": "РБК",
-      "title": "Банки указали на рост запросов данных с банковской тайной от налоговиков",
-      "url": "https://www.rbc.ru/finances/13/10/2026/6acdd876483927e3a7d40667",
-      "text_source": "snippet",
-      "published_at": "2026-10-18T04:03:42Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "в сниппете нет фактов для заметки",
-      "attempts": 1
-    },
-    {
-      "id": "world:1d06c3423e00457b",
-      "kind": "world",
-      "source": "РИА Новости",
-      "title": "Артиллеристы ВС России поразили танк ВСУ в Харьковской области",
-      "url": "https://ria.ru/20261018/spetsoperatsiya-2125196459.html",
-      "text_source": "article",
-      "published_at": "2026-10-18T04:02:15Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "военная сводка",
-      "attempts": 1
-    },
-    {
-      "id": "world:b08ee704f09ff26d",
-      "kind": "world",
-      "source": "РИА Новости",
-      "title": "Пулково просит пассажиров приезжать к скорректированному времени вылета",
-      "url": "https://ria.ru/20261018/pulkovo-2125196334.html",
-      "text_source": "article",
-      "published_at": "2026-10-18T04:01:12Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "военная сводка, оперативная рекомендация аэропорта",
-      "attempts": 1
-    },
-    {
-      "id": "world:2c12551911074d19",
-      "kind": "world",
-      "source": "YA62",
-      "title": "«Мы сами выработали павловский рефлекс у здоровенных хищников»: почему медведи нападают на людей по всей России — биолог назвал причины",
-      "url": "https://ya62.ru/text/animals/2026/10/18/76706351/",
-      "text_source": "article",
-      "published_at": "2026-10-18T04:00:04Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "интервью-объяснение без события",
-      "attempts": 1
-    },
-    {
-      "id": "world:396d1ace69cfc397",
-      "kind": "world",
-      "source": "РИА Новости",
-      "title": "На канадской военной базе произошел пожар",
-      "url": "https://ria.ru/20261018/kanada-2125196191.html",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:59:54Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "дубль world:168d452f6082ca91",
-      "attempts": 1
-    },
-    {
-      "id": "world:36c9b7fb31e19954",
-      "kind": "world",
-      "source": "Лента.ру: Россия",
-      "title": "В Пулково попросили пассажиров не приезжать в аэропорт заблаговременно",
-      "url": "https://lenta.ru/news/2026/10/18/v-pulkovo-poprosili-passazhirov-ne-priezzhat-v-aeroport-zablagovremenno/",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:55:10Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "военная сводка, дубль опубликованной world:763d5308e1eb934b",
-      "attempts": 1
-    },
-    {
-      "id": "world:156a28b64f31d36f",
-      "kind": "world",
-      "source": "РИА Новости",
-      "title": "\"Ближайшие недели\": в Киеве рассказали, что Зеленский задумал против Кличко",
-      "url": "https://ria.ru/20261018/klichko-2125196030.html",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:54:12Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "мнение политолога без решения",
-      "attempts": 1
-    },
-    {
-      "id": "world:686117ed5630ee31",
-      "kind": "world",
-      "source": "РИА Новости",
-      "title": "В Приморье при столкновении трех автомобилей погибла женщина",
-      "url": "https://ria.ru/20261018/primore-2125195859.html",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:49:52Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "частное происшествие: ДТП",
-      "attempts": 1
-    },
-    {
-      "id": "world:4680edfd6e90d76c",
-      "kind": "world",
-      "source": "Лента.ру: Мир",
-      "title": "В США признались в молитве за Францию",
-      "url": "https://lenta.ru/news/2026/10/18/v-ssha-priznalis-v-molitve-za-frantsiyu/",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:49:00Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "заявление без решения",
-      "attempts": 1
-    },
-    {
-      "id": "world:1fc44d08b2911486",
-      "kind": "world",
-      "source": "РИА Новости",
-      "title": "Заявление Путина на Валдае остудило горячие головы в ЕС, заявил Бордюжа",
-      "url": "https://ria.ru/20261018/putin-2125195665.html",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:42:55Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "заявление и комментарий без решения",
-      "attempts": 1
-    },
-    {
-      "id": "world:12c3a5da1b8d31a8",
-      "kind": "world",
-      "source": "Лента.ру: Россия",
-      "title": "Россиянам назвали пять способов распознать фальшивого соцработника",
-      "url": "https://lenta.ru/news/2026/10/18/rossiyanam-nazvali-pyat-sposobov-raspoznat-falshivogo-sotsrabotnika/",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:39:00Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "совет эксперта без события",
-      "attempts": 1
-    },
-    {
-      "id": "world:dc64edb56ef4f930",
-      "kind": "world",
-      "source": "Лента.ру: Мир",
-      "title": "Бывшего премьера Финляндии осудили за ее слова о России",
-      "url": "https://lenta.ru/news/2026/10/18/byvshego-premiera-finlyandii-osudili-za-ee-slova-o-rossii/",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:37:00Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "заявление и реакции без решения",
-      "attempts": 1
-    },
-    {
-      "id": "world:8d3f7b1c942ca2bf",
-      "kind": "world",
-      "source": "РБК",
-      "title": "Два человека погибли при наезде автомобиля на толпу болельщиков в США",
-      "url": "https://www.rbc.ru/rbcfreenews/68d659039a79479915d5be0f",
-      "text_source": "snippet",
-      "published_at": "2026-10-18T03:32:27Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "частное происшествие, мало фактов",
-      "attempts": 1
-    },
-    {
-      "id": "world:5cf8d7b0040096f4",
-      "kind": "world",
-      "source": "Лента.ру: Россия",
-      "title": "Два человека пострадали при пожаре в квартире в Петербурге",
-      "url": "https://lenta.ru/news/2026/10/18/dva-cheloveka-postradali-pri-pozhare-v-kvartire-v-peterburge/",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:32:00Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "частное происшествие: бытовой пожар",
-      "attempts": 1
-    },
-    {
-      "id": "world:c084c727bddade8e",
-      "kind": "world",
-      "source": "РИА Новости",
-      "title": "Дроны \"Севера\" превращают роботов-снабженцев в бомбы у блиндажей ВСУ",
-      "url": "https://ria.ru/20261018/spetsoperatsiya-2125195444.html",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:31:28Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "военная сводка",
-      "attempts": 1
-    },
-    {
-      "id": "world:f301a4f0c8735929",
-      "kind": "world",
-      "source": "РИА Новости",
-      "title": "СМИ: арабская коалиция потеряла военный вертолет на границе с Йеменом",
-      "url": "https://ria.ru/20261018/vertolet-2125195206.html",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:24:32Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "крушение вертолёта, частный военный инцидент",
-      "attempts": 1
-    },
-    {
-      "id": "world:05e524fe5e6f4ff6",
-      "kind": "world",
-      "source": "Лента.ру: Россия",
-      "title": "Стало известно о частичном блэкауте в Петербурге после атаки БПЛА",
-      "url": "https://lenta.ru/news/2026/10/18/stalo-izvestno-o-chastichnom-blekaute-v-peterburge-posle-ataki-bpla/",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:23:00Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "военная сводка о последствиях атаки",
-      "attempts": 1
-    },
-    {
-      "id": "world:a0d2c6bb74692e16",
-      "kind": "world",
-      "source": "Лента.ру: Россия",
-      "title": "ВСУ ударили по дата-центру VK. Что известно о массированной атаке на Ленинградскую область?",
-      "url": "https://lenta.ru/news/2026/10/18/long-vsu-udarili-po-data-tsentru-vk-chto-izvestno-o-massirovannoy-atake-na-leningradskuyu-oblast/",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:22:39Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "военная сводка, дубль опубликованной world:763d5308e1eb934b",
-      "attempts": 1
-    },
-    {
-      "id": "world:3c62937b16252aa2",
-      "kind": "world",
-      "source": "РИА Новости",
-      "title": "При пожаре в квартире в Петербурге пострадали два человека",
-      "url": "https://ria.ru/20261018/pozhar-2125194991.html",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:16:15Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "частное происшествие: бытовой пожар, дубль 5cf8d7b0040096f4",
-      "attempts": 1
-    },
-    {
-      "id": "world:1a471771dc466014",
-      "kind": "world",
-      "source": "РИА Новости",
-      "title": "Главный онколог Москвы назвал факторы риска развития рака молочной железы",
-      "url": "https://ria.ru/20261018/rak-2125194785.html",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:08:49Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "медицинский совет без события",
-      "attempts": 1
-    },
-    {
-      "id": "world:3cf63590325c016d",
-      "kind": "world",
-      "source": "Лента.ру: Россия",
-      "title": "Над Ленинградской областью отразили новую атаку беспилотников",
-      "url": "https://lenta.ru/news/2026/10/18/nad-leningradskoy-oblastyu-otrazili-novuyu-ataku-bespilotnikov/",
-      "text_source": "article",
-      "published_at": "2026-10-18T03:05:00Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "военная сводка",
-      "attempts": 1
-    },
-    {
-      "id": "world:151a3d7990b4f826",
-      "kind": "world",
-      "source": "РИА Новости",
-      "title": "СМИ: пропалестинские активисты портят имущество оборонных компаний Британии",
-      "url": "https://ria.ru/20261018/britanija-2125193371.html",
-      "text_source": "article",
-      "published_at": "2026-10-18T02:37:02Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "мелкий вандализм, не меняет ничего шире частного случая",
-      "attempts": 1
-    },
-    {
-      "id": "world:1b1ad996bd63e5f3",
-      "kind": "world",
-      "source": "РБК",
-      "title": "Трамп назвал «полезным для всего мира» решение по санкциям против России",
-      "url": "https://www.rbc.ru/politics/17/10/2026/6ad3020214f7464331e86a94",
-      "text_source": "snippet",
-      "published_at": "2026-10-18T00:22:51Z",
-      "collected_at": "2026-10-18T04:08:50Z",
-      "processed_at": "2026-10-18T04:09:59Z",
-      "outcome": "skipped",
-      "reason": "заявление без нового решения, дубль опубликованной world:1be4e3547431cae3",
       "attempts": 1
     }
   ]
