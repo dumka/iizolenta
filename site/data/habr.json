@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-20T23:10:41Z",
+  "generated_at": "2026-10-21T00:11:11Z",
   "items": [
+    {
+      "id": "habr:2875e6fb818e78db",
+      "url": "https://habr.com/ru/articles/1097014/?utm_campaign=1097014&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "ysoft",
+      "published_at": "2026-10-20T23:49:47Z",
+      "title": "Sextant 0.12–0.19: 16 релизов open source клиента Kubernetes за двое суток",
+      "summary": "Авторы бесплатного клиента Kubernetes на Rust и Tauri, написанного целиком с помощью Claude Code, за два дня выпустили 16 релизов. В них появились граф живого трафика, 12 проверок best practices, диагностика «почему Service не получает трафик» и разделы для популярных операторов. Статья полезна тем, кто выбирает замену Lens и следит за ИИ-разработкой."
+    },
     {
       "id": "habr:ea8cd341a720f837",
       "url": "https://habr.com/ru/articles/1097010/?utm_campaign=1097010&utm_source=habrahabr&utm_medium=rss",
