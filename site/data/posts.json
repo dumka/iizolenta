@@ -1,6 +1,14 @@
 {
-  "generated_at": "2026-10-22T18:12:01Z",
+  "generated_at": "2026-10-22T19:12:47Z",
   "items": [
+    {
+      "id": "x:2113333859907747871",
+      "url": "https://x.com/bcherny/status/2113333859907747871",
+      "author_handle": "bcherny",
+      "author_name": "Boris Cherny",
+      "published_at": "2026-10-22T18:17:10Z",
+      "text": "Agent Skills начинались как эксперимент в Claude Code. Многие в отрасли его переняли, поэтому мы в Anthropic решили, что правильнее передать стандарт фонду Agentic AI Foundation — рядом с MCP. По данным ClaudeDevs, с декабря 2025 года его внедрили более 70 агентных платформ, среди них ChatGPT, Cursor, GitHub Copilot и VS Code."
+    },
     {
       "id": "x:2113325885491437764",
       "url": "https://x.com/gdb/status/2113325885491437764",
