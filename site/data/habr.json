@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-24T13:11:06Z",
+  "generated_at": "2026-10-24T14:10:42Z",
   "items": [
+    {
+      "id": "habr:a928413788aed14b",
+      "url": "https://habr.com/ru/articles/1098910/?utm_campaign=1098910&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "VVN50",
+      "published_at": "2026-10-24T13:39:31Z",
+      "title": "Glafira for Apache Kafka: открытый desktop-клиент на Rust с MCP-шлюзом, который позволяет LLM читать кластер, но не менять его",
+      "summary": "Автор написал бесплатный клиент для Kafka на Tauri 2, Rust и librdkafka под лицензией Apache 2.0 для macOS, Windows и Linux. Приложение умеет фильтровать сообщения регулярными выражениями и JSONPath, отправлять шаблонные сообщения, управлять топиками и группами, сбрасывать оффсеты и проверять кластер набором встроенных правил. Главная особенность — MCP-шлюз: Claude, Cursor и другие клиенты могут диагностировать кластер и предлагать изменения, но у модели нет ни одного изменяющего инструмента, а применяет правки человек."
+    },
     {
       "id": "habr:36e66c6421bb0eba",
       "url": "https://habr.com/ru/companies/otus/articles/1097872/?utm_campaign=1097872&utm_source=habrahabr&utm_medium=rss",
