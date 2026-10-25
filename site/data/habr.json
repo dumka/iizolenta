@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-25T19:10:38Z",
+  "generated_at": "2026-10-25T20:10:44Z",
   "items": [
+    {
+      "id": "habr:399392ab7d57b8ca",
+      "url": "https://habr.com/ru/articles/1099230/?utm_campaign=1099230&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "v1st",
+      "published_at": "2026-10-25T19:30:43Z",
+      "title": "Эксперимент по созданию автономного терминального агента на базе Opencode, перенесённого на Emacs Lisp",
+      "summary": "Автор с апреля по октябрь 2026 года проверял, можно ли на локальной машине с видеокартой на 12 ГБ получить от компактной модели на 8 млрд параметров пользу, сравнимую с гораздо более крупными. Он поручил Opencode с моделью minimax m2.5 перенести собственный код на Emacs Lisp и запускал оба приложения в Docker. Для памяти агента и проверки сгенерированного кода использовано хранилище на Apache Jena Fuseki с семантическим поиском существующих функций против галлюцинаций."
+    },
     {
       "id": "habr:6de3620b0028da6f",
       "url": "https://habr.com/ru/articles/1099222/?utm_campaign=1099222&utm_source=habrahabr&utm_medium=rss",
