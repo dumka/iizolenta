@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-25T04:09:27Z",
+  "generated_at": "2026-10-25T05:10:28Z",
   "items": [
+    {
+      "id": "habr:43b627e15180c729",
+      "url": "https://habr.com/ru/articles/1098980/?utm_campaign=1098980&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "xaht88",
+      "published_at": "2026-10-25T04:08:27Z",
+      "title": "Краткий обзор Oh-My-Pi — консольного ИИ-агента с моделью-советником и субагентами",
+      "summary": "Автор знакомит с консольным агентом oh-my-pi (OMP), менее известным, чем Claude Code и opencode: он работает с LiteLLM, Ollama, LM Studio и llama.cpp, умеет запускать субагентов и подключать отдельную модель-советника, следящую за каждым ходом. В его настройке советником выступила deepseek-v4-pro, а код писала локальная модель на домашнем GPU-сервере — по оценке автора, это заметно экономит бюджет на токенах. Полезно тем, кто строит агентные цепочки на локальных моделях."
+    },
     {
       "id": "habr:c9a227916d3016d4",
       "url": "https://habr.com/ru/articles/1098978/?utm_campaign=1098978&utm_source=habrahabr&utm_medium=rss",
