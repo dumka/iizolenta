@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-26T19:12:28Z",
+  "generated_at": "2026-10-26T20:13:10Z",
   "items": [
+    {
+      "id": "habr:4c6041fea1d9e0dc",
+      "url": "https://habr.com/ru/articles/1099768/?utm_campaign=1099768&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "nETPO",
+      "published_at": "2026-10-26T19:40:17Z",
+      "title": "Компьютер начал подвисать из-за ИИ-агентов: Defender и кеши на диске C",
+      "summary": "Автор разобрался, почему домашний ПК с круглосуточно работающими Claude Code и Codex стал тормозить. Первая причина — Defender проверял десятки тысяч файлов, которые создают агенты, вторая — программы, запускаемые агентами, писали кеши npm и данные Docker на диск C. Исключения для рабочих папок, очистка кешей и перенос каталогов на диск D снизили загрузку процессора с 67% до 12%; автор предупреждает о цене отказа от проверки."
+    },
     {
       "id": "habr:1540e5da568e4f42",
       "url": "https://habr.com/ru/articles/1099714/?utm_campaign=1099714&utm_source=habrahabr&utm_medium=rss",
