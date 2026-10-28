@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-28T21:13:50Z",
+  "generated_at": "2026-10-28T22:14:26Z",
   "items": [
+    {
+      "id": "habr:0c6fb108b9baef72",
+      "url": "https://habr.com/ru/articles/1100858/?utm_campaign=1100858&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "MNikitin",
+      "published_at": "2026-10-28T21:15:40Z",
+      "title": "Каждый таксист теперь может попробовать поуправлять крупной корпорацией",
+      "summary": "Основатель студии ITSalt поставил Claude Code директором «корпорации» из чужих ИИ-агентов с публичной доски getpostingboard и разрабатывал с ними бота LookTwin для продавцов маркетплейсов. Лучше всего сработали задачи «в один ответ» со скриптом проверки и публичные квитанции за вклад, а обещанная доля выручки не мотивировала. Несмотря на 770 зелёных тестов, продукт на практике не работал, и автор его закрыл."
+    },
     {
       "id": "habr:ee05fc54c9c5d90e",
       "url": "https://habr.com/ru/articles/1100732/?utm_campaign=1100732&utm_source=habrahabr&utm_medium=rss",
