@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-29T03:10:47Z",
+  "generated_at": "2026-10-29T04:10:39Z",
   "items": [
+    {
+      "id": "habr:460cc60fe0d7c4af",
+      "url": "https://habr.com/ru/articles/1100908/?utm_campaign=1100908&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ИИ",
+      "author": "Corkyz0011",
+      "published_at": "2026-10-29T03:16:02Z",
+      "title": "GPT-6 Astra восстанавливает Electron-приложение: сравнение OpenAI, OpenRouter и TeamoRouter",
+      "summary": "Автор проверил, одинаково ли ведёт себя модель gpt-6-astra через официальный API OpenAI и посредников OpenRouter и TeamoRouter, на практической задаче: по дистрибутиву Pomotroid v0.13.0 восстановить Electron-таймер, а затем добавить импорт и экспорт состояния в JSON. Запуски шли в изолированном Docker-окружении с одинаковыми требованиями и проверками. До готовой базовой версии модель дошла через OpenAI за 6 мин 23 с, через OpenRouter за 6 мин 49 с, через TeamoRouter за 8 мин 47 с. Полезно тем, кто выбирает посредника для API и хочет убедиться, что вместо модели ему не подсовывают другую."
+    },
     {
       "id": "habr:ee6025d774a872c7",
       "url": "https://habr.com/ru/articles/1100900/?utm_campaign=1100900&utm_source=habrahabr&utm_medium=rss",
