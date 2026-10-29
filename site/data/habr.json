@@ -1,6 +1,15 @@
 {
-  "generated_at": "2026-10-29T00:11:13Z",
+  "generated_at": "2026-10-29T01:10:46Z",
   "items": [
+    {
+      "id": "habr:c01f409f36a51ae3",
+      "url": "https://habr.com/ru/articles/1100886/?utm_campaign=1100886&utm_source=habrahabr&utm_medium=rss",
+      "source": "Хабр: ML",
+      "author": "master_program",
+      "published_at": "2026-10-29T01:08:07Z",
+      "title": "Почему softmax теряет градиенты и как простая алгебра помогает их сохранить",
+      "summary": "Автор разбирает препринт Google DeepMind «A Fix for Softmax and Cross-Entropy» о двух численных дефектах в PyTorch и JAX: градиент правильного класса может исчезнуть, хотя число помещается в float32. На примере классификации кота и собаки он отделяет защиту от переполнения от потери точности и проверяет формулы кодом на Python. Материал будет полезен тем, кто хочет понять, что стоит проверить в собственном обучении."
+    },
     {
       "id": "habr:0c6fb108b9baef72",
       "url": "https://habr.com/ru/articles/1100858/?utm_campaign=1100858&utm_source=habrahabr&utm_medium=rss",
